@@ -29,13 +29,11 @@ class MainActivity : ComponentActivity() {
 
             if (showDialog) {
                 val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-                println("展示Dialog")
                 LoginDialog(
                     userViewModel = userViewModel,
                     onDismiss = { showDialog = false },
                     cameraExecutor = cameraExecutor,
                     onSubmit = { behavior ->
-                        // 👇 这里可以处理注册数据逻辑
                         when(behavior){
                             1 -> {
                                 println("登录按钮被点击")

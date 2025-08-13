@@ -132,7 +132,7 @@ fun LoginDialog(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // District of Photo
+                /** District of photo */
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -144,7 +144,7 @@ fun LoginDialog(
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // 登录表单区域
+                /** District of login/register Form */
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -171,7 +171,7 @@ fun LoginDialog(
                             .padding(top = 16.dp)
                             .fillMaxWidth()
                     ) {
-                        Button(
+                        Button( /** Login Button */
                             modifier = Modifier.weight(1f),
                             onClick = {
                                 coroutineScope.launch {
@@ -182,11 +182,11 @@ fun LoginDialog(
                         ) {
                             Text("登录")
                         }
+
                         val context = LocalContext.current
-                        Button(
+                        Button( /** Register Button */
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                // 先定义拍照保存的位置
                                 val photoFile = File(context.cacheDir, "photo_${System.currentTimeMillis()}.jpg")
                                 val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
@@ -217,8 +217,7 @@ fun LoginDialog(
                                                         userViewModel.id,
                                                         userViewModel.pwd,
                                                         photoFile
-                                                    )
-                                                    Log.d("Register", "上传成功: $res")*/
+                                                    )*/
                                                     onSubmit(REGISTER_FACE)
                                                 } catch (e: Exception) {
                                                     Log.e("Register", "上传失败: ${e.message}", e)
