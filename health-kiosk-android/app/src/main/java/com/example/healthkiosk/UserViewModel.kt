@@ -12,6 +12,7 @@ class UserViewModel: ViewModel() {
     var sex by mutableStateOf("")
     var height by mutableStateOf("")
     var weight by mutableStateOf("")
+    var pwd by mutableStateOf("")
 
     fun updateName(newName: String) { name = newName }
     fun updateId(newId: String) { id = newId }
@@ -19,6 +20,7 @@ class UserViewModel: ViewModel() {
     fun updateSex(newSex: String) { sex = newSex }
     fun updateHeight(newHeight: String) { height = newHeight }
     fun updateWeight(newWeight: String) { weight = newWeight }
+    fun updatePwd(newPwd: String) { id = newPwd }
 
 
 }

@@ -5,7 +5,7 @@ const {db,genid} = require('../db/dbUtils')
 class User {
     constructor({account,name,pwd}){
         this.account = account
-        this.pwd = sha256Hash(pwd)
+        this.pwd = crypto.createHash('sha256').update(pwd.toString()).digest('hex');
     }
 
     async setInfo(account,name,age,gender,height,weight){
@@ -15,9 +15,6 @@ class User {
         }catch(e){
             console.log(e)
         }
-    }
-    sha256Hash(password) {
-        return crypto.createHash('sha256').update(password).digest('hex');
     }
 
 }

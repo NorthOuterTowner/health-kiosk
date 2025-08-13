@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
 
@@ -27,18 +28,20 @@ class MainActivity : ComponentActivity() {
             var showDialog by remember { mutableStateOf(true) }
 
             if (showDialog) {
+                val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
                 println("展示Dialog")
                 LoginDialog(
                     userViewModel = userViewModel,
                     onDismiss = { showDialog = false },
+                    cameraExecutor = cameraExecutor,
                     onSubmit = { behavior ->
                         // 👇 这里可以处理注册数据逻辑
                         when(behavior){
                             1 -> {
-                                println("1")
+                                println("登录按钮被点击")
                             }
                             2 -> {
-                                println("2")
+                                println("注册按钮被点击")
                             }
                         }
                         showDialog = false
