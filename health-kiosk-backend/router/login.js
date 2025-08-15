@@ -104,7 +104,7 @@ router.post("/register", async (req, res) => {
     }
 
     const searchSQL = "SELECT * FROM `user` WHERE `account` = ?;";
-    const insertSql = "INSERT INTO `user` (`account`, `pwd`) VALUES (?, ?);";
+    const insertSql = "INSERT INTO `user` (`account`, `pwd`, `role`) VALUES (?, ?, ?);";
 
     try {
         const { err: searchErr, rows } = await db.async.all(searchSQL, 
