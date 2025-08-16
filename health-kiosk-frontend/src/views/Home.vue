@@ -2,47 +2,65 @@
   <div class="home">
     <!-- 顶部导航 -->
     <header class="navbar">
-      <div class="logo">自助体检机后台管理系统</div>
+      <div class="logo">{{ $t('home.title') }}</div>
       <nav>
-        <a href="#">系统简介</a>
-        <a href="#">功能介绍</a>
-        <a href="#">数据统计</a>
-        <a href="#">设备管理</a>
-        <a href="#">中文 | EN</a>
+        <a href="#">{{ $t('navbar.intro') }}</a>
+        <a href="#">{{ $t('navbar.features') }}</a>
+        <a href="#" @click="toggleLang">{{ $t('navbar.language') }}</a>
       </nav>
     </header>
 
     <!-- 主体内容 -->
     <main class="main-section">
       <div class="text-content">
-        <h1>自助体检机后台管理系统</h1>
-        <p>
-          智能化、可视化、便捷化协助体检管理平台，支持人员管理、设备管理、数据统计等功能。
-        </p>
+        <h1>{{ $t('home.title') }}</h1>
+        <p>{{ $t('home.desc') }}</p>
         <div class="buttons">
-          <button class="btn-primary">立即注册</button>
-          <button class="btn-secondary">了解更多</button>
+          <button class="btn-primary">{{ $t('home.register') }}</button>
+          <button class="btn-secondary">{{ $t('home.learnMore') }}</button>
         </div>
       </div>
 
       <div class="image-content">
-        <img :src="machineImg" alt="体检机插画" />
+        <!--<img :src="machineImg" alt="体检机插画" />-->
       </div>
     </main>
 
     <!-- 右下角登录窗口 -->
     <div class="login-box">
-      <h3>登录</h3>
-      <input type="text" placeholder="账号" />
-      <input type="password" placeholder="密码" />
-      <button class="btn-primary">登录</button>
+      <h3>{{ $t('login.title') }}</h3>
+      <input type="text" v-model="username" :placeholder="$t('login.username')" />
+      <input type="password" v-model="password" :placeholder="$t('login.password')" />
+      <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import machineImg from '@/assets/machine.png'
+import { ref } from "vue";
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n'
+
+const router = useRouter();
+const { locale } = useI18n()
+
+const username = ref("");
+const password = ref("");
+
+const login = () =>{
+  if(username.value && password.value){
+    router.push("/User");
+  }else {
+    alert(locale.value === 'zh' ? '请输入账号和密码' : 'Please enter username and password');
+  }
+};
+
+// 切换语言
+const toggleLang = () => {
+  locale.value = locale.value === 'zh' ? 'en' : 'zh'
+}
 </script>
+
 
 <style scoped>
 .home {
@@ -111,13 +129,14 @@ import machineImg from '@/assets/machine.png'
 
 .image-content img {
   max-width: 400px;
+  margin-right: 400px;
 }
 
 /* 登录窗口 */
 .login-box {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 100px;
+  right: 100px;
   background: white;
   color: black;
   padding: 1.5rem;
