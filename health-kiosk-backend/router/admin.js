@@ -3,6 +3,22 @@ const router = express.Router()
 const {db,genid} = require('../db/dbUtils')
 const User = require('../entity/User')
 
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // 存放目录
+    },
+    filename: function (req, file, cb) {
+        // 使用原始扩展名
+        const ext = path.extname(file.originalname) || '.jpg'; 
+        // 可以用 timestamp 或 uuid 保证唯一性
+        cb(null, `${Date.now()}${ext}`);
+    }
+});
+
+const upload = multer({ storage: storage });
 /**
  * @api {post} /login 用户登录
  * @apiName UserLogin
@@ -92,8 +108,18 @@ router.post("/login", async (req, res) => {
  *   "msg": "注册成功"
  * }
  */
-
-router.post("/register", async (req, res) => {
+router.post("/register", upload.single('photo'), async (req, res) => {
+    /** Headers
+     * {
+        host: '10.0.2.2:3000',
+        'content-length': '100971',
+        accept: 'application/json',
+        'accept-charset': 'UTF-8',
+        'user-agent': 'Ktor client',
+        'content-type': 'multipart/form-data; boundary=-28cfc474-180e286872297157289b20bd-502d8f1c3bf0cc86-56b70b6558da571f-2'
+        }
+    */
+   console.log(req.body);
     const user = new User(req.body);
 
     if (!user.account || !user.pwd) {
@@ -104,7 +130,7 @@ router.post("/register", async (req, res) => {
     }
 
     const searchSQL = "SELECT * FROM `user` WHERE `account` = ?;";
-    const insertSql = "INSERT INTO `user` (`account`, `pwd`, `role`) VALUES (?, ?, ?);";
+    const insertSql = "INSERT INTO `user` (`account`, `pwd`, `pic`, `role`) VALUES (?, ?, ?, ?);";
 
     try {
         const { err: searchErr, rows } = await db.async.all(searchSQL, 
@@ -127,7 +153,7 @@ router.post("/register", async (req, res) => {
         }
 
         const { err: insertErr } = await db.async.run(insertSql, 
-            [user.account, user.pwd]
+            [user.account, user.pwd, req.file.filename, '1']
         );
 
         if (insertErr) {
@@ -144,6 +170,7 @@ router.post("/register", async (req, res) => {
         });
 
     } catch (e) {
+        console.log(e)
         return res.status(500).json({
             code: 500,
             msg: "服务器错误",
@@ -151,5 +178,6 @@ router.post("/register", async (req, res) => {
         });
     }
 });
+
 
 module.exports = router

@@ -23,13 +23,14 @@ object ApiService {
     }
 
     /*Register API*/
-    suspend fun register(name: String, pwd: String, photoFile: File): String {
+    suspend fun register(account:String,name: String, pwd: String, photoFile: File): String {
         val response: HttpResponse = NetworkClient.httpClient.post("/admin/register") {
             setBody(
                 MultiPartFormDataContent(
                     formData {
+                        append("account",account)
                         append("name", name)
-                        append("pwd", pwd)
+                        append("pwd",pwd)
                         append(
                             "photo",
                             photoFile.readBytes(),

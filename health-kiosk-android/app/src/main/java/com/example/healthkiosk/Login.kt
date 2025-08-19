@@ -95,7 +95,7 @@ private fun startCamera(
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
 
-        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
         try {
             cameraProvider.unbindAll()
@@ -159,6 +159,13 @@ fun LoginDialog(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
+                        value = userViewModel.name,
+                        onValueChange = { userViewModel.updateName(it) },
+                        label = { Text("姓名") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
                         value = userViewModel.pwd,
                         onValueChange = { userViewModel.updatePwd(it) },
                         label = { Text("密码") },
@@ -213,14 +220,15 @@ fun LoginDialog(
                                                     }*/
 
                                                     /**This is part is the code which works in productive environment*/
-                                                    /*val res = ApiService.register(
+                                                    val res = ApiService.register(
                                                         userViewModel.id,
+                                                        userViewModel.name,
                                                         userViewModel.pwd,
                                                         photoFile
-                                                    )*/
+                                                    )
                                                     onSubmit(REGISTER_FACE)
                                                 } catch (e: Exception) {
-                                                    Log.e("Register", "上传失败: ${e.message}", e)
+                                                    Log.e("Register", "error: ${e.message}", e)
                                                 }
                                             }
                                         }

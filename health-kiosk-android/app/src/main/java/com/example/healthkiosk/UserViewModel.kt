@@ -20,7 +20,7 @@ class UserViewModel: ViewModel() {
     fun updateSex(newSex: String) { sex = newSex }
     fun updateHeight(newHeight: String) { height = newHeight }
     fun updateWeight(newWeight: String) { weight = newWeight }
-    fun updatePwd(newPwd: String) { id = newPwd }
+    fun updatePwd(newPwd: String) { pwd = newPwd }
 
 
 }
