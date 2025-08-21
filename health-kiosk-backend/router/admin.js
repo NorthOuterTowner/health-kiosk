@@ -2,9 +2,11 @@ const express = require('express')
 const router = express.Router()
 const {db,genid} = require('../db/dbUtils')
 const User = require('../entity/User')
+const crypto = require('crypto')
 
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -19,95 +21,138 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-/**
- * @api {post} /login 用户登录
- * @apiName UserLogin
- * @apiGroup User
- * @apiVersion 1.1.0
- * 
- * @apidescription 用户通过用户名和密码进行登录。
- * 
- * @apiBody {String} name 用户名
- * @apiBody {String} pwd 密码（明文或已加密，根据系统实现）
- * 
- * @apiSuccess {Number} code 状态码（200 表示成功）
- * @apiSuccess {String} msg 提示信息
- * 
- * @apiSuccessExample {json} 成功响应:
- * HTTP/1.1 200 OK
- * {
- *   "code": 200,
- *   "msg": "登录成功"
- * }
- * 
- */
-router.post("/login", async (req, res) => {
-    const { account, pwd } = req.body;
+
+router.post("/login", upload.single("photo") , async (req, res) => {
+  //upload.fields([{ name: "photo", maxCount: 1 }])
+  let { account, pwd } = req.body;
+  if(account!=null && pwd !=null){
+    //delete picture saved from request.
+    if (req.file) {
+      const del_file_string = path.join(__dirname, "../uploads/" + req.file?.filename);
+      fs.unlink(del_file_string, err => {
+        if (err) console.log(err);
+      });
+    }
+
+    try { 
+      const { err, rows } = await db.async.all( 
+        "SELECT * FROM user WHERE account = ?", 
+        [account] 
+      );
+      if (err) { 
+        return res.status(500).json({ 
+          code: 500, 
+          msg: "服务器错误", 
+          err 
+        }
+      ); 
+      } 
+      if (rows.length === 0) { 
+        return res.status(404).json({ 
+          code: 404, 
+          msg: "不存在该用户" }); 
+        } 
+      const user = rows[0];
+      pwd = crypto.createHash('sha256').update(pwd.toString()).digest('hex');
+      if (user.pwd === pwd) { 
+        user.pwd = ""
+        return res.status(200).json({ 
+          code: 200, 
+          msg: "登录成功",
+          user
+        }); 
+      } else { 
+        return res.status(401).json({ 
+          code: 401, 
+          msg: "密码错误" 
+        }); 
+      } 
+    } catch (e) { 
+      return res.status(500).json({ 
+        code: 500, 
+        msg: "服务器错误", 
+        err: e.message }
+      );
+    }
+  }else{
+    /**
+   * Login logic when just having the picture.
+   * Using face recognition function to recognize whether a face saved in database is as same as the input picture.
+   */
+    const py = req.py;
+    const callbacks = req.pyCallbacks;
+
+    const file_name = req.file?.filename;
+
+    const faceMatch = () =>
+      new Promise((resolve, reject) => {
+        callbacks.push((data) => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
+        });
+        py.stdin.write(JSON.stringify({ file_name }) + "\n");
+      });
 
     try {
-        const { err, rows } = await db.async.all(
-            "SELECT * FROM `user` WHERE `account` = ?",
-            [account]
-        );
+      const result = await faceMatch();
+      // find user information in MysQL through db_filename
+      if (result.status === "ok" && result.match) {
+        const file_name = result.match
+        const find_user_sql = "select * from `user` where `pic` = ? ;"
+        const {err:userErr,rows:userRows} = await db.async.all(find_user_sql,[file_name])
 
-        if (err) {
-            return res.status(500).json({
-                code: 500,
-                msg: "服务器错误",
-                err
-            });
-        }
-
-        if (rows.length === 0) {
-            return res.status(404).json({
-                code: 404,
-                msg: "不存在该用户"
-            });
-        }
-
-        const user = rows[0];
-        if (user.pwd === pwd) {
-            return res.status(200).json({
-                code: 200,
-                msg: "登录成功"
-            });
-        } else {
-            return res.status(401).json({
-                code: 401,
-                msg: "密码错误"
-            });
-        }
-    } catch (e) {
-        return res.status(500).json({
+        if(userErr != null || userRows.length == 0){
+          return res.status(500).json({
             code: 500,
-            msg: "服务器错误",
-            err: e.message
+            msg:"查询用户信息失败"
+          });
+        }
+        const user = userRows[0];
+        user.pwd = "";
+        /**
+         * TODO: 
+         * 1.The python process could just return db_filename on `match`, 
+         *    so it still need to find user information in MysQL through db_filename.√
+         * 2.python child process should be killed when the user logged into system successfully.√
+         * 3.Delete the input picture when login logic done.√
+         */
+        py.kill()
+        return res.json({ code: 200, 
+          msg: "人脸匹配成功", 
+          user 
         });
+      } else if (result.status === "ok") {
+        console.log(result.a)
+        return res.status(404).json({ 
+          code: 404, 
+          msg: "未找到匹配用户" 
+        });
+      } else {
+        return res.status(500).json({ 
+          code: 500, 
+          msg: result.msg 
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({ 
+        code: 500, 
+        msg: "Python 服务异常", 
+        err: e.message 
+      });
+    } finally {
+      if (req.file) {
+        const del_file_string = path.join(__dirname, "../uploads/" + req.file?.filename);
+        fs.unlink(del_file_string, err => {
+          if (err) console.log(err);
+        });
+      }
     }
+  }
 });
 
-/**
- * @api {post} /register 用户注册
- * @apiName UserRegister
- * @apiGroup User
- * @apiVersion 1.0.0
- * 
- * @apidescription 用户通过提交account、用户名和密码进行注册。
- * 
- * @apiBody {String} account 用户account，唯一标识
- * @apiBody {String} name 用户名
- * @apiBody {String} pwd 密码（明文或已加密，根据系统实现）
- * 
- * @apiSuccess {Number} code 状态码（201 表示注册成功）
- * @apiSuccess {String} msg 提示信息
- * 
- * @apiSuccessExample {json} 成功响应:
- * HTTP/1.1 201 Created
- * {
- *   "code": 201,
- *   "msg": "注册成功"
- * }
- */
 router.post("/register", upload.single('photo'), async (req, res) => {
     /** Headers
      * {
@@ -119,7 +164,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
         'content-type': 'multipart/form-data; boundary=-28cfc474-180e286872297157289b20bd-502d8f1c3bf0cc86-56b70b6558da571f-2'
         }
     */
-   console.log(req.body);
+    console.log(req.body);
     const user = new User(req.body);
 
     if (!user.account || !user.pwd) {
@@ -153,7 +198,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
         }
 
         const { err: insertErr } = await db.async.run(insertSql, 
-            [user.account, user.pwd, req.file.filename, '1']
+            [user.account, user.pwd, req.file?.filename, '1']
         );
 
         if (insertErr) {

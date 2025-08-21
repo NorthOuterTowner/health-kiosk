@@ -10,12 +10,19 @@
 
 前端为管理员或用户进行信息查看所使用的UI界面。使用Vue.js框架，使用npm包管理器进行依赖管理，提供用户交互界面。
 
-![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
 
-### 1.运行
+### 1.安装依赖
+首先在官网中下载node.js并安装，之后安装相关的npm包。
 ```bash
 cd health-kiosk-frontend
 npm install
+```
+
+### 2.运行
+在终端运行如下命令，之后打开浏览器访问`localhost:5173`即可。
+```bash
+cd health-kiosk-frontend
 npm run dev
 ```
 
@@ -23,7 +30,7 @@ npm run dev
 
 Android APP为用户在体检过程中提供指引，并可视化的查看当前体检数据，使用Kotlin语言开发，使用Gradle进行依赖管理。
 
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Ktor](https://img.shields.io/badge/Ktor-000000?style=for-the-badge&logo=ktor&logoColor=white)
 
 ### 1.运行
 使用数据线连接待运行设备，之后在Android Studio中打开项目，点击运行按钮即可。
@@ -31,7 +38,7 @@ Android APP为用户在体检过程中提供指引，并可视化的查看当前
 ## :computer: 后端使用说明
 后端使用node.js和Express框架，连接MySQL数据库，并提供RESTful API接口供前端调用。
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
 ### 1.运行
 在scheduling目录打开cmd。
@@ -75,3 +82,23 @@ mysql -u [username] -p [database_name] < [database_name.sql]
 法2：直接启动mysql命令行，将 SQL 文件导入到本地 MySQL 服务器
 use [database_bane]
 source [D:/Demo.sql]
+
+## 人脸识别模块
+
+本模块在后端中进行启动，用于 Android 用户人脸识别认证登录。使用dlib和face_recognition库进行人脸识别，使用Python语言开发。
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Dlib](https://img.shields.io/badge/Dlib-6C8CD5?style=for-the-badge&logo=dlib&logoColor=white) ![face_recognition](https://img.shields.io/badge/face__recognition-FF6F61?style=for-the-badge&logo=python&logoColor=white)
+
+### 1.安装依赖
+```bash
+conda create -n face_recognition python=3.9
+conda activate face_recognition
+
+conda install -c conda-forge dlib
+pip install face_recognition
+```
+### 2.运行
+```bash
+cd face_recognition
+conda activate face_recognition
+```

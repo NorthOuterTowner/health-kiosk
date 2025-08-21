@@ -8,10 +8,36 @@ const redis = require("redis")
 const redisClient = require("./db/redis")
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const { spawn } = require("child_process");
 
 const rateLimit = require('express-rate-limit');
 
 const path = require('path');
+
+//启动常驻的子进程
+const py = spawn("python", ["../face_recognition/face_service.py"]);
+
+const callbacks = [];
+
+py.stdout.on("data", (data) => {
+  if (callbacks.length === 0) return;
+  const cb = callbacks.shift();
+  cb(data.toString());
+});
+
+py.stderr.on("data", (data) => {
+  console.error("[Python ERROR]", data.toString());
+});
+
+/**
+ * TODO: 
+ * this middleware just used when request is about login function.
+ */
+app.use((req, res, next) => {
+  req.py = py;
+  req.pyCallbacks = callbacks;
+  next();
+});
 
 // The API using for test whether mobile phone could connect to the backend
 app.get('/test', (req, res) => {
