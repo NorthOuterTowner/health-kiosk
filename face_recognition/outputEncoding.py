@@ -1,11 +1,28 @@
-'''
-Name: outputEncoding.py
+"""
+File: outputEncoding.py
 
-Description: Through running this python file, 
-    you could transform all pictures saved in MySQL 
-    and save numpy file into 'uploads' floder. 
-'''
+Description:
+    This script connects to a MySQL database, retrieves image file names stored in the `user` table,
+    loads the corresponding image files from the uploads folder, extracts face encodings using the
+    `face_recognition` library, and saves them as `.npy` files in the same folder.
 
+Dependencies:
+    - face_recognition
+    - mysql-connector-python
+    - python-dotenv
+    - numpy
+    
+Environment Variables (.env file):
+    DB_HOST      - MySQL host address
+    DB_DATABASE  - Database name
+    DB_USER      - Database username
+    DB_PASSWORD  - Database password
+    DB_CHARSET   - Character set
+
+Output:
+    - For each valid image: a corresponding .npy file containing the face encoding
+      saved in the ../health-kiosk/health-kiosk-backend/uploads folder
+"""
 import face_recognition
 import mysql.connector
 import os

@@ -93,7 +93,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
             reject(e);
           }
         });
-        py.stdin.write(JSON.stringify({ file_name }) + "\n");
+        py.stdin.write(JSON.stringify({ action: "compare", file_name }) + "\n");
       });
 
     try {
@@ -112,14 +112,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         }
         const user = userRows[0];
         user.pwd = "";
-        /**
-         * TODO: 
-         * 1.The python process could just return db_filename on `match`, 
-         *    so it still need to find user information in MysQL through db_filename.√
-         * 2.python child process should be killed when the user logged into system successfully.√
-         * 3.Delete the input picture when login logic done.√
-         */
-        py.kill()
+        //py.kill()
         return res.json({ code: 200, 
           msg: "人脸匹配成功", 
           user 
@@ -165,6 +158,12 @@ router.post("/register", upload.single('photo'), async (req, res) => {
         }
     */
     console.log(req.body);
+    if(req.file){
+      console.log("true")
+      const py = req.py;
+      py.stdin.write(JSON.stringify({ action: "encode", file_name: req.file.filename }) + "\n");
+    }
+
     const user = new User(req.body);
 
     if (!user.account || !user.pwd) {
