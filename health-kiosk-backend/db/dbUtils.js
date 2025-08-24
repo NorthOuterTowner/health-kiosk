@@ -1,5 +1,3 @@
-require("dotenv").config()
-
 const mysql = require("mysql2"); // 使用 mysql2 库
 const path = require("path");
 const Genid = require("../utils/SnowFlake");

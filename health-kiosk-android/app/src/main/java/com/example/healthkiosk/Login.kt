@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -28,9 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
+import io.ktor.http.ContentType.Application.Json
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
+import kotlinx.serialization.json.*
 
 const val LOGIN_BY_INFO: Int = 1
 const val REGISTER_FACE: Int = 2
@@ -178,19 +181,25 @@ fun LoginDialog(
                             .padding(top = 16.dp)
                             .fillMaxWidth()
                     ) {
+                        val context = LocalContext.current
                         Button( /** Login Button */
                             modifier = Modifier.weight(1f),
                             onClick = {
                                 coroutineScope.launch {
                                     val res = ApiService.login(userViewModel.id, userViewModel.pwd)
-                                    onSubmit(LOGIN_BY_INFO)
+                                    val json = kotlinx.serialization.json.Json.parseToJsonElement(res).jsonObject
+                                    val code: Int? = json["code"]?.jsonPrimitive?.int
+                                    if(code==200){
+                                        onSubmit(LOGIN_BY_INFO)
+                                    }else{
+                                        Toast.makeText(context, "登录失败"+code.toString(), Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         ) {
                             Text("登录")
                         }
 
-                        val context = LocalContext.current
                         Button( /** Register Button */
                             modifier = Modifier.weight(1f),
                             onClick = {
@@ -226,7 +235,13 @@ fun LoginDialog(
                                                         userViewModel.pwd,
                                                         photoFile
                                                     )
-                                                    onSubmit(REGISTER_FACE)
+                                                    val json = kotlinx.serialization.json.Json.parseToJsonElement(res).jsonObject
+                                                    val code: Int? = json["code"]?.jsonPrimitive?.int
+                                                    if(code==200){
+                                                        onSubmit(REGISTER_FACE)
+                                                    }else{
+                                                        Toast.makeText(context, "注册失败"+code.toString(), Toast.LENGTH_SHORT).show()
+                                                    }
                                                 } catch (e: Exception) {
                                                     Log.e("Register", "error: ${e.message}", e)
                                                 }

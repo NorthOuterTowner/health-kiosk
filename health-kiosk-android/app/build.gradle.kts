@@ -86,4 +86,6 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-layout:1.6.0")
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
 }

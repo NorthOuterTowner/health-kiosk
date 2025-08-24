@@ -9,15 +9,19 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.Json
 import java.io.File
 
-data class LoginRequest(val name: String, val pwd: String)
+data class LoginRequest(val account: String, val pwd: String)
 object ApiService {
     /*Login API*/
     suspend fun login(name: String, pwd: String): String {
         val response: HttpResponse = NetworkClient.httpClient.post("/admin/login") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequest(name, pwd))
+            //body = Json.encodeToString(LoginRequest(name, pwd))
+            val jsonBody = """{"account":"$name","pwd":"$pwd"}"""
+            setBody(jsonBody)
+            //setBody(LoginRequest(name,pwd))
         }
         return response.bodyAsText()
     }

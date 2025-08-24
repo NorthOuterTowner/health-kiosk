@@ -17,7 +17,7 @@
         <p>{{ $t('home.desc') }}</p>
         <div class="buttons">
           <button class="btn-primary">{{ $t('home.register') }}</button>
-          <button class="btn-secondary">{{ $t('home.learnMore') }}</button>
+          <button class="btn-secondary" @click="learnMore">{{ $t('home.learnMore') }}</button>
         </div>
       </div>
 
@@ -40,6 +40,8 @@
 import { ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
+import { loginApi,registerApi, testApi } from "../api/auth";
+import { useMessage } from 'naive-ui'
 
 const router = useRouter();
 const { locale } = useI18n()
@@ -47,14 +49,29 @@ const { locale } = useI18n()
 const username = ref("");
 const password = ref("");
 
-const login = () =>{
+const message = useMessage();
+
+const login = async () =>{
   if(username.value && password.value){
-    router.push("/User");
+    const res = await loginApi(username.value,password.value);
+    if(res.data.code === 200){
+      localStorage.setItem("token",res.data.user.token);
+      message.info("登录成功")
+      //router.push("/User");
+    }else{
+      message.error("登录失败")
+    }
   }else {
     alert(locale.value === 'zh' ? '请输入账号和密码' : 'Please enter username and password');
   }
 };
 
+const learnMore = async () =>{
+  const res = await testApi();
+  if(res.data.code === 200){
+    message.info(res.data.msg)
+  }
+}
 // 切换语言
 const toggleLang = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh'

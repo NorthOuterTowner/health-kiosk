@@ -7,12 +7,17 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.*
 import io.ktor.http.*
 import io.ktor.serialization.gson.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 object NetworkClient {
     val httpClient = HttpClient(CIO) {
         // 1. 基础JSON序列化配置
         install(ContentNegotiation) {
-            gson()
+            json(Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            })
         }
 
         // 2. 日志配置（开发调试用）

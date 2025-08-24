@@ -38,7 +38,7 @@ Android APP为用户在体检过程中提供指引，并可视化的查看当前
 ## :computer: 后端使用说明
 后端使用node.js和Express框架，连接MySQL数据库，并提供RESTful API接口供前端调用。
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens) ![dotenv](https://img.shields.io/badge/dotenv-000000?style=for-the-badge&logo=dotenv) 
 
 ### 1.运行
 在scheduling目录打开cmd。

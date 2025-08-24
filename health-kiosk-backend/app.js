@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -13,6 +15,18 @@ const { spawn } = require("child_process");
 const rateLimit = require('express-rate-limit');
 
 const path = require('path');
+const { verifyToken } = require('./utils/jwtHelper');
+
+app.use(express.json());
+
+/*app.use((req, res, next) => {
+  console.log('\n=== 开始 ===');
+  console.log(`方法: ${req.method}`);
+  console.log(`URL: ${req.originalUrl}`);
+  console.log('请求体:', req.body);
+  console.log('=== 结束 ===\n');
+  next();
+});*/
 
 //启动常驻的子进程
 const py = spawn("python", ["../face_recognition/face_service.py"]);
@@ -39,12 +53,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// The API using for test whether mobile phone could connect to the backend
-app.get('/test', (req, res) => {
-  console.log("from phone")
-  res.json({ status: 'ok', timestamp: Date.now() });
-});
-
 /* API rate limit */
 const limiter = rateLimit({
 	windowMs: 1000, // 1 second
@@ -64,10 +72,26 @@ app.use(function(req,res,next){
     else next();
 });
 
-app.use(express.json());
 app.use(limiter);
 
 app.use("/admin",require("./router/admin"))
+
+app.use((req,res,next)=>{
+  console.log(req.headers)
+  const authorization = req.headers.authorization;
+  if(!authorization){
+    return res.status(401).json({
+      code:401,
+      msg:"无访问权限"
+    })
+  }
+  const content = authorization.split(' ')[1]
+  verifyToken(content);
+
+  next()
+})
+
+app.use("/func",require("./router/func"))
 
 app.listen(port,'0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);
