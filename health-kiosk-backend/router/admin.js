@@ -12,7 +12,7 @@ const { generateToken } = require('../utils/jwtHelper')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // 存放目录
+        cb(null, 'uploads/'); // store catalog
     },
     filename: function (req, file, cb) {
         // 使用原始扩展名
@@ -24,6 +24,44 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+/**
+ * @api {post} /user/login User Login
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Content-Type multipart/form-data
+ * 
+ * @apiBody {String} [account] User account (optional if using face login).
+ * @apiBody {String} [pwd] User password (required if using account login).
+ * @apiBody {File} [photo] User photo for face recognition login (optional if using account login).
+ * 
+ * @apiSuccess {Object} Response Example (Account Login Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Login successful",
+ *   "user": {
+ *     "account": "user001",
+ *     "name": "Alice",
+ *     "role": 1,
+ *     "gender": "Female",
+ *     "age": 25,
+ *     "token": "jwt_or_uuid_token"
+ *   }
+ * }
+ * 
+ * @apiSuccess {Object} Response Example (Face Login Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Face match successful",
+ *   "user": {
+ *     "account": "user001",
+ *     "name": "Alice",
+ *     "role": 1,
+ *     "gender": "Female",
+ *     "age": 25,
+ *     "token": "jwt_or_uuid_token"
+ *   }
+ * }
+ */
 router.post("/login", upload.single("photo") , async (req, res) => {
   //upload.fields([{ name: "photo", maxCount: 1 }])
   let { account, pwd } = req.body;
@@ -161,6 +199,22 @@ router.post("/login", upload.single("photo") , async (req, res) => {
   }
 });
 
+/**
+ * @api {post} /user/register Register New User
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Content-Type multipart/form-data
+ * 
+ * @apiBody {String} account User account (required).
+ * @apiBody {String} pwd User password (required).
+ * @apiBody {File} [photo] User profile photo (optional).
+ * 
+ * @apiSuccess {Object} Response Example (Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Registration successful"
+ * }
+ */
 router.post("/register", upload.single('photo'), async (req, res) => {
     /** Headers
      * {

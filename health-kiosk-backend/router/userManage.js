@@ -20,26 +20,94 @@ const path = require('path');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-//get all users' information
-router.get("/", async (req,res)=>{
-    const page = req.page || 1;
-    const limit = req.limit || 20;
-    const searchSQL = "select * from `user` order by `account` limit ? offset ( ? - 1 ) * 10 ;"
-    const {err,rows} = await db.async.all(searchSQL,[limit,page]);
-    if(err!=null){
+/**
+ * @api {get} /user/list Get User List
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Authorization Bearer Token
+ *
+ * @apiQuery {Number} [page=1] Page number (starting from 1).
+ * @apiQuery {Number} [limit=20] Number of items per page.
+ * 
+ * @apiSuccess {Object} Response:
+ * {
+ *   "code": 200,
+ *   "msg": "Success",
+ *   "rows": [
+ *     {
+ *       "account": "user001",
+ *       "role": "2",
+ *       "name": "Alice",
+ *       "gender": "Female",
+ *       "age": 25
+ *     },
+ *     // ... more users
+ *   ]
+ * }
+ */
+router.get("/list", async (req,res)=>{
+    const token = req.headers.authorization.split(' ')[1];
+    const account = decodeToken(token).data.account;
+    const adminSQL = "select `role` from `user` where account = ? ;"
+    const {err:adminErr,rows:adminRows} = await db.async.all(adminSQL,[account]);
+    if(adminErr == null && adminRows.length > 0){
+        if(adminRows[0]["role"] < 2){
+            return res.status(200).json({
+                code:403,
+                msg:"您无权限访问"
+            })
+        }
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 20;
+        const offset = (page - 1) * limit;
+        const searchSQL = "select * from `user` order by `account` limit ? offset ? ;"
+        const {err,rows} = await db.async.all(searchSQL,[limit,offset]);
+        if(err!=null){
+            return res.status(500).json({
+                code:500,
+                msg:"服务器错误"
+            })
+        }else{
+            return res.status(200).json({
+                code:200,
+                rows
+            })
+        }
+    }else if(adminRows.length == 0){
+        return res.status(200).json({
+            code:404,
+            msg:"无该用户"
+        });
+    }else{
         return res.status(500).json({
             code:500,
             msg:"服务器错误"
-        })
-    }else{
-        return res.status(200).json({
-            code:200,
-            rows
-        })
+        });
     }
 });
 
-router.get("/info", async (req,res)=>{
+/**
+ * @api {get} /user/selfinfo Get Current User Info
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Authorization Bearer Token
+ * 
+ * @apiSuccess {Object} Response Example:
+ * {
+ *   "code": 200,
+ *   "rows": [
+ *     {
+ *       "account": "user001",
+ *       "role": "2",
+ *       "name": "Alice",
+ *       "gender": "Female",
+ *       "age": 25
+ *     }
+ *   ]
+ * }
+ * 
+ */
+router.get("/selfinfo", async (req,res)=>{
     const token = req.headers.authorization.split(' ')[1];
     const account = decodeToken(token).data.account;
     const searchSQL = "select * from `user` where account = ? ;"
@@ -62,6 +130,67 @@ router.get("/info", async (req,res)=>{
     }
 });
 
+/**
+ * @api {get} /user/info Get User Info by Account
+ * @apiGroup User
+ * 
+ * @apiQuery {String} account User account to query.
+ * 
+ * @apiSuccess {Object} Response Example:
+ * {
+ *   "code": 200,
+ *   "rows": [
+ *     {
+ *       "account": "user001",
+ *       "role": "2",
+ *       "name": "Alice",
+ *       "gender": "Female",
+ *       "age": 25
+ *     }
+ *   ]
+ * }
+ */
+router.get("/info",async (req,res) => {
+    const account = req.query.account;
+    const searchSQL = "select * from `user` where account = ? ;"
+    const {err,rows} = await db.async.all(searchSQL,[account]);
+    if(err == null && rows.length > 0){
+        return res.status(200).json({
+            code:200,
+            rows
+        });
+    }else if(rows.length == 0){
+        return res.status(200).json({
+            code:200,
+            msg:"无该用户"
+        });
+    }else{
+        return res.status(500).json({
+            code:200,
+            msg:"服务器错误"
+        });
+    }
+})
+
+/**
+ * @api {post} /user/change Update Current User Info
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Authorization Bearer Token
+ * 
+ * @apiBody {String} [name] User name.
+ * @apiBody {Number} [age] User age.
+ * @apiBody {String} [gender] User gender.
+ * @apiBody {Number} [height] User height.
+ * @apiBody {Number} [weight] User weight.
+ * @apiBody {String} [email] User email (must be valid format).
+ * 
+ * @apiSuccess {Object} Response Example (Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Update successful"
+ * }
+ */
 router.post("/change",async (req,res) => {
     const account = decodeToken(req.headers.authorization.split(' ')[1]).data.account;
     const searchSQL = "select * from `user` where `account` = ? ;"
@@ -104,6 +233,20 @@ router.post("/change",async (req,res) => {
     } 
 });
 
+/**
+ * @api {post} /user/reset/pwd Request Password Reset
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Authorization Bearer Token
+ * 
+ * @apiBody {String} newPassword New password (required).
+ * 
+ * @apiSuccess {Object} Response Example (Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Password reset verification email sent, please check your inbox"
+ * }
+ */
 router.post('/reset/pwd', async (req, res) => {
     const account = decodeToken(req.headers.authorization.split(' ')[1]).data.account;
     const searchSQL = "select `email` from `user` where `account` = ? ;"
@@ -179,7 +322,7 @@ router.post('/reset/pwd', async (req, res) => {
             msg: "重置验证邮件已发送，请查收邮箱" 
         });
     }catch(err){
-        return res.code(200).json({
+        return res.code(500).json({
             code:500,
             msg:err.msg
         })
