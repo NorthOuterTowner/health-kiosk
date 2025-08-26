@@ -6,21 +6,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
 class UserViewModel: ViewModel() {
-    var name by mutableStateOf("")
-    var id by mutableStateOf("")
-    var age by mutableStateOf("")
-    var sex by mutableStateOf("")
-    var height by mutableStateOf("")
-    var weight by mutableStateOf("")
-    var pwd by mutableStateOf("")
+  var name by mutableStateOf("")
+  var id by mutableStateOf("")
+  var age by mutableStateOf("")
+  var sex by mutableStateOf("")
+  var height by mutableStateOf("")
+  var weight by mutableStateOf("")
+  var pwd by mutableStateOf("")
+  var token by mutableStateOf("")
 
-    fun updateName(newName: String) { name = newName }
-    fun updateId(newId: String) { id = newId }
-    fun updateAge(newAge: String) { age = newAge }
-    fun updateSex(newSex: String) { sex = newSex }
-    fun updateHeight(newHeight: String) { height = newHeight }
-    fun updateWeight(newWeight: String) { weight = newWeight }
-    fun updatePwd(newPwd: String) { pwd = newPwd }
-
+  fun updateName(newName: String) { name = newName }
+  fun updateId(newId: String) { id = newId }
+  fun updateAge(newAge: String) { age = newAge }
+  fun updateSex(newSex: String) { sex = newSex }
+  fun updateHeight(newHeight: String) { height = newHeight }
+  fun updateWeight(newWeight: String) { weight = newWeight }
+  fun updatePwd(newPwd: String) { pwd = newPwd }
+  fun updateToken(newToken: String) { token = newToken }
 
 }

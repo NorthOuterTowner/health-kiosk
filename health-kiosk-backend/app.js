@@ -91,6 +91,7 @@ app.use((req,res,next)=>{
   next()
 })
 
+app.use("/func",require("./router/func"))
 app.use("/user",require("./router/userManage"))
 //app.use("/device",require("./router/deviceManage"))
 
