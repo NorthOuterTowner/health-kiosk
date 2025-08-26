@@ -257,7 +257,6 @@ fun LoginDialog(
                         ) {
                             Text("注册")
                         }
-
                     }
                 }
             }

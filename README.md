@@ -38,7 +38,7 @@ Android APP为用户在体检过程中提供指引，并可视化的查看当前
 ## :computer: 后端使用说明
 后端使用node.js和Express框架，连接MySQL数据库，并提供RESTful API接口供前端调用。
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens) ![dotenv](https://img.shields.io/badge/dotenv-000000?style=for-the-badge&logo=dotenv) 
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) ![Apifox](https://img.shields.io/badge/Apifox-FF6A00?style=for-the-badge&logo=apifox&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens) ![dotenv](https://img.shields.io/badge/dotenv-000000?style=for-the-badge&logo=dotenv)
 
 ### 1.运行
 在scheduling目录打开cmd。
@@ -66,7 +66,7 @@ const port = 8080;
 - data为数据源xls格式和xlsx格式
 
 ---
-####  :tent: 导出方式
+#### :tent: 导出方式
 
 使用 mysqldump 命令将数据库导出为 SQL 文件。
 ```bash
@@ -87,7 +87,7 @@ source [D:/Demo.sql]
 
 本模块在后端中进行启动，用于 Android 用户人脸识别认证登录。使用dlib和face_recognition库进行人脸识别，使用Python语言开发。
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Dlib](https://img.shields.io/badge/Dlib-6C8CD5?style=for-the-badge&logo=dlib&logoColor=white) ![face_recognition](https://img.shields.io/badge/face__recognition-FF6F61?style=for-the-badge&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Dlib](https://img.shields.io/badge/Dlib-6C8CD5?style=for-the-badge&logo=dlib&logoColor=white) ![Conda](https://img.shields.io/badge/Conda-44A833?style=for-the-badge&logo=anaconda&logoColor=white)
 
 ### 1.安装依赖
 ```bash

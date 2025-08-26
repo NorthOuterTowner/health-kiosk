@@ -8,6 +8,7 @@ function generateToken(data){
 }
 
 function verifyToken(data){
+    console.log(data)
     try{
         jwt.verify(data,JWT_SECRET)
     }catch(error){
@@ -15,4 +16,8 @@ function verifyToken(data){
     }
 }
 
-module.exports = {generateToken,verifyToken}
+function decodeToken(data){
+    return jwt.verify(data,JWT_SECRET);
+}
+
+module.exports = {generateToken,verifyToken,decodeToken}

@@ -16,7 +16,7 @@
         <h1>{{ $t('home.title') }}</h1>
         <p>{{ $t('home.desc') }}</p>
         <div class="buttons">
-          <button class="btn-primary">{{ $t('home.register') }}</button>
+          <button class="btn-primary" @click="register">{{ $t('home.register') }}</button>
           <button class="btn-secondary" @click="learnMore">{{ $t('home.learnMore') }}</button>
         </div>
       </div>
@@ -51,13 +51,17 @@ const password = ref("");
 
 const message = useMessage();
 
+const register = async () => {
+  router.push("/Register")
+}
+
 const login = async () =>{
   if(username.value && password.value){
     const res = await loginApi(username.value,password.value);
     if(res.data.code === 200){
       localStorage.setItem("token",res.data.user.token);
       message.info("登录成功")
-      //router.push("/User");
+      router.push("/User");
     }else{
       message.error("登录失败")
     }
