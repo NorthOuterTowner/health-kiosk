@@ -109,7 +109,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
           user
         }); 
       } else { 
-        return res.status(401).json({ 
+        return res.status(200).json({ 
           code: 401, 
           msg: "密码错误" 
         }); 
@@ -236,7 +236,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
     const user = new User(req.body);
 
     if (!user.account || !user.pwd) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "缺少必填字段：account 或 pwd"
         });
@@ -259,7 +259,7 @@ router.post("/register", upload.single('photo'), async (req, res) => {
         }
 
         if (rows.length > 0) {
-            return res.status(409).json({
+            return res.status(200).json({
                 code: 409,
                 msg: "用户account已存在"
             });

@@ -87,13 +87,12 @@ app.use((req,res,next)=>{
   }
   const content = authorization.split(' ')[1]
   verifyToken(content);
-
   next()
 })
 
 app.use("/func",require("./router/func"))
 app.use("/user",require("./router/userManage"))
-//app.use("/device",require("./router/deviceManage"))
+app.use("/device",require("./router/deviceManage"))
 
 app.listen(port,'0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);

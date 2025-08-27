@@ -47,6 +47,16 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.all {
+        outputs.all {
+            val version = versionName
+            val buildType = buildType.name
+            if (this is com.android.build.gradle.internal.api.BaseVariantOutputImpl) {
+                outputFileName = "HealthKiosk-${buildType}-v${version}.apk"
+            }
+        }
+    }
 }
 
 dependencies {

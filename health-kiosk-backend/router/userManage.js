@@ -329,4 +329,45 @@ router.post('/reset/pwd', async (req, res) => {
     }
 });
 
+router.post('/authorization', async (req,res) => {
+    const authUser = req.body.account;
+    const roleLevel = req.body.role;
+
+    const token = req.headers.authorization.split(' ')[1];
+    const account = decodeToken(token).data.account;
+    const adminSQL = "select `role` from `user` where account = ? ;"
+    const {err:adminErr,rows:adminRows} = await db.async.all(adminSQL,[account]);
+    if(adminErr == null && adminRows.length > 0){
+        if(adminRows[0]["role"]<2){
+            return res.status(200).json({
+                code:403,
+                msg:"您无权限访问"
+            })
+        }
+        try{
+            const authSQL = "update `role` set `role` = ? where `account` = ? ;"
+            await db.async.run(authSQL,[roleLevel,authUser])
+            return res.status(200).json({
+                    code:200,
+                    msg:"修改成功"
+            })
+        }catch(e){
+            return res.status(200).json({
+                code:500,
+                msg:"修改失败"
+            })
+        }
+    }else if(adminRows.length == 0){
+        return res.status(200).json({
+            code:404,
+            msg:"无该用户"
+        });
+    }else{
+        return res.status(500).json({
+            code:500,
+            msg:"服务器错误"
+        });
+    }
+})
+
 module.exports = router
