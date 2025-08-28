@@ -1,7 +1,8 @@
 // middleware/authMiddleware.js
-const { verifyToken } = require("../utils/jwtHelper");
+const { verifyToken,decodeToken } = require("../utils/jwtHelper");
+const {db,genId} = require("../db/dbUtils");
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   console.log(req.headers);
 
   const authorization = req.headers.authorization;
@@ -15,10 +16,20 @@ function authMiddleware(req, res, next) {
   const token = authorization.split(" ")[1];
 
   try {
-    // 验证 token
-    const decoded = verifyToken(token);
-    // 如果需要，可以把解析结果挂载到 req 上，方便后续使用
-    req.user = decoded;  
+    const decoded = decodeToken(token);
+    const account = decoded.data.account;
+    const roleSQL = "select `role` from `user` where `account` = ? ;"
+    const {err, rows} = await db.async.all(roleSQL,[account])
+    console.log(rows)
+    if(err == null && rows.length > 0){
+      req.role = rows[0].role
+      req.account = account
+    }else{
+      return res.status(401).json({
+        code: 401,
+        msg: "无访问权限"
+      });
+    }
     next();
   } catch (err) {
     console.error("token 验证失败:", err);

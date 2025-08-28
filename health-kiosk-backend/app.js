@@ -74,22 +74,10 @@ app.use(function(req,res,next){
 
 app.use(limiter);
 
+app.set('view engine','ejs');
+app.set('views',path.join(__dirname,'views'));
+
 app.use("/admin",require("./router/admin"))
-
-app.use((req,res,next)=>{
-  console.log(req.headers)
-  const authorization = req.headers.authorization;
-  if(!authorization){
-    return res.status(401).json({
-      code:401,
-      msg:"无访问权限"
-    })
-  }
-  const content = authorization.split(' ')[1]
-  verifyToken(content);
-  next()
-})
-
 app.use("/func",require("./router/func"))
 app.use("/user",require("./router/userManage"))
 app.use("/device",require("./router/deviceManage"))

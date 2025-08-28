@@ -23,7 +23,7 @@ router.get("/list",async (req,res) => {
     const page = req.query.page || 1;
     const limit = req.query.limit || 20;
     const offset = (page - 1) * limit;
-    const searchSQL = "select * from `device` order by `account` limit ? offset ? ;"
+    const searchSQL = "select * from `device` order by `version` limit ? offset ? ;"
     const {err,rows} = await db.async.all(searchSQL,[limit,offset]);
     if(err!=null){
         return res.status(500).json({
