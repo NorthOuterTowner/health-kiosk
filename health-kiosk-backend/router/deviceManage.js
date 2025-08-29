@@ -6,7 +6,7 @@ const { decodeToken } = require('../utils/jwtHelper');
 const path = require('path')
 const fs = require("fs");
 
-function calculate_adk_position(version,type){
+async function calculate_adk_position(version,type){
     let type_string,relative_str,apk_name;
     if(type === '1'){
         type_string = "release"
@@ -19,6 +19,27 @@ function calculate_adk_position(version,type){
     return apk_position;
 }
 
+/**
+ * @api {get} /device/list Get Device List
+ * @apiGroup Device
+ *
+ * @apiQuery {Number} [page=1] Current page number (default: 1).
+ * @apiQuery {Number} [limit=20] Number of items per page (default: 20).
+ * 
+ * @apiSuccess {json} Success Response:
+ * {
+ *   "code": 200,
+ *   "rows": [
+ *     {
+ *       "version": 1.0,
+ *       "description": "xxx",
+ *       "type": "1",
+ *       "time":"2025-08-28 17:43:30"
+ *     },
+ *      ... //other device information
+ *   ]
+ * }
+ */
 router.get("/list",async (req,res) => {
     const page = req.query.page || 1;
     const limit = req.query.limit || 20;
@@ -38,6 +59,100 @@ router.get("/list",async (req,res) => {
     }
 })
 
+/**
+ * @api {post} /device/add Add New Device
+ * @apiGroup Device
+ *
+ * @apiBody {String} version Device version (required).
+ * @apiBody {String} description Device description (required).
+ * @apiBody {String} type Device type (required).
+ *
+ * @apiSuccess {json} Success Response:
+ * {
+ *   "code": 200,
+ *   "msg": "上传成功"
+ * }
+ */
+router.post("/add",async (req,res) => {
+    const { version, description, type } = req.body;
+    const apk_position = calculate_adk_position(version,type);
+
+    fs.access(apk_position,fs.constants.F_OK, async (err) => {
+        if(err) {
+            return res.status(200).json({
+                code: 404,
+                msg: "文件不存在"
+            });
+        }
+        try{
+            const insertSQL = "insert into `device` (`version`, `description`, `type`) values (?, ?, ?) ;";
+            await db.async.run(insertSQL, [version,description,type]);
+            res.status(200).json({
+                code:200,
+                msg:"上传成功"
+            })
+        }catch(e){
+            res.status(500).json({
+                    code: 500,
+                    msg: "文件下载失败"
+            });
+        }
+    })
+})
+
+/**
+ * @api {post} /device/delete Delete Device
+ * @apiGroup Device
+ *
+ * @apiBody {String} version Device version (required).
+ * @apiBody {String} type Device type (required).
+ * 
+ * @apiSuccess {json} Success Response:
+ * {
+ *   "code": 200,
+ *   "msg": "删除成功"
+ * }
+ */
+router.post("/delete",async (req,res) => {
+    const { version, type } = req.body;
+    const apk_position = calculate_adk_position(version,type);
+
+    fs.access(apk_position,fs.constants.F_OK, async (err) => {
+        if(err) {
+            return res.status(200).json({
+                code: 404,
+                msg: "文件不存在"
+            });
+        }
+        try{
+            const deleteSQL = "delete from `device` where `version` = ? and `type` = ? ;";
+            await db.async.run(deleteSQL, [version, type]);
+            res.status(200).json({
+                code:200,
+                msg:"删除成功"
+            })
+        }catch(e){
+            res.status(500).json({
+                    code: 500,
+                    msg: "删除失败"
+            });
+        }
+    })
+})
+
+/**
+ * @api {get} /device/download Download Device File
+ * @apiGroup Device
+ *
+ * @apiQuery {String} version Device version (required).
+ * @apiQuery {String} type Device type (required).
+ *
+ * @apiSuccess {json} File Not Found:
+ * {
+ *   "code": 404,
+ *   "msg": "文件不存在"
+ * }
+ */
 router.get("/download",async (req,res) => {
     const {version,type} = req.query;
     const apk_position = calculate_adk_position(version,type);
@@ -61,5 +176,7 @@ router.get("/download",async (req,res) => {
         });
     });
 });
+
+ 
 
 module.exports = router
