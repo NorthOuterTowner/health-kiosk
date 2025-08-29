@@ -102,6 +102,3 @@ pip install face_recognition
 cd face_recognition
 conda activate face_recognition
 ```
-
-## :handshake: 为项目贡献代码
-若要为本项目贡献代码，请首先 fork 本仓库，创建新分支，提交代码并发起 Pull Request。
