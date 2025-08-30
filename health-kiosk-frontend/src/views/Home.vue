@@ -1,37 +1,63 @@
 <template>
   <div class="home">
-    <!-- 顶部导航 -->
-    <header class="navbar">
-      <div class="logo">{{ $t('home.title') }}</div>
-      <nav>
-        <a href="#">{{ $t('navbar.intro') }}</a>
-        <a href="#">{{ $t('navbar.features') }}</a>
-        <a href="#" @click="toggleLang">{{ $t('navbar.language') }}</a>
-      </nav>
-    </header>
-
-    <!-- 主体内容 -->
     <main class="main-section">
       <div class="text-content">
         <h1>{{ $t('home.title') }}</h1>
         <p>{{ $t('home.desc') }}</p>
         <div class="buttons">
-          <button class="btn-primary" @click="register">{{ $t('home.register') }}</button>
+          <button class="btn-primary" @click="change_to_register" v-if="isLogin">{{ $t('home.register') }}</button>
+          <button class="btn-primary" @click="change_to_login" v-else>{{ $t('home.login') }}</button>
           <button class="btn-secondary" @click="learnMore">{{ $t('home.learnMore') }}</button>
         </div>
       </div>
 
       <div class="image-content">
-        <!--<img :src="machineImg" alt="体检机插画" />-->
       </div>
     </main>
 
-    <!-- 右下角登录窗口 -->
-    <div class="login-box">
+    <!-- Login Box: show at the begin time -->
+    <div class="login-box" v-if="isLogin">
       <h3>{{ $t('login.title') }}</h3>
-      <input type="text" v-model="username" :placeholder="$t('login.username')" />
-      <input type="password" v-model="password" :placeholder="$t('login.password')" />
+      <div class="inputln">
+        <user class="icon" />
+        <input
+          type="text"
+          v-model="username"
+          :placeholder="$t('login.username')"
+        />
+      </div>
+
+      <div class="inputln">
+        <key-round class="icon" />
+        <input
+          type="password"
+          v-model="password"
+          :placeholder="$t('login.password')"
+        />
+      </div>
       <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
+    </div>
+      <!-- Register Box: show after the user click register button -->
+    <div class="login-box" v-else>
+      <h3>{{ $t('register.title') }}</h3>
+      <div class="inputln">
+        <user class="icon" />
+        <input
+          type="text"
+          v-model="username"
+          :placeholder="$t('register.username')"
+        />
+      </div>
+
+      <div class="inputln">
+        <key-round class="icon" />
+        <input
+          type="password"
+          v-model="password"
+          :placeholder="$t('register.password')"
+        />
+      </div>
+      <button class="btn-primary" @click="register">{{ $t('register.button') }}</button>
     </div>
   </div>
 </template>
@@ -42,6 +68,8 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { loginApi,registerApi, testApi } from "../api/auth";
 import { useMessage } from 'naive-ui'
+import { User } from 'lucide-vue-next';
+import { KeyRound } from 'lucide-vue-next';
 
 const router = useRouter();
 const { locale } = useI18n()
@@ -49,11 +77,31 @@ const { locale } = useI18n()
 const username = ref("");
 const password = ref("");
 
+const isLogin = ref(true);
+
 const message = useMessage();
 
-const register = async () => {
-  router.push("/Register")
+const change_to_register = async () => {
+  isLogin.value = false;
 }
+
+const change_to_login = async () => {
+  isLogin.value = true;
+}
+
+const register = async () => {
+  try{
+    const res = registerApi(username.value,password.value);
+    if((await res).data.code === 200){
+      message.info("注册成功");
+      isLogin.value = true;
+    }else{
+      message.error("登录失败");
+    }
+  }catch(e){
+    console.log(e)
+  }
+};
 
 const login = async () =>{
   if(username.value && password.value){
@@ -76,10 +124,7 @@ const learnMore = async () =>{
     message.info(res.data.msg)
   }
 }
-// 切换语言
-const toggleLang = () => {
-  locale.value = locale.value === 'zh' ? 'en' : 'zh'
-}
+
 </script>
 
 
@@ -133,7 +178,7 @@ const toggleLang = () => {
   background: #00bfff;
   color: white;
   padding: 0.7rem 1.5rem;
-  border: none;
+  border: 2px solid white;
   border-radius: 5px;
   cursor: pointer;
 }
@@ -155,6 +200,7 @@ const toggleLang = () => {
 
 /* 登录窗口 */
 .login-box {
+  text-align: center;
   position: fixed;
   bottom: 100px;
   right: 100px;
@@ -163,18 +209,39 @@ const toggleLang = () => {
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  width: 250px;
+  width: 300px;
+  height: 200px;
 }
 
 .login-box h3 {
   margin-bottom: 1rem;
 }
 
-.login-box input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.inputln {
+  display: flex;
+  align-items: center;
+  margin: 5px;
 }
+
+.inputln input {
+  height: 40px;        /* 固定高度 */
+  line-height: 40px;   /* 和高度一致 */
+  font-size: 14px;     /* 字体大小不要太大 */
+  padding: 0 8px;      /* 给点左右内边距 */
+  border: black 1px solid;
+  border-left: 0px;
+  margin-left: 0px;
+}
+
+.inputln .icon {
+  margin-left: 20px;
+  margin-right: 0px;
+  border: black 1px solid;
+  padding: 10px;
+  width: 20px;
+  height: 20px;
+  color: #666;
+  top: -20px;
+}
+
 </style>
