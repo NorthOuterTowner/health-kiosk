@@ -4,7 +4,7 @@
       <div class="text-content">
         <h1>{{ $t('home.title') }}</h1>
         <p>{{ $t('home.desc') }}</p>
-        <div class="buttons">
+        <div class="left-buttons">
           <button class="btn-primary" @click="change_to_register" v-if="isLogin">{{ $t('home.register') }}</button>
           <button class="btn-primary" @click="change_to_login" v-else>{{ $t('home.login') }}</button>
           <button class="btn-secondary" @click="learnMore">{{ $t('home.learnMore') }}</button>
@@ -15,9 +15,13 @@
       </div>
     </main>
 
+    <div class="login-box-container">
+    <div class="login-box-inner" :class="{flipped: !isLogin}">
     <!-- Login Box: show at the begin time -->
-    <div class="login-box" v-if="isLogin">
-      <h3>{{ $t('login.title') }}</h3>
+    <div class="login-box front">
+      <div class="login-title">
+        <h3>{{ $t('login.title') }}</h3>
+      </div>
       <div class="inputln">
         <user class="icon" />
         <input
@@ -35,11 +39,15 @@
           :placeholder="$t('login.password')"
         />
       </div>
-      <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
+      <div class="buttons">
+        <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
+      </div>
     </div>
       <!-- Register Box: show after the user click register button -->
-    <div class="login-box" v-else>
-      <h3>{{ $t('register.title') }}</h3>
+    <div class="login-box back">
+      <div class="login-title">
+        <h3>{{ $t('register.title') }}</h3>
+      </div>
       <div class="inputln">
         <user class="icon" />
         <input
@@ -57,7 +65,11 @@
           :placeholder="$t('register.password')"
         />
       </div>
-      <button class="btn-primary" @click="register">{{ $t('register.button') }}</button>
+      <div class="buttons">
+        <button class="btn-primary" @click="register">{{ $t('register.button') }}</button>
+      </div>
+    </div>
+    </div>
     </div>
   </div>
 </template>
@@ -127,7 +139,6 @@ const learnMore = async () =>{
 
 </script>
 
-
 <style scoped>
 .home {
   display: flex;
@@ -137,7 +148,6 @@ const learnMore = async () =>{
   color: #fff;
 }
 
-/* 顶部导航 */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -152,7 +162,6 @@ const learnMore = async () =>{
   text-decoration: none;
 }
 
-/* 主体内容占满屏幕剩余空间 */
 .main-section {
   flex: 1;
   display: flex;
@@ -171,7 +180,9 @@ const learnMore = async () =>{
 }
 
 .buttons {
-  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .btn-primary {
@@ -198,21 +209,6 @@ const learnMore = async () =>{
   margin-right: 400px;
 }
 
-/* 登录窗口 */
-.login-box {
-  text-align: center;
-  position: fixed;
-  bottom: 100px;
-  right: 100px;
-  background: white;
-  color: black;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  width: 300px;
-  height: 200px;
-}
-
 .login-box h3 {
   margin-bottom: 1rem;
 }
@@ -224,10 +220,10 @@ const learnMore = async () =>{
 }
 
 .inputln input {
-  height: 40px;        /* 固定高度 */
-  line-height: 40px;   /* 和高度一致 */
-  font-size: 14px;     /* 字体大小不要太大 */
-  padding: 0 8px;      /* 给点左右内边距 */
+  height: 40px;   
+  line-height: 40px;
+  font-size: 14px;
+  padding: 0 8px;
   border: black 1px solid;
   border-left: 0px;
   margin-left: 0px;
@@ -242,6 +238,62 @@ const learnMore = async () =>{
   height: 20px;
   color: #666;
   top: -20px;
+}
+
+.login-box-container {
+  position: fixed;
+  bottom: 100px;
+  right: 100px;
+  width: 300px;
+  height: 200px;
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease-in-out;
+  transform-origin:center center ;
+}
+
+.login-box-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.login-box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  color: black;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  backface-visibility: hidden;
+}
+
+.login-box.front {
+  transform: rotateY(0deg);
+  backface-visibility: hidden;
+}
+
+.login-box.back {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+
+.left-buttons {
+  margin-top: 2rem;
+}
+
+.login-title {
+  display: flex;
+  justify-content: center;
 }
 
 </style>
