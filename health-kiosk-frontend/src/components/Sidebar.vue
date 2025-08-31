@@ -17,7 +17,7 @@
       <div v-for="section in menuConfig" :key="section.key" class="menu-section">
         <button class="menu-title" @click="toggleSection(section.key)">
           <component :is="section.icon" class="icon" />
-          <span v-if="!collapsed">{{ section.title }}</span>
+          <span v-if="!collapsed">{{ $t(section.title) }}</span>
           <ChevronDownIcon
             v-if="!collapsed"
             class="chevron"
@@ -35,7 +35,7 @@
               active-class="active"
             >
               <component :is="item.icon" class="icon" />
-              <span>{{ item.name }}</span>
+              <span>{{ $t( item.name ) }}</span>
             </router-link>
           </div>
         </transition>
@@ -55,7 +55,11 @@ import {
   ShieldIcon,
   UserIcon,
   FileTextIcon,
-  SettingsIcon
+  SettingsIcon,
+  UserStar,
+  LayoutGrid,
+  Database,
+  ChartNoAxesCombined
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
@@ -81,48 +85,39 @@ const toggleSection = (section) => {
 }
 
 const menuConfig = [
-  //此处根据功能需求进行展示
-  {
-    key: 'predict',
-    title: '预测显示',
-    icon: InboxIcon,
-    children: [
-      { path: '/dashboard/mapView', name: '预测地图', icon: MapPinIcon },
-      { path: '/dashboard/predict', name: '预测结果', icon: TrendingUpIcon }
-    ]
-  },
-  {
-    key: 'monitor',
-    title: '风险监测',
-    icon: AlertTriangleIcon,
-    children: [
-      { path: '/dashboard/monitor', name: '监测看板', icon: ShieldIcon }
-    ]
-  },
   {
     key: 'users',
-    title: '用户管理',
-    icon: UserIcon,
+    title: 'sidebar.users.title',
+    icon: UserStar,
     children: [
-      { path: '/dashboard/users', name: '用户列表', icon: UserIcon }
+      { path: '/dashboard/users', name: 'sidebar.users.list', icon: UserStar }
     ]
   },
   {
-    key: 'contracts',
-    title: '合同管理',
-    icon: FileTextIcon,
+    key: 'app',
+    title: 'sidebar.devices.title',
+    icon: LayoutGrid,
     children: [
-      { path: '/dashboard/contracts', name: '合同列表', icon: FileTextIcon }
+      { path: '/dashboard/contracts', name: 'sidebar.devices.list', icon: LayoutGrid }
     ]
   },
   {
     key: 'settings',
-    title: '系统设置',
-    icon: SettingsIcon,
+    title: 'sidebar.data.title',
+    icon: Database,
     children: [
-      { path: '/dashboard/settings', name: '设置项', icon: SettingsIcon }
+      { path: '/dashboard/settings', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined },
+      { path: '/dashboard/settings', name: 'sidebar.data.self', icon: Database },
     ]
-  }
+  },
+  {
+    key: 'info',
+    title: 'sidebar.info.title',
+    icon: UserIcon,
+    children: [
+      { path: '/dashboard/settings', name: 'sidebar.info.watch', icon: UserIcon }
+    ]
+  },
 ]
 </script>
 
@@ -144,7 +139,7 @@ const menuConfig = [
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center center;
   height: 4rem;
   padding: 0 1rem;
   border-bottom: 1px solid #334155;
@@ -153,13 +148,15 @@ const menuConfig = [
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: rgb(241, 229, 208);
+  text-decoration: none;
 }
 .logo img {
   height: 2rem;
 }
 .logo span {
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   white-space: nowrap;
 }
 
@@ -171,6 +168,7 @@ const menuConfig = [
   border: none;
   background: none;
   cursor: pointer;
+  margin-right: 15px;
 }
 .line {
   width: 1.5rem;
