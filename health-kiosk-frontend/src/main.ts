@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import './style.css'
-import i18n from './i18n'
+import { i18n } from './i18n'
 import { create, NButton, NInput, NForm, NFormItem, NMessageProvider } from 'naive-ui';
 
 const naive = create({

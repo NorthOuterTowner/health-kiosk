@@ -8,7 +8,7 @@
         <span class="line" :class="{ active: collapsed }"></span>
       </button>
       <router-link to="/dashboard" class="logo">
-        <span v-if="!collapsed">铁路司机用健康检测系统</span>
+        <span v-if="!collapsed">{{ $t( 'sidebar.title' ) }}</span>
       </router-link>
     </div>
 
@@ -57,6 +57,9 @@ import {
   FileTextIcon,
   SettingsIcon
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 
 const props = defineProps({ collapsed: Boolean })
 const emit = defineEmits(['toggle-collapse'])
