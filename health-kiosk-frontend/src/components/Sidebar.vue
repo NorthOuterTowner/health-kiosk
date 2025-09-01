@@ -14,7 +14,7 @@
 
     <!-- Menu -->
     <nav class="menu">
-      <div v-for="section in menuConfig" :key="section.key" class="menu-section">
+      <div v-for="section in visibleMenuConfig" :key="section.key" class="menu-section">
         <button class="menu-title" @click="toggleSection(section.key)">
           <component :is="section.icon" class="icon" />
           <span v-if="!collapsed">{{ $t(section.title) }}</span>
@@ -59,7 +59,9 @@ import {
   UserStar,
   LayoutGrid,
   Database,
-  ChartNoAxesCombined
+  ChartNoAxesCombined,
+  HeartPulse,
+  FilePenLine
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
@@ -67,6 +69,8 @@ const { locale } = useI18n()
 
 const props = defineProps({ collapsed: Boolean })
 const emit = defineEmits(['toggle-collapse'])
+
+const visitRight = localStorage.getItem("role") ?? 0;
 
 const openSections = reactive({
   predict: false,
@@ -84,41 +88,83 @@ const toggleSection = (section) => {
   openSections[section] = !openSections[section]
 }
 
+/* role:
+ * 0 => 访客（未注册的用户）
+ * 1 => 游客（前端注册的用户）
+ * 2 => 用户（Android设备端注册的用户）
+ * 3 => 管理员（可进行用户授权和相关后台管理内容）
+ * 4 => 超级管理员（可进行管理员授权）
+ * 5 => 开发者（可访问测试和开发期的内容）
+ */
 const menuConfig = [
   {
+    // 用户管理模块
     key: 'users',
     title: 'sidebar.users.title',
     icon: UserStar,
+    role: [3,4,5],
     children: [
-      { path: '/dashboard/users', name: 'sidebar.users.list', icon: UserStar }
+      { path: '/dashboard/users', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
     ]
   },
-  {
+  { 
+    // 软件管理模块
     key: 'app',
     title: 'sidebar.devices.title',
     icon: LayoutGrid,
+    role: [1,2,3,4,5],
     children: [
-      { path: '/dashboard/contracts', name: 'sidebar.devices.list', icon: LayoutGrid }
+      { path: '/dashboard/contracts', name: 'sidebar.devices.list', icon: LayoutGrid, role: [1,2,3,4,5] }
     ]
   },
   {
+    // 体检数据查询
     key: 'settings',
     title: 'sidebar.data.title',
     icon: Database,
+    role: [2,3,4,5],
     children: [
-      { path: '/dashboard/settings', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined },
-      { path: '/dashboard/settings', name: 'sidebar.data.self', icon: Database },
+      { path: '/dashboard/settings', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]},
+      { path: '/dashboard/settings', name: 'sidebar.data.self', icon: Database, role: [2,3,4,5] },
     ]
   },
   {
+    // 个人信息设置
     key: 'info',
     title: 'sidebar.info.title',
     icon: UserIcon,
+    role: [1,2,3,4,5],
     children: [
-      { path: '/dashboard/settings', name: 'sidebar.info.watch', icon: UserIcon }
+      { path: '/dashboard/settings', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] }
     ]
   },
+  {
+    // 体检项目管理
+    key: 'examItem',
+    title: 'sidebar.examItem.title',
+    icon: HeartPulse,
+    role: [3,4,5],
+    children: [
+      { path: '/dashboard/settings', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] },
+      { path: '/dashboard/settings', name: 'sidebar.examItem.edit', icon: FilePenLine, role: [3,4,5] }
+    ]
+  }
 ]
+
+function filterMenu(config, role) {
+  return config
+    .filter(section => !section.roles || section.roles.includes(role))
+    .map(section => {
+      const children = section.children
+        ? section.children.filter(item => !item.roles || item.roles.includes(role))
+        : []
+      return { ...section, children }
+    })
+    .filter(section => section.children.length > 0 || !section.children)
+}
+
+const visibleMenuConfig = filterMenu(menuConfig, visitRight);
+
 </script>
 
 <style scoped>

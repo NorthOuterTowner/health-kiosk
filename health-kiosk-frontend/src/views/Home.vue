@@ -120,6 +120,7 @@ const login = async () =>{
     const res = await loginApi(username.value,password.value);
     if(res.data.code === 200){
       localStorage.setItem("token",res.data.user.token);
+      localStorage.setItem("role",res.data.user.role);// this item is just using for show in frontend
       message.info("登录成功")
       router.push("/User");
     }else{

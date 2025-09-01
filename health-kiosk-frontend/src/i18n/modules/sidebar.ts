@@ -17,6 +17,11 @@ export const sidebarMessages = {
         info: {
             title: "个人信息",
             watch: "查看个人信息"
+        },
+        examItem: {
+            title: "体检项目管理",
+            list: "查看体检项目",
+            edit: "修改体检内容"
         }
     },
     en: {
@@ -37,6 +42,11 @@ export const sidebarMessages = {
         info: {
             title: "self information",
             watch: "self information"
+        },
+        examItem: {
+            title: "体检项目管理",
+            list: "查看体检项目",
+            edit: "修改体检内容"
         }
     }
 }

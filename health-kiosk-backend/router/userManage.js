@@ -48,7 +48,7 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 router.get("/list", authMiddleware, async (req,res)=>{
     const role = req.role;
-    if(role < 2){
+    if(role < 3){
         return res.status(200).json({
             code:403,
             msg:"您无权限访问"
@@ -186,7 +186,7 @@ router.post("/change", authMiddleware, async (req,res) => {
     const {err,rows} = await db.async.all(searchSQL,[changeAccount]);
 
     if(err == null && rows.length > 0){
-        if(role < 2 && changeAccount != account){
+        if(role < 3 && changeAccount != account){
             return res.status(200).json({
                 code:401,
                 msg:"Unauthorized"
@@ -395,10 +395,10 @@ router.post('/authorization',authMiddleware ,async (req,res) => {
     const authUser = req.body.account;
     const roleLevel = req.body.role;
 
-    if(req.role < 2){
+    if((req.role < 3) || (req.role < 4 && roleLevel > 2)){
         return res.status(200).json({
             code:403,
-            msg:"您无权限进行授权操作"
+            msg:"您无权限进行此授权操作"
         })
     }
     try{

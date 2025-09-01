@@ -226,9 +226,9 @@ router.post("/register", upload.single('photo'), async (req, res) => {
         'content-type': 'multipart/form-data; boundary=-28cfc474-180e286872297157289b20bd-502d8f1c3bf0cc86-56b70b6558da571f-2'
         }
     */
-    let role = 0;
+    let role = 1;
     if(req.file){
-      role = 1
+      role = 2
       const py = req.py;
       py.stdin.write(JSON.stringify({ action: "encode", file_name: req.file.filename }) + "\n");
     }
