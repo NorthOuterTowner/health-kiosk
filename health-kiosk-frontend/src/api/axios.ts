@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import type { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
 const instance: AxiosInstance = axios.create({
   baseURL: "http://localhost:3000",

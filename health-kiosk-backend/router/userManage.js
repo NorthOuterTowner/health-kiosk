@@ -54,11 +54,12 @@ router.get("/list", authMiddleware, async (req,res)=>{
             msg:"您无权限访问"
         })
     }
-    const page = req.query.page || 1;
-    const limit = req.query.limit || 20;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
     const offset = (page - 1) * limit;
     const searchSQL = "select * from `user` order by `account` limit ? offset ? ;"
     const {err,rows} = await db.async.all(searchSQL,[limit,offset]);
+    const {err:countErr,rows:Countrows} = await db.async.all("select count(*) as cnt from `user`;",[]);
     if(err!=null){
         return res.status(500).json({
             code:500,
@@ -67,7 +68,8 @@ router.get("/list", authMiddleware, async (req,res)=>{
     }else{
         return res.status(200).json({
             code:200,
-            rows
+            rows,
+            count:Countrows[0].cnt
         })
     }
 });
@@ -392,8 +394,10 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
  * }
  */
 router.post('/authorization',authMiddleware ,async (req,res) => {
-    const authUser = req.body.account;
-    const roleLevel = req.body.role;
+    console.log("处理授权")
+    console.log(req.body)
+    const authUser = req.body.authUser;
+    const roleLevel = Number(req.body.roleLevel);
 
     if((req.role < 3) || (req.role < 4 && roleLevel > 2)){
         return res.status(200).json({
@@ -409,6 +413,7 @@ router.post('/authorization',authMiddleware ,async (req,res) => {
                 msg:"修改成功"
         })
     }catch(e){
+        console.log(e)
         return res.status(200).json({
             code:500,
             msg:"修改失败"

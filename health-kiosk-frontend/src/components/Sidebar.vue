@@ -7,7 +7,7 @@
         <span class="line" :class="{ active: collapsed }"></span>
         <span class="line" :class="{ active: collapsed }"></span>
       </button>
-      <router-link to="/dashboard" class="logo">
+      <router-link to="/" class="logo">
         <span v-if="!collapsed">{{ $t( 'sidebar.title' ) }}</span>
       </router-link>
     </div>
@@ -70,7 +70,7 @@ const { locale } = useI18n()
 const props = defineProps({ collapsed: Boolean })
 const emit = defineEmits(['toggle-collapse'])
 
-const visitRight = localStorage.getItem("role") ?? 0;
+const visitRight = Number(localStorage.getItem("role")) ?? 0;
 
 const openSections = reactive({
   predict: false,
@@ -104,7 +104,7 @@ const menuConfig = [
     icon: UserStar,
     role: [3,4,5],
     children: [
-      { path: '/dashboard/users', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
+      { path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
     ]
   },
   { 
@@ -114,7 +114,7 @@ const menuConfig = [
     icon: LayoutGrid,
     role: [1,2,3,4,5],
     children: [
-      { path: '/dashboard/contracts', name: 'sidebar.devices.list', icon: LayoutGrid, role: [1,2,3,4,5] }
+      { path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [1,2,3,4,5] }
     ]
   },
   {
@@ -124,8 +124,8 @@ const menuConfig = [
     icon: Database,
     role: [2,3,4,5],
     children: [
-      { path: '/dashboard/settings', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]},
-      { path: '/dashboard/settings', name: 'sidebar.data.self', icon: Database, role: [2,3,4,5] },
+      { path: '/examdata', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]},
+      { path: '/settings', name: 'sidebar.data.self', icon: Database, role: [2,3,4,5] },
     ]
   },
   {
@@ -135,7 +135,7 @@ const menuConfig = [
     icon: UserIcon,
     role: [1,2,3,4,5],
     children: [
-      { path: '/dashboard/settings', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] }
+      { path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] }
     ]
   },
   {
@@ -145,18 +145,18 @@ const menuConfig = [
     icon: HeartPulse,
     role: [3,4,5],
     children: [
-      { path: '/dashboard/settings', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] },
-      { path: '/dashboard/settings', name: 'sidebar.examItem.edit', icon: FilePenLine, role: [3,4,5] }
+      { path: '/projectshow', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] },
+      { path: '/projectedit', name: 'sidebar.examItem.edit', icon: FilePenLine, role: [3,4,5] }
     ]
   }
 ]
 
 function filterMenu(config, role) {
   return config
-    .filter(section => !section.roles || section.roles.includes(role))
+    .filter(section => !section.role || section.role.includes(role))
     .map(section => {
       const children = section.children
-        ? section.children.filter(item => !item.roles || item.roles.includes(role))
+        ? section.children.filter(item => !item.role || item.role.includes(role))
         : []
       return { ...section, children }
     })
@@ -164,11 +164,13 @@ function filterMenu(config, role) {
 }
 
 const visibleMenuConfig = filterMenu(menuConfig, visitRight);
+console.log(visibleMenuConfig)
 
 </script>
 
 <style scoped>
 .sidebar {
+  position: fixed;
   width: 16rem;
   height: 100vh;
   background: linear-gradient(to bottom, #0f172a, #1e293b);

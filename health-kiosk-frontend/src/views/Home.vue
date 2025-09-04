@@ -1,5 +1,13 @@
 <template>
   <div class="home">
+      <header class="navbar">
+      <div class="logo">{{ $t('home.title') }}</div>
+      <nav>
+        <a href="#">{{ $t('navbar.intro') }}</a>
+        <a href="#">{{ $t('navbar.features') }}</a>
+        <a href="#" @click="toggleLang">{{ $t('navbar.language') }}</a>
+      </nav>
+  </header>
     <main class="main-section">
       <div class="text-content">
         <h1>{{ $t('home.title') }}</h1>
@@ -85,7 +93,9 @@ import { KeyRound } from 'lucide-vue-next';
 
 const router = useRouter();
 const { locale } = useI18n()
-
+const toggleLang = () => {
+  locale.value = locale.value === 'zh' ? 'en' : 'zh'
+}
 const username = ref("");
 const password = ref("");
 
