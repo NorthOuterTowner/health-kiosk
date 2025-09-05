@@ -22,3 +22,8 @@ export function authApi(authUser:String,roleLevel:String){
         roleLevel
     })
 }
+
+export function userChartApi(){
+    return instance.get("/statistics/userRegister");
+
+}

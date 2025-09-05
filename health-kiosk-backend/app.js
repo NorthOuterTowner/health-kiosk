@@ -81,6 +81,7 @@ app.use("/admin",require("./router/admin"))
 app.use("/func",require("./router/func"))
 app.use("/user",require("./router/userManage"))
 app.use("/device",require("./router/deviceManage"))
+app.use("/statistics",require("./router/statistics"))
 
 app.listen(port,'0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);
