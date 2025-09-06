@@ -21,6 +21,14 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+router.post("/add",authMiddleware,(req,res) => {
+
+});
+
+router.post("/delete",authMiddleware,(req,res) =>{
+    
+})
+
 /**
  * @api {get} /user/list Get User List
  * @apiGroup User

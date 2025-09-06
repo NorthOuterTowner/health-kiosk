@@ -1,8 +1,14 @@
+<!--User Management Page-->
 <template>
   <div class="layout">
     <Sidebar />
     <div class="user-page">
-      <h2>用户管理</h2>
+      <div style="display: flex;">
+        <h2>用户管理</h2>
+      
+        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 50px;" size="medium" type="primary" >刷新用户列表</n-button>
+        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary">添加新用户</n-button>
+      </div>
       
       <UserBarchart />
 
@@ -15,10 +21,11 @@
         class="dataTable"
       />
 
-      <!-- 用户信息弹窗 -->
+      <!-- 查看/编辑用户信息弹窗 -->
       <UserInfo
         v-if="editingUser"
         :user="editingUser"
+        :editable = editable
         @close="editingUser=null"
         @update="updateUser"
       />
@@ -49,7 +56,6 @@ import { NButton } from "naive-ui";
 import UserInfo from "../components/UserInfo.vue";
 import { useMessage } from 'naive-ui'
 import UserBarchart from "../components/UserBarchart.vue";
-import router from "../router";
 
 const message = useMessage();
 
@@ -141,9 +147,19 @@ const columns = [
             size: "small",
             type: "info",
             style: "margin-right: 6px;",
-            onClick: () => handleEdit(row),
+            onClick: () => handleView(row),
           },
           { default: () => "查看" }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "info",
+            style: "margin-right: 6px;",
+            onClick: () => handleEdit(row),
+          },
+          { default: () => "编辑" }
         ),
         h(
           NButton,
@@ -177,6 +193,8 @@ const pagination = reactive({
   }
 });
 
+const editable = ref(false)
+
 // 操作函数
 const handleAuth = (row: any) => {
   //openAuthDialog(row);
@@ -187,7 +205,13 @@ const handleAuth = (row: any) => {
 
 const handleEdit = (row: any) => {
   editingUser.value = { ...row }
+  editable.value = true
 };
+
+const handleView = (row: any) => {
+  editingUser.value = { ...row }
+  editable.value = false
+}
 
 const updateUser = (updatedUser: any) => {
   const index = users.value.findIndex(u => u.account === updatedUser.account);

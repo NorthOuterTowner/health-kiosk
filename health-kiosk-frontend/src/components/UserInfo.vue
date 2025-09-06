@@ -1,12 +1,12 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>更改用户数据</h3>
-      <label>用户名:<input v-model="localUser.name" /></label>
-      <label>性别:<input v-model="localUser.gender" /></label>
-      <label>年龄:<input v-model="localUser.age" /></label>
-      <label>身高:<input v-model="localUser.height" /></label>
-      <label>体重:<input v-model="localUser.weight" /></label>
+      <h3>{{ header }}</h3>
+      <label>用户名:<input v-model="localUser.name" :disabled="!props.editable" /></label>
+      <label>性别:<input v-model="localUser.gender" :disabled="!props.editable"/></label>
+      <label>年龄:<input v-model="localUser.age" :disabled="!props.editable"/></label>
+      <label>身高:<input v-model="localUser.height":disabled="!props.editable" /></label>
+      <label>体重:<input v-model="localUser.weight" :disabled="!props.editable"/></label>
       <div class="buttons">
         <button @click="save">保存</button>
         <button @click="$emit('close')">取消</button>
@@ -20,8 +20,11 @@ import { reactive, toRefs, watch } from "vue";
 import { editApi } from "../api/user"; // 调用后端更新接口
 
 const props = defineProps({
-  user: Object
+  user: Object,
+  editable: Boolean
 });
+
+const header = props.editable ? "编辑用户数据" : "查看用户信息"
 
 const emit = defineEmits(["close", "update"]);
 
