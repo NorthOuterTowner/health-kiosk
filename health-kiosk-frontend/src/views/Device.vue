@@ -3,6 +3,7 @@
     <div class="layout">
         <Sidebar />
         <div class="device-page">
+        <h2>版本管理</h2>
             <n-data-table
                 remote
                 :columns="columns"

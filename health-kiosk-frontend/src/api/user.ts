@@ -25,5 +25,16 @@ export function authApi(authUser:String,roleLevel:String){
 
 export function userChartApi(){
     return instance.get("/statistics/userRegister");
+}
 
+export function addUserApi(User: any){
+    return instance.post("/user/add",{
+        ...User
+    });
+}
+
+export function deleteUserApi(account: String){
+    return instance.post("/user/delete",{
+        account:account
+    });
 }

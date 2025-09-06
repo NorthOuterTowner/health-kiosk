@@ -21,12 +21,63 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-router.post("/add",authMiddleware,(req,res) => {
+router.post("/add",authMiddleware, async (req,res) => {
+    let account = req.body.account ?? null ;
+    let pwd     = req.body.pwd     ?? null ;
+    let name    = req.body.name    ?? null ;
+    let age     = req.body.age     ?? null ;
+    let gender  = req.body.gender  ?? null ;
+    let height  = req.body.height  ?? null ;
+    let weight  = req.body.weight  ?? null ;
+    pwd = crypto.createHash('sha256').update(pwd.toString()).digest('hex');
 
+    const existAccountSql = "select * from `user` where `account` = ?;";
+    const {err,rows} = await db.async.all(existAccountSql,[account]);
+    if(err==null && rows.length === 0){
+        const insertUserSql = "insert into `user` (`account`,`name`,`pwd`,`age`,`gender`,`height`,`weight`,`role`) values (?,?,?,?,?,?,?,?) ;";
+        try{
+            await db.async.run(insertUserSql,[account,name,pwd,age,gender,height,weight,1]);
+            return res.status(200).json({
+                code:200,
+                msg:"添加成功"
+            });
+        }catch(e){
+            console.log(e)
+            return res.status(200).json({
+                code:500,
+                msg:"添加失败"
+            });
+        }
+    }else if(rows.length > 0){
+        return res.status(200).json({
+            code:403,
+            msg:"用户已存在"
+        });
+    }else {
+        console.log(e)
+        return res.status(200).json({
+                code:500,
+                msg:"添加失败"
+        });
+    }
 });
 
-router.post("/delete",authMiddleware,(req,res) =>{
-    
+router.post("/delete",authMiddleware,async (req,res) =>{
+    const account = req.body.account;
+    const delSql = "delete from `user` where `account` = ? ;";
+    try{
+        await db.async.run(delSql,[account]);
+        return res.status(200).json({
+            code:200,
+            msg:"删除成功"
+        });
+    }catch(err){
+        console.log(err)
+        return res.status(500).json({
+            code:500,
+            msg:"服务器错误"
+        });
+    }
 })
 
 /**

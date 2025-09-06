@@ -6,8 +6,10 @@
       <div style="display: flex;">
         <h2>用户管理</h2>
       
-        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 50px;" size="medium" type="primary" >刷新用户列表</n-button>
-        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary">添加新用户</n-button>
+        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 50px;" size="medium" type="primary" @click="fetchUsers">刷新用户列表</n-button>
+        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
+          @click="addUserView = true"
+          >添加新用户</n-button>
       </div>
       
       <UserBarchart />
@@ -21,6 +23,9 @@
         class="dataTable"
       />
 
+      <AddUser v-if="addUserView"
+          @close="addUserView = false"
+          @update="updateUserAfterAdd"/>
       <!-- 查看/编辑用户信息弹窗 -->
       <UserInfo
         v-if="editingUser"
@@ -51,11 +56,12 @@
 <script setup lang="ts">
 import { ref, onMounted, h, reactive } from "vue";
 import Sidebar from "../components/Sidebar.vue";
-import { UserListApi, authApi } from "../api/user";
+import { UserListApi, authApi,deleteUserApi } from "../api/user";
 import { NButton } from "naive-ui";
 import UserInfo from "../components/UserInfo.vue";
 import { useMessage } from 'naive-ui'
 import UserBarchart from "../components/UserBarchart.vue";
+import AddUser from "../components/AddUser.vue";
 
 const message = useMessage();
 
@@ -63,6 +69,7 @@ const users = ref<any[]>([]);
 
 // user editting currently
 const editingUser = ref<any | null>(null);
+const addUserView = ref<boolean>(false);
 
 // user suthorized currently
 const authUser = ref<any | null>(null);
@@ -221,8 +228,15 @@ const updateUser = (updatedUser: any) => {
   editingUser.value = null;
 }
 
+const updateUserAfterAdd = () => {
+  fetchUsers();
+  addUserView.value = false;
+}
+
 const handleDelete = (row: any) => {
-  console.log("删除:", row);
+  console.log(row)
+  deleteUserApi(row.account)
+  fetchUsers();
 };
 
 // get users' information
@@ -230,7 +244,6 @@ const fetchUsers = async () => {
   try {
     const res = await UserListApi(pagination.page, pagination.pageSize);
     users.value = res.data.rows || [];
-    console.log(res.data.count===6)
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
     console.error("获取用户失败:", err);
