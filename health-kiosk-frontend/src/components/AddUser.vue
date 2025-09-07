@@ -7,7 +7,7 @@
       <label>密码:   <input v-model="localUser.pwd" /></label>
       <label>性别:   <input v-model="localUser.gender"/></label>
       <label>年龄:   <input v-model="localUser.age"/></label>
-      <label>身高:   <input v-model="localUser.height":disabled="!props.editable" /></label>
+      <label>身高:   <input v-model="localUser.height"/></label>
       <label>体重:   <input v-model="localUser.weight"/></label>
       <div class="buttons">
         <button @click="save">添加</button>

@@ -3,7 +3,12 @@
     <div class="layout">
         <Sidebar />
         <div class="device-page">
-        <h2>版本管理</h2>
+          <div style="display: flex;">
+            <h2>版本管理</h2>
+            <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
+              @click="addDeviceView = true">添加新的软件版本</n-button>
+          </div>
+        
             <n-data-table
                 remote
                 :columns="columns"
@@ -11,6 +16,11 @@
                 :pagination="pagination"
                 :bordered="true" 
                 class="dataTable"
+            />
+            <AddDevice
+              v-if="addDeviceView"
+              @close="addDeviceView = false"
+              @update="fetchDevices"
             />
         </div>
     </div>
@@ -22,6 +32,9 @@ import Sidebar from "../components/Sidebar.vue";
 import { UserListApi, authApi } from "../api/user";
 import { getDeviceInfoApi } from "../api/device";
 import { NButton } from "naive-ui";
+import AddDevice from "../components/AddDevice.vue";
+
+const addDeviceView = ref<boolean>(false)
 
 function handleDownload(row: any){
     console.log("download")
