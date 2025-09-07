@@ -2,14 +2,15 @@
   <div class="overlay-child">
     <div class="user-info">
       <h3>添加新版本软件</h3>
-      <label>版本:     <input v-model="localApp.version"></input></label>
+      <label>版本:     <input v-model="localApp.version" :disabled="!props.editable" /> </label>
+      <label>选择软件类型: </label>
       <n-select
         v-model:value="localApp.type"
         :options="typeOptions"
         placeholder="选择软件类型"
         style="margin-bottom: 16px; width: 200px;"
       />
-      <label>描述:     <input v-model="localApp.description"></input></label>
+      <label>描述:     <input v-model="localApp.description" :disabled="!props.editable"></input></label>
       <label>上传文件: <input type="file" @change="handleFileChange" /></label>
       <div class="buttons">
         <button @click="save">添加</button>
@@ -21,8 +22,8 @@
 
 <script setup lang ="ts">
 import { reactive, toRefs, watch, ref, version } from "vue";
-import { addDeviceApi } from "../api/device";
-import { useMessage } from "naive-ui";
+import { addDeviceApi, updateDeviceApi } from "../api/device";
+import { pProps, useMessage } from "naive-ui";
 
 const message = useMessage();
 
@@ -30,6 +31,13 @@ const typeOptions = [
     {label: "release", value: '1'},
     {label: "debug", value: '2'},
 ]
+
+const props = defineProps({
+  device: Object,
+  editable: Boolean
+});
+
+console.log(props.device)
 
 const emit = defineEmits(["close", "update"]);
 
@@ -41,9 +49,9 @@ const handleFileChange = (event: Event) => {
 };
 
 const localApp = reactive({
-    version: "" as string,
-    type: "" as string,
-    description: "" as string | null,
+    version: props.device?.version ?? "" as string,
+    type: props.device?.type ?? "1" as string,
+    description: props.device?.description ?? "" as string | null,
     apk: null as File | null
 });
 
@@ -53,14 +61,24 @@ const save = async () => {
         message.error("请上传APK");
         return;
     }
-    console.log("Trying to upload apk")
-    const res = await addDeviceApi(localApp.version,localApp.type,localApp.description,localApp.apk); // 调用后端接口
-    if(res.data.code == 200){
-        message.info("添加成功");
+    if(props.editable == true){
+        const res = await addDeviceApi(localApp.version,localApp.type,localApp.description,localApp.apk); // 调用后端接口
+        if(res.data.code == 200){
+            message.info("添加成功");
+        }else{
+            console.log(res)
+        }
+        emit("update"); // 通知父组件更新表格
     }else{
-        console.log(res)
+        const res = await updateDeviceApi(localApp.version,localApp.type,localApp.apk); // 调用后端接口
+        if(res.data.code == 200){
+            message.info("更新成功");
+        }else{
+            console.log(res)
+        }
+        emit("update"); // 通知父组件更新表格
     }
-    emit("update"); // 通知父组件更新表格
+
   } catch (err) {
     console.error("更新失败", err);
   }

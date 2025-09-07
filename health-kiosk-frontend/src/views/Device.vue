@@ -6,7 +6,7 @@
           <div style="display: flex;">
             <h2>版本管理</h2>
             <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addDeviceView = true">添加新的软件版本</n-button>
+              @click="addDeviceView = true; editable = true">添加新的软件版本</n-button>
           </div>
         
             <n-data-table
@@ -19,33 +19,69 @@
             />
             <AddDevice
               v-if="addDeviceView"
+              :device="currentDevice"
+              :editable="editable"
               @close="addDeviceView = false"
-              @update="fetchDevices"
+              @update="updatePage"
             />
         </div>
     </div>
 </template>
 
 <script setup lang = "ts">
-import { ref, onMounted, h, reactive } from "vue";
+import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
-import { UserListApi, authApi } from "../api/user";
-import { getDeviceInfoApi } from "../api/device";
-import { NButton } from "naive-ui";
+import { getDeviceInfoApi,downloadDeviceApi,deleteDeviceApi } from "../api/device";
+import { NButton, useMessage } from "naive-ui";
 import AddDevice from "../components/AddDevice.vue";
 
 const addDeviceView = ref<boolean>(false)
 
-function handleDownload(row: any){
-    console.log("download")
+const message = useMessage();
+const editable = ref(true)
+const currentDevice = ref<any | null>(null);
+
+const updatePage = ()=>{
+  fetchDevices();
+  addDeviceView.value = false;
 }
 
-function handleUpdate(row: any){
-    console.log("download")
+async function handleDownload(row: any) {
+  try {
+    const res = await downloadDeviceApi(row.version, row.type);
+
+    const blob = new Blob([res.data]);
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    const typeStr = row.type === '1' ? "release" : "debug";
+    a.download = `healthKiosk_${typeStr}_${row.version}.apk`; // 下载文件名
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+
+    message.info("已开始下载");
+  } catch (err: any) {
+    console.error("下载出错:", err);
+    message.error("下载失败");
+  }
 }
 
-function handleDelete(row: any){
-    console.log("download")
+async function handleUpdate(row: any){
+  currentDevice.value = { ...row };
+  editable.value = false;
+  addDeviceView.value = true;
+}
+
+async function handleDelete(row: any){
+    const res = await deleteDeviceApi(row.version,row.type);
+    if(res.data.code === 200){
+      fetchDevices()
+      message.info("删除成功")
+    }else{
+      message.error(res.data.msg);
+    }
 }
 
 const devices = ref<any[]>([]);
@@ -59,6 +95,9 @@ const columns = [
   {
     title: "类型",
     key: "type",
+    render(row: any) {
+      return row.type === '1' ? "release" : "debug"
+    }
   },
   {
     title: "下载量",

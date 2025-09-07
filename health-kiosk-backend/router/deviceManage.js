@@ -89,8 +89,6 @@ router.get("/list",async (req,res) => {
  * }
  */
 router.post("/add",upload.single('apk'),async (req,res) => {
-    console.log("Trying to add new .apk")
-    console.log(req.body);
     const { version, description, type } = req.body;
 
     try{
@@ -101,11 +99,19 @@ router.post("/add",upload.single('apk'),async (req,res) => {
             msg:"上传成功"
         })
     }catch(e){
+        console.log(e)
         res.status(500).json({
             code: 500,
             msg: "文件上传失败"
         });
     }
+});
+
+router.post("/update",upload.single('apk'),async (req,res) => {
+    res.status(200).json({
+        code:200,
+        msg:"上传成功"
+    })
 })
 
 /**
@@ -123,7 +129,7 @@ router.post("/add",upload.single('apk'),async (req,res) => {
  */
 router.post("/delete",async (req,res) => {
     const { version, type } = req.body;
-    const apk_position = calculate_adk_position(version,type);
+    const apk_position = await calculate_adk_position(version,type);
 
     fs.access(apk_position,fs.constants.F_OK, async (err) => {
         if(err) {
@@ -133,6 +139,13 @@ router.post("/delete",async (req,res) => {
             });
         }
         try{
+            fs.unlink(apk_position, async (unlinkErr) => {
+            if (unlinkErr) {
+                return res.status(500).json({
+                    code: 500,
+                    msg: "删除文件失败",
+                });
+            }});
             const deleteSQL = "delete from `device` where `version` = ? and `type` = ? ;";
             await db.async.run(deleteSQL, [version, type]);
             res.status(200).json({
@@ -184,7 +197,5 @@ router.get("/download",async (req,res) => {
         });
     });
 });
-
- 
 
 module.exports = router
