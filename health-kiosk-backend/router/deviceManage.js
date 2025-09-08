@@ -90,17 +90,24 @@ router.get("/list",async (req,res) => {
  */
 router.post("/add",upload.single('apk'),async (req,res) => {
     const { version, description, type } = req.body;
-
+    const selectSQL = "select * from `device` where `version` = ? and `type` = ?;";
+    const {err,rows} = await db.async.all(selectSQL,[version,type]);
+    if(err == null && rows.length > 0){
+        return res.status(200).json({
+            code:500,
+            msg:"文件已存在"
+        });
+    }
     try{
         const insertSQL = "insert into `device` (`version`, `description`, `type`) values (?, ?, ?) ;";
         await db.async.run(insertSQL, [version,description,type]);
-        res.status(200).json({
+        return res.status(200).json({
             code:200,
             msg:"上传成功"
         })
     }catch(e){
         console.log(e)
-        res.status(500).json({
+        return res.status(500).json({
             code: 500,
             msg: "文件上传失败"
         });
