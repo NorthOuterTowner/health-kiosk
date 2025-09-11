@@ -361,7 +361,6 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
     const account = req.account;
     const searchSQL = "select `email` from `user` where `account` = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[account]);
-    console.log(rows)
     let email = rows[0].email;
     if(email == null){
         return res.status(200).json({
@@ -379,6 +378,14 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
             msg:"服务器错误"
         })
     }
+
+    if(!emailRegex.test(email)){
+        return res.status(200).json({
+            code:422,//unprocessable entity
+            msg:"邮箱格式不合法"
+        });
+    }
+    
     const { newPassword } = req.body;
 
     if (!newPassword) {
@@ -430,7 +437,7 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
             msg: "重置验证邮件已发送，请查收邮箱" 
         });
     }catch(err){
-        return res.code(500).json({
+        return res.status(500).json({
             code:500,
             msg:err.msg
         })
@@ -452,8 +459,7 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
  *   "msg": "Role updated successfully"
  * }
  */
-router.post('/authorization',authMiddleware ,async (req,res) => {
-    console.log("处理授权")
+router.post('/authorization',authMiddleware ,async (req,res) => { 
     console.log(req.body)
     const authUser = req.body.authUser;
     const roleLevel = Number(req.body.roleLevel);
@@ -551,5 +557,9 @@ router.get('/verifyReset', async (req, res) => {
     return res.status(500).render("resetPwdFailed");
   }
 });
+
+router.post('/addPicture',async (req,res) => {
+    // 仿照登录逻辑即可
+})
 
 module.exports = router

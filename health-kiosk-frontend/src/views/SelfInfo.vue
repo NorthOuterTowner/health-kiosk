@@ -25,13 +25,13 @@
             type="password"
             show-password-on="click"
           />
-          <n-button>修改密码</n-button>
+          <n-button @click="reset_pwd">修改密码</n-button>
         </n-form-item>
 
         <!-- 邮箱 -->
         <n-form-item label="邮箱" path="email">
           <n-input v-model:value="form.email" placeholder="请输入邮箱" />
-          <n-button>验证邮箱</n-button>
+          <n-button @click="reset_email">验证邮箱</n-button>
         </n-form-item>
 
         <!-- 性别 -->
@@ -55,7 +55,7 @@
 
         <n-form-item>
           <n-button type="primary" style="margin: 10px;">重置</n-button>
-          <n-button type="error">保存信息</n-button>
+          <n-button type="error" @click="change_info">保存信息</n-button>
         </n-form-item>
       </n-form>
     </n-card>
@@ -129,12 +129,13 @@ import {
 
 import type { FormInst, FormRules, UploadFileInfo } from "naive-ui";
 import Sidebar from "../components/Sidebar.vue";
+import { changeInfoApi, resetPasswordApi, setEmailApi } from "../api/user";
 
 // 表单数据
 const form = ref({
-  username: "",
-  password: "",
-  email: "",
+  username: "" as string | null,
+  password: "" as string,
+  email: "" as string,
   gender: null as string | null,
   age: null as number | null,
   birthday: null as number | null,
@@ -143,8 +144,8 @@ const form = ref({
 
 // 性别选项
 const genderOptions = [
-  { label: "男", value: "male" },
-  { label: "女", value: "female" }
+  { label: "男", value: "男" },
+  { label: "女", value: "女" }
 ];
 
 // 表单验证规则
@@ -162,6 +163,21 @@ const rules: FormRules = {
 
 const formRef = ref<FormInst | null>(null);
 const message = useMessage();
+
+const reset_pwd = () => {
+  resetPasswordApi(form.value.password);
+}
+
+const reset_email = () => {
+  setEmailApi(form.value.email);
+}
+
+const change_info = () => {
+  const res: any = changeInfoApi(form.value);
+
+    console.log(res)
+  
+}
 
 // 提交
 const submitForm = () => {
