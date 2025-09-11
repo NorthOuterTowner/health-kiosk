@@ -61,7 +61,9 @@ import {
   Database,
   ChartNoAxesCombined,
   HeartPulse,
-  FilePenLine
+  FilePenLine,
+  FileText,
+  FileUser
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
@@ -147,6 +149,17 @@ const menuConfig = [
     children: [
       { path: '/projectshow', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] },
       { path: '/projectedit', name: 'sidebar.examItem.edit', icon: FilePenLine, role: [3,4,5] }
+    ]
+  },
+  {
+    // 使用说明
+    key: 'use',
+    title: 'sidebar.use.title',
+    icon:FileText,
+    role:[0,1,2,3,4,5],
+    children: [
+      { path: 'userintro', name: 'sidebar.use.userintro', icon: FileText , role: [0,1,2,3,4,5] },
+      { path: 'managerintro', name: 'sidebar.use.managerintro', icon: FileUser, role: [3,4,5] }
     ]
   }
 ]

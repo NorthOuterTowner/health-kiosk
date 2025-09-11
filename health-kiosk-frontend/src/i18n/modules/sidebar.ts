@@ -22,6 +22,11 @@ export const sidebarMessages = {
             title: "体检项目管理",
             list: "查看体检项目",
             edit: "修改体检内容"
+        },
+        use: {
+            title: "使用说明",
+            userintro: "用户使用说明",
+            managerintro: "管理员使用说明"
         }
     },
     en: {

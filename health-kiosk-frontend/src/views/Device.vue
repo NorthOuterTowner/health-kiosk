@@ -1,4 +1,4 @@
-<!-- Device Management Page-->
+<!-- Device Management Page--> 
 <template>
     <div class="layout">
         <Sidebar />
