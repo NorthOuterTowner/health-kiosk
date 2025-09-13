@@ -558,8 +558,4 @@ router.get('/verifyReset', async (req, res) => {
   }
 });
 
-router.post('/addPicture',async (req,res) => {
-    // 仿照登录逻辑即可
-})
-
 module.exports = router

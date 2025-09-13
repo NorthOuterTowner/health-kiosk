@@ -73,3 +73,15 @@ export function setEmailApi(email: string){
         email
     })
 }
+
+export function uploadPictureApi(picture: File | null | undefined) {
+    if(picture != null){
+        const formData = new FormData();
+        formData.append("photo",picture);
+        return instance.post("/admin/addPicture",formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        })
+    }
+}

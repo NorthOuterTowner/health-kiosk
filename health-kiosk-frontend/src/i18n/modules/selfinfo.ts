@@ -29,6 +29,25 @@ export const selfinfoMessages = {
                 reset: "重置表单",
                 save: "保存信息"
             }
+        },
+        systemForm: {
+            title: "修改系统设置",
+            language: {
+                label:"语言",
+                placeholder: "请选择语言"
+            },
+            system_time: {
+                label:"系统时间",
+                placeholder: "请选择时间"
+            },
+            upload_picture: {
+                label:"上传图片",
+                button_text:"点击上传"
+            },
+            birthday: {
+                label:"生日",
+                placeholder: "请选择生日" 
+            }
         }
     },
     en: {
@@ -60,6 +79,25 @@ export const selfinfoMessages = {
             buttonGroup: {
                 reset: "Reset Form",
                 save: "Save Information"
+            }
+        },
+        systemForm: {
+            title: "Modify System Settings",
+            language: {
+                label: "Language",
+                placeholder: "Please select a language"
+            },
+            system_time: {
+                label: "System Time",
+                placeholder: "Please select a time"
+            },
+            upload_picture: {
+                label: "Upload Picture",
+                button_text: "Click to Upload"
+            },
+            birthday: {
+                label: "Birthday",
+                placeholder: "Please select a birthday" 
             }
         }
     }

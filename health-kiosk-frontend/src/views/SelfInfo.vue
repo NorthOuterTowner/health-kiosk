@@ -59,52 +59,58 @@
         </n-form-item>
       </n-form>
     </n-card>
-    <!-- Just n-card's copy-->
-     <n-card title="修改系统设置" class="settings-card">
+
+    <!-- System Settings -->
+    <n-card :title="$t('selfinfo.systemForm.title')" class="settings-card">
       <n-form
         :model="form"
         :rules="rules"
-        ref="formRef"
+        ref="systemFormRef"
         label-placement="left"
-        label-width="80"
+        label-width="100"
       >
         <!-- lang -->
-        <n-form-item label="语言" path="username">
-          <n-input v-model:value="form.username" placeholder="请输入用户名" />
+        <n-form-item :label="$t('selfinfo.systemForm.language.label')" path="language">
+          <n-select
+            v-model:value="locale"
+            :options="languageOptions"
+            :placeholder="$t('selfinfo.systemForm.language.placeholder')"
+          />
         </n-form-item>
 
         <!-- time -->
-        <n-form-item label="系统时间" path="password">
+        <n-form-item :label="$t('selfinfo.systemForm.system_time.label')" path="time">
           <n-time-picker
             v-model:value="form.time"
             format="HH:mm:ss"
-            placeholder="请选择时间"
+            value-format="timestamp"
+            type = "datetime"
+            :placeholder="$t('selfinfo.systemForm.system_time.placeholder')"
           />
         </n-form-item>
 
         <!-- picture -->
-        <n-form-item label="上传图片" path="avatorList">
+        <n-form-item :label="$t('selfinfo.systemForm.upload_picture.label')">
           <n-upload
-            action="http://localhost:3000/upload"  
+            :custom-request="handleUpload" 
             list-type="image-card"               
-            :max="1"                           
-            v-model:file-list="form.avatarList"
+            :max="1"
           >
-            点击上传
+            {{ $t('selfinfo.systemForm.upload_picture.button_text') }}
           </n-upload>
         </n-form-item>
 
         <!-- 生日 -->
-        <n-form-item label="生日" path="birthday">
+        <n-form-item :label="$t('selfinfo.systemForm.birthday.label')" path="birthday">
           <n-date-picker
             v-model:value="form.birthday"
             type="date"
-            placeholder="请选择生日"
+            :placeholder="$t('selfinfo.systemForm.birthday.placeholder')"
           />
         </n-form-item>
-
       </n-form>
     </n-card>
+
     </div>
   </div>
   </div>
@@ -123,15 +129,22 @@ import {
   NCard,
   NSpace,
   useMessage,
-  NUpload
+  NUpload,
+  NTimePicker
 } from "naive-ui";
 
 import type { FormInst, FormRules, UploadFileInfo } from "naive-ui";
 import Sidebar from "../components/Sidebar.vue";
-import { changeInfoApi, resetPasswordApi, setEmailApi } from "../api/user";
+import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi } from "../api/user";
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n();
+
+const languageOptions = [
+  { label: "中文", value: 'zh' },
+  { label: "English", value: 'en' }
+]
+
 // 表单数据
 const initialForm = {
   username: "" as string | null,
@@ -140,19 +153,18 @@ const initialForm = {
   gender: null as string | null,
   age: null as number | null,
   birthday: null as number | null,
-  avatarList: [] as UploadFileInfo[],
-  time: null as number | null
+  time: Date.now() as number
 };
 
 const form = ref({...initialForm})
 
-// 性别选项
+// gender options
 const genderOptions = [
   { label: "男", value: "男" },
   { label: "女", value: "女" }
 ];
 
-// 表单验证规则
+// form verify rules
 const rules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [{ required: true, message: "请输入密码", trigger: "blur" }],
@@ -190,6 +202,19 @@ const change_info = async () => {
 const reset_form = () => {
   form.value = initialForm;
   message.info("表单已重置")
+}
+
+import type { UploadCustomRequestOptions } from "naive-ui";
+
+const handleUpload = async (options: UploadCustomRequestOptions) => {
+  if (options.file && options.file.file) {
+    const res = await uploadPictureApi(options.file.file);
+    if(res?.data.code === 200){
+      message.info("上传成功")
+    }else{
+      message.error("上传失败")
+    }
+  }
 }
 
 </script>

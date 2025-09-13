@@ -9,6 +9,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { generateToken } = require('../utils/jwtHelper')
+const authMiddleware = require('../middleware/authMiddleware')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -65,7 +66,7 @@ const upload = multer({ storage: storage });
 router.post("/login", upload.single("photo") , async (req, res) => {
   //upload.fields([{ name: "photo", maxCount: 1 }])
   let { account, pwd } = req.body;
-  console.log("account: " + account+", pwd: " + pwd)
+
   if(account!=null && pwd !=null){
     //delete picture saved from request.
     if (req.file) {
@@ -292,5 +293,32 @@ router.post("/register", upload.single('photo'), async (req, res) => {
     }
 });
 
+router.post('/addPicture', authMiddleware, upload.single('photo'),async (req,res) => {
+  const account = req.account;
+
+  const searchSQL = "SELECT * FROM `user` WHERE `account` = ?;";
+  const updateSql = "update `user` set `pic` = ? where `account` = ? ;";
+
+  const {err,rows} = await db.async.all(searchSQL,[account]);
+  if(err != null || rows.length == 0){
+    return res.status(200).json({
+      code:404,
+      msg:"未找到该用户"
+    })
+  }else {
+    try{
+      await db.async.run(updateSql,[req.file.filename,account]);
+      return res.status(200).json({
+        code:200,
+        msg:"添加照片成功"
+      });
+    }catch(err) {
+      return res.status(200).json({
+        code:500,
+        msg:"添加照片失败"
+      });
+    }
+  }
+})
 
 module.exports = router
