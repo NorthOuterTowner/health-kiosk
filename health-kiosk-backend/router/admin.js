@@ -293,6 +293,21 @@ router.post("/register", upload.single('photo'), async (req, res) => {
     }
 });
 
+/**
+ * @api {post} /user/addPicture Upload User Avatar
+ * @apiGroup User
+ * 
+ * @apiHeader {String} Authorization User login token in the format: "Bearer <token>"
+ * @apiHeader {String} Content-Type multipart/form-data
+ * 
+ * @apiBody {File} photo Image file to upload (required)
+ * 
+ * @apiSuccess {Object} Response Example (Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Picture uploaded successfully"
+ * }
+ */
 router.post('/addPicture', authMiddleware, upload.single('photo'),async (req,res) => {
   const account = req.account;
 

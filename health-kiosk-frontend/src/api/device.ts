@@ -1,6 +1,6 @@
 /* tip:
- * `type` is enum of '1' and '0',
- * release type representative by '1' and debug type representative by '0'
+ * `type` is enum of '1' and '2',
+ * release type representative by '1' and debug type representative by '2'
  */
 
 import instance from "./axios";

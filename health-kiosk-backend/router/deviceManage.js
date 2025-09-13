@@ -114,6 +114,20 @@ router.post("/add",upload.single('apk'),async (req,res) => {
     }
 });
 
+/**
+ * @api {post} /update Upload APK File
+ * @apiGroup System
+ * 
+ * @apiHeader {String} Content-Type multipart/form-data
+ * 
+ * @apiBody {File} apk APK file to upload (required)
+ * 
+ * @apiSuccess {Object} Response Example (Success):
+ * {
+ *   "code": 200,
+ *   "msg": "Upload successful"
+ * }
+ */
 router.post("/update",upload.single('apk'),async (req,res) => {
     res.status(200).json({
         code:200,
@@ -185,6 +199,13 @@ router.get("/download",async (req,res) => {
     const {version,type} = req.query;
     const apk_position = await calculate_adk_position(version,type);
 
+    try{        
+        const addNumSql = "update `device` set `num` = `num` + 1 where `version` = ? and `type` = ? ;";
+        await db.async.run(addNumSql,[version,type]);
+    }catch(err){
+        console.log(err)
+    }
+    
     fs.access(apk_position, fs.constants.F_OK, (err) => {
         if (err) {
             return res.status(200).json({
@@ -192,7 +213,7 @@ router.get("/download",async (req,res) => {
                 msg: "文件不存在"
             });
         }
-        
+
         res.download(apk_position, (err) => {
             if (err) {
                 console.error("下载出错:", err);
