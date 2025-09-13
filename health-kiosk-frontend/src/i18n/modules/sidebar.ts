@@ -30,7 +30,7 @@ export const sidebarMessages = {
         }
     },
     en: {
-        title: "Health monitoring system backend",
+        title: "",
         users: {
             title:"User Management",
             list: "User list"
@@ -49,9 +49,14 @@ export const sidebarMessages = {
             watch: "self information"
         },
         examItem: {
-            title: "体检项目管理",
-            list: "查看体检项目",
-            edit: "修改体检内容"
+            title: "Kiosk project management",
+            list: "View kiosk project",
+            edit: "Edit Kiosk content"
+        },
+        use: {
+            title: "use intruction",
+            userintro: "user intruction",
+            managerintro: "admin intruction"
         }
     }
 }

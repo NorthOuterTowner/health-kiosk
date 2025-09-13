@@ -5,6 +5,8 @@ import User from "../views/User.vue";
 import Device from "../views/Device.vue";
 import ExamData from "../views/ExamData.vue";
 import SelfInfo from "../views/SelfInfo.vue";
+import AdminIntruction from "../views/adminIntruction.vue";
+import UseIntruction from "../views/useIntruction.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -31,6 +33,16 @@ const routes: Array<RouteRecordRaw> = [
     path: "/selfinfo",
     name: "SelfInfo",
     component: SelfInfo
+  },
+  {
+    path: "/useintruction",
+    name: "UseIntruction",
+    component: UseIntruction
+  },
+  {
+    path: "/adminintruction",
+    name: "AdminIntruction",
+    component: AdminIntruction
   }
 ];
 

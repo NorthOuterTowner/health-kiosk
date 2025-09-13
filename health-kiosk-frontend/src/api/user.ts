@@ -11,7 +11,6 @@ export function UserListApi (page:Number,limit:Number) {
 }
 
 export function editApi (User: any){
-    console.log(User)
     return instance.post("/user/change",{
         ...User
     })
