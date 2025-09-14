@@ -4,12 +4,12 @@
     <Sidebar />
     <div class="user-page">
       <div style="display: flex;">
-        <h2>用户管理</h2>
+        <h2>{{ $t('user.title') }}</h2>
       
-        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 50px;" size="medium" type="primary" @click="fetchUsers">刷新用户列表</n-button>
+        <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 50px;" size="medium" type="primary" @click="fetchUsers">{{ $t('user.fetch') }}</n-button>
         <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
           @click="addUserView = true"
-          >添加新用户</n-button>
+          >{{ $t('user.add_user_button_text') }}</n-button>
       </div>
       
       <UserBarchart />
@@ -36,16 +36,16 @@
       />
 
       <!-- 授权对话框 -->
-      <n-modal v-model:show="authDialogVisible" preset="dialog" title="设置权限">
+      <n-modal v-model:show="authDialogVisible" preset="dialog" :title="$t('user.title')">
         <n-select
           v-model:value="selectedRole"
           :options="roleOptions"
-          placeholder="选择权限等级"
+          placeholder="{{ $t('user.auth.placeholder') }}"
           style="margin-bottom: 16px; width: 200px;"
         />
         <template #action>
-          <n-button @click="authDialogVisible=false">取消</n-button>
-          <n-button type="primary" @click="confirmAuth">确认</n-button>
+          <n-button @click="authDialogVisible=false">{{ t('utils.cancel') }}</n-button>
+          <n-button type="primary" @click="confirmAuth">{{ t('utils.confirm') }}</n-button>
         </template>
       </n-modal>
  
@@ -62,7 +62,9 @@ import UserInfo from "../components/UserInfo.vue";
 import { useMessage } from 'naive-ui'
 import UserBarchart from "../components/UserBarchart.vue";
 import AddUser from "../components/AddUser.vue";
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n();
 const message = useMessage();
 
 const users = ref<any[]>([]);
@@ -80,12 +82,12 @@ const adminRole: number | null = Number(localStorage.getItem("role")).valueOf();
 
 // using for n-select
 const roleOptions = [
-  { label: "游客", value: 0, disabled: adminRole < 0 },
-  { label: "访客", value: 1, disabled: adminRole < 1 },
-  { label: "用户", value: 2, disabled: adminRole < 2 },
-  { label: "管理员", value: 3, disabled: adminRole < 3 },
-  { label: "超级管理员", value: 4, disabled: adminRole < 4 },
-  { label: "开发者", value: 5, disabled: adminRole < 5 }
+  { label: t('user.role.0'), value: 0, disabled: adminRole < 0 },
+  { label: t('user.role.1'), value: 1, disabled: adminRole < 1 },
+  { label: t('user.role.2'), value: 2, disabled: adminRole < 2 },
+  { label: t('user.role.3'), value: 3, disabled: adminRole < 3 },
+  { label: t('user.role.4'), value: 4, disabled: adminRole < 4 },
+  { label: t('user.role.5'), value: 5, disabled: adminRole < 5 }
 ];
 
 // return correspinding text of role when the page should show the role content
@@ -119,22 +121,22 @@ const columns = [
     width: 100,
   },
   {
-    title: "用户名",
+    title: t('user.columns.name'),
     key: "name",
   },
   {
-    title: "邮箱",
+    title: t('user.columns.email'),
     key: "email",
   },
   {
-    title: "角色",
+    title: t('user.columns.role'),
     key: "role",
     render(row: any) {
       return roleText(row.role);
     }
   },
   {
-    title: "操作",
+    title: t('user.columns.action'),
     key: "actions",
     render(row: any) {
       return [
@@ -146,7 +148,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleAuth(row),
           },
-          { default: () => "授权" }
+          { default: () => t('user.columns.auth') }
         ),
         h(
           NButton,
@@ -156,7 +158,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleView(row),
           },
-          { default: () => "查看" }
+          { default: () => t('user.columns.watch') }
         ),
         h(
           NButton,
@@ -166,7 +168,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleEdit(row),
           },
-          { default: () => "编辑" }
+          { default: () => t('utils.edit') }
         ),
         h(
           NButton,
@@ -175,7 +177,7 @@ const columns = [
             type: "error",
             onClick: () => handleDelete(row),
           },
-          { default: () => "删除" }
+          { default: () => t('utils.delete') }
         )
       ];
     },

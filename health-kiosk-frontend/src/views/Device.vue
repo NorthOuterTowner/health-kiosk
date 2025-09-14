@@ -4,9 +4,9 @@
         <Sidebar />
         <div class="device-page">
           <div style="display: flex;">
-            <h2>版本管理</h2>
+            <h2>{{ $t('device.title') }}</h2>
             <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addDeviceView = true; editable = true">添加新的软件版本</n-button>
+              @click="addDeviceView = true; editable = true">{{ $t('device.add_button') }}</n-button>
           </div>
         
             <n-data-table
@@ -34,7 +34,9 @@ import Sidebar from "../components/Sidebar.vue";
 import { getDeviceInfoApi,downloadDeviceApi,deleteDeviceApi } from "../api/device";
 import { NButton, useMessage } from "naive-ui";
 import AddDevice from "../components/AddDevice.vue";
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n();
 const addDeviceView = ref<boolean>(false)
 
 const message = useMessage();
@@ -56,7 +58,7 @@ async function handleDownload(row: any) {
     const a = document.createElement('a');
     a.href = url;
     const typeStr = row.type === '1' ? "release" : "debug";
-    a.download = `healthKiosk_${typeStr}_${row.version}.apk`; // 下载文件名
+    a.download = `healthKiosk_${typeStr}_${row.version}.apk`; // the name of download file
     a.click();
 
     window.URL.revokeObjectURL(url);
@@ -88,23 +90,23 @@ const devices = ref<any[]>([]);
 
 const columns = [
   {
-    title: "版本",
+    title: t('device.columns.version'),
     key: "version",
     width: 100,
   },
   {
-    title: "类型",
+    title: t('device.columns.type'),
     key: "type",
     render(row: any) {
       return row.type === '1' ? "release" : "debug"
     }
   },
   {
-    title: "下载量",
+    title: t('device.columns.num'),
     key: "num",
   },
   {
-    title: "操作",
+    title: t('device.columns.action'),
     key: "actions",
     render(row: any) {
       return [
@@ -116,7 +118,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleDownload(row),
           },
-          { default: () => "下载" }
+          { default: () => t("utils.download") }
         ),
         Number(localStorage.getItem("role") ?? "0") >= 3 ?
         h(
@@ -127,7 +129,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleDelete(row),
           },
-          { default: () => "删除" }
+          { default: () => t("utils.delete") }
         ) : null,
         Number(localStorage.getItem("role") ?? "0") >= 3 ?
         h(
@@ -137,7 +139,7 @@ const columns = [
             type: "error",
             onClick: () => handleUpdate(row),
           },
-          { default: () => "更新" }
+          { default: () => t("utils.update") }
         ) : null
       ];
     },

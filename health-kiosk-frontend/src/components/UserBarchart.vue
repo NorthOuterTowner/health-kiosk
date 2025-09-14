@@ -9,9 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from 'vue';
 import * as echarts from "echarts";
 import { userChartApi } from "../api/user";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 
 const barChartRef = ref<HTMLDivElement | null>(null);
 const pieChartRef = ref<HTMLDivElement | null>(null);
@@ -34,7 +37,7 @@ onMounted(async() => {
       const barChart = echarts.init(barChartRef.value);
       const barOption = {
         title: {
-          text:"每日注册人数",
+          text: t('user.barChart.title'),
           left:"center"
         },
         tooltip: {},
@@ -54,7 +57,7 @@ onMounted(async() => {
         },
         series: [
           {
-            name:"注册人数",
+            name: "每日注册人数",
             type:"bar",
             data: barCounts,
             itemStyle: {
@@ -70,7 +73,7 @@ onMounted(async() => {
     const pieData = role_rate.map((item:any) => {
       return {
         value: item.rate,
-        name: item.role
+        name: t(`user.role.${item.role}`)
       }
     });
 
@@ -78,7 +81,7 @@ onMounted(async() => {
       const pieChart = echarts.init(pieChartRef.value);
       const pieOption = {
         title: {
-          text: "用户角色分布",
+          text: t('user.pieChart.title'),
           left: "center"
         },
         tooltip: {

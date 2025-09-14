@@ -74,9 +74,9 @@ router.get("/userRegister",async (req,res) => {
     }
     
     let role_rate = role_rate_raw_result.map(row => {
-        let roleStr = calRole(row.role);
+        //let roleStr = calRole(row.role);
         return {
-            role: roleStr,
+            role: row.role,
             rate: row.cnt / totalCnt
         }
     });

@@ -138,7 +138,7 @@ import Sidebar from "../components/Sidebar.vue";
 import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi } from "../api/user";
 import { useI18n } from 'vue-i18n'
 
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 
 const languageOptions = [
   { label: "中文", value: 'zh' },
@@ -160,8 +160,8 @@ const form = ref({...initialForm})
 
 // gender options
 const genderOptions = [
-  { label: "男", value: "男" },
-  { label: "女", value: "女" }
+  { label: t("utils.gender.male"), value: "男" },
+  { label: t("utils.gender.female"), value: "女" }
 ];
 
 // form verify rules

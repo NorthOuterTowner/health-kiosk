@@ -1,17 +1,17 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>{{ header }}</h3>
+      <h3>{{ t(`user.add_user.${header}`) }}</h3>
       <label>ID:     <input v-model="localUser.account"></input></label>
-      <label>用户名:  <input v-model="localUser.name" /></label>
-      <label>密码:   <input v-model="localUser.pwd" /></label>
-      <label>性别:   <input v-model="localUser.gender"/></label>
-      <label>年龄:   <input v-model="localUser.age"/></label>
-      <label>身高:   <input v-model="localUser.height"/></label>
-      <label>体重:   <input v-model="localUser.weight"/></label>
+      <label>{{ t('user.add_user.name') }}:  <input v-model="localUser.name" /></label>
+      <label>{{ t('user.add_user.pwd') }}:   <input v-model="localUser.pwd" /></label>
+      <label>{{ t('user.add_user.gender') }}:   <input v-model="localUser.gender"/></label>
+      <label>{{ t('user.add_user.age') }}:  <input v-model="localUser.age"/></label>
+      <label>{{ t('user.add_user.height') }}:   <input v-model="localUser.height"/></label>
+      <label>{{ t('user.add_user.weight') }}:   <input v-model="localUser.weight"/></label>
       <div class="buttons">
-        <button @click="save">添加</button>
-        <button @click="$emit('close')">取消</button>
+        <button @click="save">{{ t('user.add_user.add_button') }}</button>
+        <button @click="$emit('close')">{{ t('utils.cancel') }}</button>
       </div>
     </div>
   </div>
@@ -20,13 +20,15 @@
 <script setup>
 import { reactive, toRefs, watch } from "vue";
 import { editApi,addUserApi } from "../api/user"; // 调用后端更新接口
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const props = defineProps({
   user: Object,
   editable: Boolean
 });
 
-const header = props.editable ? "编辑用户数据" : "查看用户信息"
+const header = props.editable ? "edit_title" : "view_title"
 
 const emit = defineEmits(["close", "update"]);
 
