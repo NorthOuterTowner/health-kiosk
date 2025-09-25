@@ -1,0 +1,1 @@
+{"setting":{"project":[{"name":"体温℃","is_open":1},{"name":"酒精度mg","is_open":1},{"name":"  ","is_open":1},{"name":"心率/呼吸","is_open":1},{"name":"血压","is_open":1}]}}

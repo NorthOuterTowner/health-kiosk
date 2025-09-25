@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal">
+
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_width="350px"
+        android:layout_height="350px"
+        android:layout_centerInParent="true"
+        android:background="@drawable/project_tw"
+        android:padding="40px"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="23dp"
+            android:layout_marginEnd="0dp"
+            android:gravity="center_horizontal"
+            android:text="体温得"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/title"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="100/100"
+                android:textColor="@color/white"
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/unit"
+                android:layout_width="wrap_content"
+                android:layout_height="6dp"
+                android:singleLine="true"
+                android:text="℃"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

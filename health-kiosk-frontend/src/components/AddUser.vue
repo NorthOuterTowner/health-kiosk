@@ -1,17 +1,17 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>{{ t(`user.add_user.${header}`) }}</h3>
+      <h3>{{ $t(`user.add_user.${header}`) }}</h3>
       <label>ID:     <input v-model="localUser.account"></input></label>
-      <label>{{ t('user.add_user.name') }}:  <input v-model="localUser.name" /></label>
-      <label>{{ t('user.add_user.pwd') }}:   <input v-model="localUser.pwd" /></label>
-      <label>{{ t('user.add_user.gender') }}:   <input v-model="localUser.gender"/></label>
-      <label>{{ t('user.add_user.age') }}:  <input v-model="localUser.age"/></label>
-      <label>{{ t('user.add_user.height') }}:   <input v-model="localUser.height"/></label>
-      <label>{{ t('user.add_user.weight') }}:   <input v-model="localUser.weight"/></label>
+      <label>{{ $t('user.add_user.name') }}:  <input v-model="localUser.name" /></label>
+      <label>{{ $t('user.add_user.pwd') }}:   <input v-model="localUser.pwd" /></label>
+      <label>{{ $t('user.add_user.gender') }}:   <input v-model="localUser.gender"/></label>
+      <label>{{ $t('user.add_user.age') }}:  <input v-model="localUser.age"/></label>
+      <label>{{ $t('user.add_user.height') }}:   <input v-model="localUser.height"/></label>
+      <label>{{ $t('user.add_user.weight') }}:   <input v-model="localUser.weight"/></label>
       <div class="buttons">
-        <button @click="save">{{ t('user.add_user.add_button') }}</button>
-        <button @click="$emit('close')">{{ t('utils.cancel') }}</button>
+        <button @click="save">{{ $t('user.add_user.add_button') }}</button>
+        <button @click="$emit('close')">{{ $t('utils.cancel') }}</button>
       </div>
     </div>
   </div>

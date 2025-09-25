@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/blood"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20px"
+        android:layout_marginTop="30px"
+        android:gravity="center"
+        android:paddingLeft="10px"
+        android:paddingRight="10px"
+        android:text="@string/title_activity_fragment2"
+        android:textColor="@color/white"
+        android:textSize="27sp"
+        android:visibility="visible" />
+
+    <com.example.quickexam.view.PColumn
+        android:id="@+id/column_height"
+        android:layout_width="40dp"
+        android:layout_height="240dp"
+        android:layout_below="@id/title"
+        android:layout_marginLeft="60px"
+        android:layout_marginTop="40px"
+        android:layout_marginBottom="20dp"
+        tools:ignore="MissingConstraints" />
+
+    <com.example.quickexam.view.PColumn
+        android:id="@+id/column_low"
+        android:layout_width="40dp"
+        android:layout_height="240dp"
+        android:layout_below="@id/title"
+        android:layout_marginLeft="60px"
+        android:layout_marginTop="40px"
+        android:layout_marginBottom="20dp"
+        android:layout_toRightOf="@id/column_height"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/hp"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_marginLeft="100px"
+        android:layout_toRightOf="@id/column_low"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="0"
+        android:textColor="#fff"
+        android:textSize="60sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/hp"
+        android:layout_marginLeft="30px"
+        android:layout_marginTop="15px"
+        android:layout_marginRight="15dp"
+        android:layout_toRightOf="@id/hp"
+        android:text="收缩压"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/lp"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hp"
+        android:layout_marginLeft="100px"
+        android:layout_toRightOf="@id/column_low"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="0"
+        android:textColor="#fff"
+        android:textSize="60sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/lp"
+        android:layout_marginLeft="30px"
+        android:layout_marginTop="15px"
+        android:layout_toRightOf="@id/lp"
+        android:text="舒张压"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/pulse"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lp"
+        android:layout_marginLeft="100px"
+        android:layout_toRightOf="@id/column_low"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="0"
+        android:textColor="#fff"
+        android:textSize="60sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/pulse"
+        android:layout_marginLeft="30px"
+        android:layout_marginTop="15px"
+        android:layout_toRightOf="@id/pulse"
+        android:text="脉搏"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
