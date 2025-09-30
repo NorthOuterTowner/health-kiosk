@@ -37,7 +37,7 @@ function emailIndexHash(email) {
   const normalized = (email || '').trim().toLowerCase();
   const hmac = crypto.createHmac('sha256', HMAC_KEY).update(normalized).digest('hex');
   // optionally include key version prefix to allow rotation
-  return `${KEY_VERSION}:${hmac}`;
+  return `${hmac}`;
 }
 
 module.exports = {

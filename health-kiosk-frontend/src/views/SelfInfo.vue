@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import {
   NForm,
   NFormItem,
@@ -135,7 +135,7 @@ import {
 
 import type { FormInst, FormRules, UploadFileInfo } from "naive-ui";
 import Sidebar from "../components/Sidebar.vue";
-import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi } from "../api/user";
+import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi, getInfoApi } from "../api/user";
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n();
@@ -145,18 +145,28 @@ const languageOptions = [
   { label: "English", value: 'en' }
 ]
 
-// 表单数据
 const initialForm = {
   username: "" as string | null,
   password: "" as string,
   email: "" as string,
-  gender: null as string | null,
+  gender: "" as string | null,
   age: null as number | null,
   birthday: null as number | null,
   time: Date.now() as number
 };
 
+//const res = await getInfoApi();
+
 const form = ref({...initialForm})
+
+onMounted(async () => {
+  const res = await getInfoApi();
+  const row = res?.data?.rows[0];
+  form.value.username = row.name;
+  form.value.email = row.email;
+  form.value.gender = row.gender;
+  form.value.age = row.age;
+})
 
 // gender options
 const genderOptions = [
@@ -181,7 +191,9 @@ const formRef = ref<FormInst | null>(null);
 const message = useMessage();
 
 const reset_pwd = () => {
-  resetPasswordApi(form.value.password);
+  console.log(form.value.password)
+  const res = resetPasswordApi(form.value.password);
+  console.log(res)
   message.info("验证邮件已发送至您的邮箱");
 }
 

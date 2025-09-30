@@ -1,10 +1,12 @@
 package com.seeta.camera;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Surface;
 import android.view.TextureView;
 
 import androidx.annotation.Nullable;
@@ -68,7 +70,7 @@ public class CameraPreview2 extends TextureView implements TextureView.SurfaceTe
 //                rotation = 90;
 //                Log.d(TAG, "orientation: landscape");
 //            }
-            setCamera(mCamera, info, 90);
+            setCamera(mCamera, info, 180);
             startPreview(surface);
         } catch (Exception e) {
             e.printStackTrace();

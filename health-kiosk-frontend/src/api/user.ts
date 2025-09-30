@@ -85,3 +85,7 @@ export function uploadPictureApi(picture: File | null | undefined) {
         })
     }
 }
+
+export function getInfoApi(){
+    return instance.get("/user/selfinfo");
+}

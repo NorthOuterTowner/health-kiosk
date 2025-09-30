@@ -20,6 +20,7 @@ const path = require('path');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const {encryptEmail, decryptEmail, emailIndexHash} = require('../utils/EmailCrypto')
 
 router.post("/add",authMiddleware, async (req,res) => {
     let account = req.body.account ?? null ;
@@ -158,7 +159,9 @@ router.get("/selfinfo", authMiddleware, async (req,res)=>{
     const account = req.account;
     const searchSQL = "select * from `user` where account = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[account]);
+    
     if(err == null && rows.length > 0){
+        rows[0].email = decryptEmail(rows[0].email_enc);
         return res.status(200).json({
             code:200,
             rows
@@ -201,6 +204,7 @@ router.get("/info",authMiddleware,async (req,res) => {
     const searchSQL = "select * from `user` where account = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[account]);
     if(err == null && rows.length > 0){
+        rows[0].email = decryptEmail(rows[0].email_enc);
         return res.status(200).json({
             code:200,
             rows
@@ -307,12 +311,17 @@ router.post("/setEmail",authMiddleware,async (req,res) => {
         });
     }
     
+    const emailHash = emailIndexHash(email)
+    const {payload, keyVersion} = encryptEmail(email);
+
     const verifyCode = crypto.randomBytes(16).toString("hex");
     const expiresAt = 60 * 30; // 秒为单位
 
     const userData = JSON.stringify({
         account,
-        email
+        email_enc: payload,
+        email_hash: emailHash,
+        keyVersion
     });
 
     // store to Redis (set exprie time as 30 minutes)
@@ -359,10 +368,10 @@ router.post("/setEmail",authMiddleware,async (req,res) => {
  */
 router.post('/reset/pwd',authMiddleware, async (req, res) => {
     const account = req.account;
-    const searchSQL = "select `email` from `user` where `account` = ? ;"
+    const searchSQL = "select `email_enc` from `user` where `account` = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[account]);
-    let email = rows[0].email;
-    if(email == null){
+    let emailEnc = rows[0].email_enc;
+    if(emailEnc == null){
         return res.status(200).json({
             code:412,//pre condition failed
             msg:"请先设置邮箱内容"
@@ -379,6 +388,8 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
         })
     }
 
+    const email = decryptEmail(emailEnc); 
+    console.log(email)
     if(!emailRegex.test(email)){
         return res.status(200).json({
             code:422,//unprocessable entity
@@ -408,7 +419,7 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
         await redisClient.setEx(
             `reset-password:${verifyCode}`, 
             expiresAt, 
-            JSON.stringify({ email, newPassword: hashedPassword })
+            JSON.stringify({ account, newPassword: hashedPassword })
         );
 
         // send email
@@ -505,17 +516,18 @@ router.get('/verify', async (req, res) => {
   if (!json) {
     return res.status(500).render('verifyEmailFailed');
   }else{
-    const { account, email } = JSON.parse(json);
+    const { account, email_enc, email_hash, keyVersion } = JSON.parse(json);
 
     // insert into info of user
     await db.async.run(
-      "update `user` set `email` = ? where `account` = ? ;",
-      [email,account]
+      "update `user` set `email_enc` = ?, `email_hash` = ?, `key_version` = ? where `account` = ? ;",
+      [email_enc, email_hash, keyVersion, account]
     );
 
     await redisClient.del(`setEmail:${code}`);
 
-    res.status(200).render('verifyEmailSuccess',{ account, email });
+    const decryptedEmail = decryptEmail(email_enc)
+    res.status(200).render('verifyEmailSuccess',{ account, email: decryptedEmail });
   }
 });
 
@@ -542,11 +554,11 @@ router.get('/verifyReset', async (req, res) => {
       return res.send("链接无效或已过期！");
     }
 
-    const { email, newPassword } = JSON.parse(data);
+    const { account, newPassword } = JSON.parse(data);
 
     await db.async.run(
-      "UPDATE `user` SET `pwd` = ? WHERE `email` = ?",
-      [newPassword, email]
+      "UPDATE `user` SET `pwd` = ? WHERE `account` = ?",
+      [newPassword, account]
     );
 
     await redisClient.del(`reset-password:${code}`);
