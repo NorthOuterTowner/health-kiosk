@@ -147,8 +147,7 @@ const menuConfig = [
     icon: HeartPulse,
     role: [3,4,5],
     children: [
-      { path: '/projectshow', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] },
-      { path: '/projectedit', name: 'sidebar.examItem.edit', icon: FilePenLine, role: [3,4,5] }
+      { path: '/ExamItem', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] }
     ]
   },
   {
@@ -158,8 +157,8 @@ const menuConfig = [
     icon:FileText,
     role:[0,1,2,3,4,5],
     children: [
-      { path: 'userintro', name: 'sidebar.use.userintro', icon: FileText , role: [0,1,2,3,4,5] },
-      { path: 'managerintro', name: 'sidebar.use.managerintro', icon: FileUser, role: [3,4,5] }
+      { path: '/userintro', name: 'sidebar.use.userintro', icon: FileText , role: [0,1,2,3,4,5] },
+      { path: '/managerintro', name: 'sidebar.use.managerintro', icon: FileUser, role: [3,4,5] }
     ]
   }
 ]

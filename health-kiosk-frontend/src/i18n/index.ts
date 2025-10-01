@@ -5,6 +5,7 @@ import { selfinfoMessages } from './modules/selfinfo'
 import { utilsMessages } from './modules/utils'
 import { deviceMessages } from './modules/device'
 import { userMessages } from './modules/user'
+import { examitemMessages } from './modules/examitem'
 
 const Messages = {
   zh: {
@@ -16,6 +17,7 @@ const Messages = {
     selfinfo: selfinfoMessages.zh,
     device: deviceMessages.zh,
     user: userMessages.zh,
+    examitem: examitemMessages.zh,
     utils: utilsMessages.zh
   },
   en: {
@@ -27,6 +29,7 @@ const Messages = {
     selfinfo: selfinfoMessages.en,
     device: deviceMessages.en,
     user: userMessages.en,
+    examitem: examitemMessages.en,
     utils: utilsMessages.en
   }
 }
