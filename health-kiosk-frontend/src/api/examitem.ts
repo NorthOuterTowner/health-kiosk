@@ -1,5 +1,4 @@
 import instance from "./axios";
-import { version } from 'vue';
 
 export function getExamItemInfoApi(page: Number, limit: Number){
     return instance.get("/examitem/list",{

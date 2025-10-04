@@ -204,7 +204,7 @@ const pagination = reactive({
 
 const editable = ref(false)
 
-// 操作函数
+// Operation function
 const handleAuth = (row: any) => {
   //openAuthDialog(row);
   authUser.value = row;
@@ -223,6 +223,7 @@ const handleView = (row: any) => {
 }
 
 const updateUser = (updatedUser: any) => {
+  console.log(updatedUser)
   const index = users.value.findIndex(u => u.account === updatedUser.account);
   if(index !== -1) {
     users.value[index] = updatedUser;

@@ -19,10 +19,15 @@
             />
             <AddExamItem
               v-if="addExamItemView"
-              :item="currentExamItem"
-              :editable="editable"
               @close="addExamItemView = false"
               @update="updatePage"
+            />
+            <ExamItemInfo 
+              v-if="editingItem"
+              :examItem="editingItem"
+              :editable="editable"
+              @close="editingItem=null"
+              @update="updateExamItem"
             />
         </div>
     </div>
@@ -33,8 +38,9 @@ import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
 import { NButton, useMessage } from "naive-ui";
 import AddExamItem from '../components/AddExamItem.vue';
-import { deleteExamItemApi,getExamItemInfoApi,updateExamItemApi } from '../api/examitem';
+import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../api/examitem';
 import { useI18n } from 'vue-i18n'
+import ExamItemInfo from '../components/ExamItemInfo.vue';
 
 const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)
@@ -43,19 +49,40 @@ const message = useMessage();
 const editable = ref(true)
 const currentExamItem = ref<any | null>(null);
 
+const editingItem = ref<any | null>(null);
+
 const updatePage = ()=>{
   fetchExamItems();
   addExamItemView.value = false;
 }
 
 async function handleDelete(row: any){
-    const res = await deleteExamItemApi(row.id,row.name);
-    if(res.data.code === 200){
-      fetchExamItems()
-      message.info("删除成功")
-    }else{
-      message.error(res.data.msg);
-    }
+  const res = await deleteExamItemApi(row.id,row.name);
+  console.log(res.data)
+  if(res.data.code === '200'){
+    await fetchExamItems()
+    message.info("删除成功")
+  }else{
+    message.error(res.data.msg);
+  }
+}
+
+async function handleView(row: any) {
+  editingItem.value = { ...row };
+  editable.value = false;
+}
+
+async function handleEdit(row: any) {
+  editingItem.value = { ...row };
+  editable.value = true;
+}
+
+const updateExamItem = (updatedExamItem: any) => {
+  const index = examItems.value.findIndex(u => u.id === updatedExamItem.id);
+  if(index !== -1) {
+    examItems.value[index] = updatedExamItem;
+  }
+  editingItem.value = null;
 }
 
 const examItems = ref<any[]>([]);
@@ -70,7 +97,7 @@ const columns = [
     title: t('examitem.columns.status'),
     key: "status",
     render(row: any) {
-      return row.status == '1' ? "enable" : "disable"
+      return row.status == '1' ? t('examitem.add_item.enable') : t('examitem.add_item.disable')
     }
   },
   {
@@ -90,11 +117,31 @@ const columns = [
           NButton,
           {
             size: "small",
-            type: "info",
+            type: "error",
             style: "margin-right: 6px;",
             onClick: () => handleDelete(row),
           },
           { default: () => t("utils.delete") }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "info",
+            style: "margin-right: 6px;",
+            onClick: () => handleView(row),
+          },
+          { default: () => t("examitem.info") }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "warning",
+            style: "margin-right: 6px;",
+            onClick: () => handleEdit(row),
+          },
+          { default: () => t("utils.edit") }
         )
       ];
     },

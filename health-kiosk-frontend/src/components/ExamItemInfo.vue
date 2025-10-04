@@ -2,7 +2,7 @@
   <div class="overlay-child">
     <div class="user-info">
       <h3>{{ $t(`examitem.add_item.${header}`) }}</h3>
-      <label>{{ $t('examitem.add_item.name') }}:   <input v-model="localItem.name" /></label>
+      <label>{{ $t('examitem.add_item.name') }}:   <input v-model="localItem.name" :disabled="!props.editable"/></label>
       <label>{{ $t('examitem.add_item.status') }}:   
         <n-select 
           v-model:value="localItem.status"
@@ -11,8 +11,12 @@
           style="margin-bottom: 16px; width: 200px;"
         />
       </label>
-      <label>{{ $t('examitem.add_item.abbreviation') }}:  <input v-model="localItem.abbreviation"/></label>
-      <label>{{ $t('examitem.add_item.description') }}:   <input v-model="localItem.description"/></label>
+      <label>{{ $t('examitem.add_item.abbreviation') }}:  <input v-model="localItem.abbreviation" :disabled="!props.editable"/></label>
+      <label>{{ $t('examitem.add_item.description') }}:   <input v-model="localItem.description" :disabled="!props.editable"/></label>
+      <label>{{ $t('examitem.add_item.usage') }}: 
+        <textarea v-if="!props.editable" v-model="localItem.usage" disabled></textarea>
+        <!--<input v-model="localItem.usage" :disabled="!props.editable">-->
+      </label>
       <div class="buttons">
         <button @click="save">{{ $t('examitem.add_item.add_button') }}</button>
         <button @click="$emit('close')">{{ $t('utils.cancel') }}</button>
@@ -23,19 +27,20 @@
 
 <script setup>
 import { reactive, toRefs, watch } from "vue";
-import { addExamItemApi } from "../api/examitem";
+import { addExamItemApi, updateExamItemApi } from "../api/examitem";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const props = defineProps({
-  examItem: Object,
-  editable: Boolean
-});
 
 const statusOptions = [
     {label: t('examitem.add_item.enable'), value: 1},
     {label: t('examitem.add_item.disable'), value: 0},
 ]
+
+const props = defineProps({
+  examItem: Object,
+  editable: Boolean
+});
 
 const header = props.editable ? "edit_title" : "view_title"
 
@@ -45,22 +50,22 @@ const localItem = reactive({ ...props.examItem });
 
 const save = async () => {
   try {
-    const { name, abbreviation, description, status } = { ... localItem}
-    const res = await addExamItemApi(name, abbreviation, description, status); // 调用后端接口
+    const { name, abbreviation, description, status } = localItem;
+    const res = await updateExamItemApi(name,abbreviation,description,status); // 调用后端接口
     if(res.data.code == 200){
-        console.log("add success")
+        console.log("update success")
     }else{
         console.log(res)
     }
-    emit("update"); // 通知父组件更新表格
+    emit("update",{ ...localItem }); // 通知父组件更新表格
   } catch (err) {
     console.error("更新失败", err);
   }
 };
 
 // 当 props.user 改变时，更新本地状态
-watch(() => props.examItem, (newVal) => {
-  Object.assign(localItem, newVal);
+watch(() => props.user, (newVal) => {
+  Object.assign(localUser, newVal);
 });
 </script>
 
@@ -117,4 +122,25 @@ input {
 
 .buttons button:first-child { background-color: #4caf50; }
 .buttons button:last-child { background-color: #f44336; }
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;       /* 允许用户上下拉伸 */
+  overflow-y: auto;       /* 内容超出时滚动 */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
+  outline: none;
+}
+
 </style>

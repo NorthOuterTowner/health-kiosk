@@ -17,7 +17,11 @@ export const examitemMessages = {
             status: "项目状态",
             abbreviation: "项目简称",
             description: "项目描述",
-            add_button: "添加"
+            add_button: "添加",
+            placeholder: "选择是否启用",
+            enable: "启用",
+            disable: "不启用",
+            usage: "使用方式"
         },
         info: "查看详情"
     },
@@ -39,7 +43,11 @@ export const examitemMessages = {
             status: "Status",
             abbreviation: "Abbreviation",
             description: "description",
-            add_button: "Add"
+            add_button: "Add",
+            placeholder: "Select whether enable or not",
+            enable: "enable",
+            disable: "disable",
+            usage: "usage"
         },
         info: "view details"
     }
