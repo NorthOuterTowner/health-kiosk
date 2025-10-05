@@ -37,12 +37,14 @@ export function deleteExamItemApi(id: string | null, name: string | null){
 
 export function updateExamItemApi(id: string, name: string | null, 
     status: number | null, description: string | null, 
-    abbreviation: string | null){
+    abbreviation: string | null, usage: string | null){
+        console.log("here"+usage)
     return instance.post("/examitem/update",{
         id,
         name,
         status,
         abbreviation,
-        description
+        description,
+        usage
     });
 }

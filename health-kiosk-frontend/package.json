@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.11.0",
     "dayjs": "^1.11.18",
     "echarts": "^6.0.0",
@@ -17,7 +19,8 @@
     "pinia": "^3.0.3",
     "vue": "^3.5.18",
     "vue-i18n": "^12.0.0-alpha.3",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "wangeditor": "^4.7.15"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",

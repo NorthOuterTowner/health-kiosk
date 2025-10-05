@@ -13,10 +13,26 @@
       </label>
       <label>{{ $t('examitem.add_item.abbreviation') }}:  <input v-model="localItem.abbreviation" :disabled="!props.editable"/></label>
       <label>{{ $t('examitem.add_item.description') }}:   <input v-model="localItem.description" :disabled="!props.editable"/></label>
-      <label>{{ $t('examitem.add_item.usage') }}: 
-        <textarea v-if="!props.editable" v-model="localItem.usage" disabled></textarea>
-        <!--<input v-model="localItem.usage" :disabled="!props.editable">-->
-      </label>
+      <label>{{ $t('examitem.add_item.usage') }}:</label>
+        <div v-if="props.editable" class="editor-box">
+          <!-- 编辑模式：带工具栏 -->
+          <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" style="border-bottom: 1px solid #ccc"/>
+          <Editor
+            v-model="localItem.usage"
+            :defaultConfig="editorConfig"
+            @onCreated="handleCreated"
+            style="height: 200px; border: 1px solid #ccc"
+          />
+        </div>
+        <div v-else class="editor-box">
+          <!-- 查看模式：只读、无工具栏 -->
+          <Editor
+            v-model="localItem.usage"
+            :defaultConfig="readonlyConfig"
+            @onCreated="handleCreatedReadonly"
+            style="height: 200px; border: 1px solid #ccc"
+          />
+        </div>
       <div class="buttons">
         <button @click="save">{{ $t('examitem.add_item.add_button') }}</button>
         <button @click="$emit('close')">{{ $t('utils.cancel') }}</button>
@@ -26,9 +42,36 @@
 </template>
 
 <script setup>
-import { reactive, toRefs, watch } from "vue";
+import { ref, onBeforeMount, onBeforeUnmount, reactive, toRefs, watch } from "vue";
 import { addExamItemApi, updateExamItemApi } from "../api/examitem";
 import { useI18n } from "vue-i18n";
+import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
+import "@wangeditor/editor/dist/css/style.css"
+
+// 编辑器引用
+const editorRef = ref(null)
+
+const readonlyEditorRef = ref(null)
+
+const toolbarConfig = {
+  excludeKeys: ["fullScreen"]
+}   // 工具栏配置
+const editorConfig = { placeholder: "请输入内容..." }
+const readonlyConfig = { readOnly: true }  // 只读配置
+
+const handleCreated = (editor) => {
+  editorRef.value = editor
+}
+
+const handleCreatedReadonly = (editor) => {
+  readonlyEditorRef.value = editor
+  editor.disable() // 禁止编辑
+}
+
+onBeforeUnmount(() => {
+  if (editorRef.value) editorRef.value.destroy()
+  if (readonlyEditorRef.value) readonlyEditorRef.value.destroy()
+})
 
 const { t } = useI18n();
 
@@ -50,8 +93,9 @@ const localItem = reactive({ ...props.examItem });
 
 const save = async () => {
   try {
-    const { name, abbreviation, description, status } = localItem;
-    const res = await updateExamItemApi(name,abbreviation,description,status); // 调用后端接口
+    const { id, name, abbreviation, description, status, usage } = localItem;
+    console.log(usage)
+    const res = await updateExamItemApi(id, name, status, description, abbreviation, usage); // 调用后端接口
     if(res.data.code == 200){
         console.log("update success")
     }else{
@@ -89,7 +133,12 @@ watch(() => props.user, (newVal) => {
   background-color: #fff;
   padding: 24px;
   border-radius: 8px;
-  min-width: 400px;
+  width: 690px;                /* 固定宽度，避免撑满 */
+  max-height: 80vh;            /* 最大高度占屏幕80% */
+  overflow-y: auto;            /* 超出部分滚动 */
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;      /* 纵向排列 */
 }
 
 label {
@@ -105,11 +154,31 @@ input {
   border-radius: 4px;
 }
 
+.editor-box {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 220px;           /* 限制编辑器区域高度 */
+  overflow-y: auto;            /* 编辑器内部也能滚动 */
+}
+
+:deep(.w-e-bar) {
+  display: flex;
+  gap: 0px;   /* 整体按钮间距 */
+}
+
 .buttons {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 16px;
+  position: sticky;            /* 按钮固定在底部 */
+  bottom: 0;
+  background: #fff;            /* 覆盖内容 */
+  padding-top: 12px;
 }
 
 .buttons button {
@@ -122,25 +191,4 @@ input {
 
 .buttons button:first-child { background-color: #4caf50; }
 .buttons button:last-child { background-color: #f44336; }
-
-textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 8px 10px;
-  margin-top: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  line-height: 1.5;
-  resize: vertical;       /* 允许用户上下拉伸 */
-  overflow-y: auto;       /* 内容超出时滚动 */
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-textarea:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
-  outline: none;
-}
-
 </style>
