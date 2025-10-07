@@ -8,7 +8,6 @@
 const express = require('express')
 const router = express.Router()
 const {db,genid} = require('../db/dbUtils');
-const { decodeToken } = require('../utils/jwtHelper');
 
 const crypto = require('crypto');
 const fs = require('fs');
@@ -246,11 +245,15 @@ router.post("/change", authMiddleware, async (req,res) => {
     // get it role just when the request is trying to change others' info.
     const account = req.account;
     const role = req.role;
-    const changeAccount = req.body.account;
+    // As long as the request doesn't send account, means he is trying to change information of himself.
+    const changeAccount = req.body.account == null ? req.account : req.body.account ; 
+    
     const searchSQL = "select * from `user` where `account` = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[changeAccount]);
 
     if(err == null && rows.length > 0){
+        console.log(changeAccount)
+        console.log(account)
         if(role < 3 && changeAccount != account){
             return res.status(200).json({
                 code:401,

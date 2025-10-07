@@ -54,8 +54,9 @@
         </n-form-item>
 
         <n-form-item>
-          <n-button type="primary" @click="reset_form" style="margin: 10px;">{{ $t('selfinfo.form.buttonGroup.reset') }}</n-button>
-          <n-button type="error" @click="change_info">{{ $t('selfinfo.form.buttonGroup.save') }}</n-button>
+          <n-button type="warning" @click="reset_form" style="margin: 10px;">{{ $t('selfinfo.form.buttonGroup.reset') }}</n-button>
+          <n-button type="primary" @click="change_info" style="margin-right: 10px;">{{ $t('selfinfo.form.buttonGroup.save') }}</n-button>
+          <n-button type="error" @click="log_out" style="margin-right: 10px;">{{ $t('selfinfo.form.buttonGroup.logout')}}</n-button> 
         </n-form-item>
       </n-form>
     </n-card>
@@ -210,12 +211,19 @@ const change_info = async () => {
   }
 }
 
+const log_out = async () => {
+  router.push("/");
+  localStorage.setItem("token","");
+  localStorage.setItem("role", "0");
+}
+
 const reset_form = () => {
   form.value = initialForm;
   message.info("表单已重置")
 }
 
 import type { UploadCustomRequestOptions } from "naive-ui";
+import router from "../router";
 
 const handleUpload = async (options: UploadCustomRequestOptions) => {
   if (options.file && options.file.file) {

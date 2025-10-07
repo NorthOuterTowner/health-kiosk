@@ -1,20 +1,20 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>添加新版本软件</h3>
-      <label>版本:     <input v-model="localApp.version" :disabled="!props.editable" /> </label>
-      <label>选择软件类型: </label>
+      <h3>{{ $t('device.add.title') }}</h3>
+      <label>{{ $t('device.add.version') }}     <input v-model="localApp.version" :disabled="!props.editable" /> </label>
+      <label>{{ $t('device.add.select') }}</label>
       <n-select
         v-model:value="localApp.type"
         :options="typeOptions"
-        placeholder="选择软件类型"
+        :placeholder="$t('device.add.select')"
         style="margin-bottom: 16px; width: 200px;"
       />
-      <label>描述:     <input v-model="localApp.description" :disabled="!props.editable"></input></label>
-      <label>上传文件: <input type="file" @change="handleFileChange" /></label>
+      <label>{{ $t('device.add.description') }}     <input v-model="localApp.description" :disabled="!props.editable"></input></label>
+      <label>{{ $t('device.add.upload') }}<input type="file" @change="handleFileChange" /></label>
       <div class="buttons">
-        <button @click="save">添加</button>
-        <button @click="$emit('close')">取消</button>
+        <button @click="save">{{ $t('device.add.add') }}</button>
+        <button @click="$emit('close')">{{ $t('device.add.cancel') }}</button>
       </div>
     </div>
   </div>
@@ -24,7 +24,9 @@
 import { reactive, toRefs, watch, ref, version } from "vue";
 import { addDeviceApi, updateDeviceApi } from "../api/device";
 import { pProps, useMessage } from "naive-ui";
+import { useI18n } from 'vue-i18n';
 
+const t = useI18n();
 const message = useMessage();
 
 const typeOptions = [

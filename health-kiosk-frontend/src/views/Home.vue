@@ -132,7 +132,7 @@ const login = async () =>{
       localStorage.setItem("token",res.data.user.token);
       localStorage.setItem("role",res.data.user.role);// this item is just using for show in frontend
       message.info("登录成功")
-      router.push("/User");
+      router.push("/selfinfo");
     }else{
       message.error("登录失败")
     }

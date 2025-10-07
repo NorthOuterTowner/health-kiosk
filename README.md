@@ -30,7 +30,9 @@ npm run dev
 
 Android APP为用户在体检过程中提供指引，并可视化的查看当前体检数据，使用Kotlin语言开发，使用Gradle进行依赖管理。
 
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Ktor](https://img.shields.io/badge/Ktor-000000?style=for-the-badge&logo=ktor&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Retrofit](https://img.shields.io/badge/Retrofit-4285F4?style=for-the-badge&logo=Retrofit) ![OkHttp](https://img.shields.io/badge/OkHttp-3949AB?style=for-the-badge&logo=https://raw.githubusercontent.com/konpa/devicon/master/icons/okhttp/okhttp-original.svg)
+
+
 
 #### 1.运行
 使用数据线连接待运行设备，之后在 `Android Studio` 中打开项目，点击运行按钮即可。或使用 `Android Studio` 模拟器 `Pixel` 进行运行。若电脑使用集成式显卡，推荐使用软件方式进行界面渲染。

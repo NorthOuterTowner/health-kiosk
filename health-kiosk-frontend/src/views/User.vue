@@ -236,10 +236,9 @@ const updateUserAfterAdd = () => {
   addUserView.value = false;
 }
 
-const handleDelete = (row: any) => {
-  console.log(row)
+const handleDelete = async (row: any) => {
   deleteUserApi(row.account)
-  fetchUsers();
+  await fetchUsers();
 };
 
 // get users' information

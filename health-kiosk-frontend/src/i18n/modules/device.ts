@@ -7,6 +7,15 @@ export const deviceMessages = {
             type: "类型",
             num: "下载量",
             action: "操作",
+        },
+        add: {
+            title: "添加新版本软件",
+            version: "版本",
+            select: "选择软件类型",
+            description: "描述",
+            upload: "上传文件",
+            add: "添加",
+            cancel: "取消"
         }
     },
     en: {
@@ -17,6 +26,15 @@ export const deviceMessages = {
             type: "Type",
             num: "Downloads",
             action: "Action",
+        },
+        add: {
+            title: "Add New Software Version",
+            version: "Version",
+            select: "Select Software Type",
+            description: "Description",
+            upload: "Upload File",
+            add: "Add",
+            cancel: "Cancel"
         }
     }
 }

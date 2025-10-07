@@ -27,7 +27,8 @@ export const selfinfoMessages = {
             },
             buttonGroup: {
                 reset: "重置表单",
-                save: "保存信息"
+                save: "保存信息",
+                logout: "退出登录"
             }
         },
         systemForm: {
@@ -78,7 +79,8 @@ export const selfinfoMessages = {
             },
             buttonGroup: {
                 reset: "Reset Form",
-                save: "Save Information"
+                save: "Save Information",
+                logout: "logout"
             }
         },
         systemForm: {

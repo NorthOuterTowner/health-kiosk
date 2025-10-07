@@ -1,15 +1,15 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>{{ header }}</h3>
-      <label>用户名:<input v-model="localUser.name" :disabled="!props.editable" /></label>
-      <label>性别:<input v-model="localUser.gender" :disabled="!props.editable"/></label>
-      <label>年龄:<input v-model="localUser.age" :disabled="!props.editable"/></label>
-      <label>身高:<input v-model="localUser.height":disabled="!props.editable" /></label>
-      <label>体重:<input v-model="localUser.weight" :disabled="!props.editable"/></label>
+      <h3>{{ $t(`user.add_user.${header}`) }}</h3>
+      <label>{{ $t('user.add_user.name') }}<input v-model="localUser.name" :disabled="!props.editable" /></label>
+      <label>{{ $t('user.add_user.gender') }}<input v-model="localUser.gender" :disabled="!props.editable"/></label>
+      <label>{{ $t('user.add_user.age') }}<input v-model="localUser.age" :disabled="!props.editable"/></label>
+      <label>{{ $t('user.add_user.height') }}<input v-model="localUser.height":disabled="!props.editable" /></label>
+      <label>{{ $t('user.add_user.weight') }}<input v-model="localUser.weight" :disabled="!props.editable"/></label>
       <div class="buttons">
-        <button @click="save">保存</button>
-        <button @click="$emit('close')">取消</button>
+        <button @click="save">{{ $t('utils.save') }}</button>
+        <button @click="$emit('close')">{{ $t('utils.cancel') }}</button>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@ const props = defineProps({
   editable: Boolean
 });
 
-const header = props.editable ? "编辑用户数据" : "查看用户信息"
+const header = props.editable ? "edit_title" : "view_title"
 
 const emit = defineEmits(["close", "update"]);
 
@@ -39,7 +39,7 @@ const save = async () => {
   }
 };
 
-// 当 props.user 改变时，更新本地状态
+// update local status 
 watch(() => props.user, (newVal) => {
   Object.assign(localUser, newVal);
 });

@@ -45,6 +45,7 @@ export function resetPasswordApi(password: string){
     })
 }
 
+// Edit Self Information
 interface ChangeInfo {
   username?: string | null;
   pwd?: string | null;
@@ -57,8 +58,9 @@ interface ChangeInfo {
 }
 export function changeInfoApi(data: Partial<ChangeInfo>){
     const { username, gender, age, height, weight, birthday, ...rest} = data;
+    
     return instance.post("/user/change",{
-        account: localStorage.getItem("account"),
+        accountToken: localStorage.getItem("token"),
         name: username,
         age,
         gender,
