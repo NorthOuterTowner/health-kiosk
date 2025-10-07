@@ -54,7 +54,7 @@ const editorRef = ref(null)
 const readonlyEditorRef = ref(null)
 
 const toolbarConfig = {
-  excludeKeys: ["fullScreen"]
+  excludeKeys: ["fullScreen","group-video"]
 }   // 工具栏配置
 const editorConfig = { placeholder: "请输入内容..." }
 const readonlyConfig = { readOnly: true }  // 只读配置
