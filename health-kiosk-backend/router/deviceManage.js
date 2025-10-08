@@ -9,7 +9,7 @@ const fs = require("fs");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, '../health-kiosk-android/app/release/'); // store catalog
+        cb(null, '../QuickExam/releases/'); // store catalog
     },
     filename: function (req, file, cb) {
         const { version, type } = req.body;
@@ -29,7 +29,7 @@ async function calculate_adk_position(version,type){
         type_string = "debug"
     }
     apk_name = "HealthKiosk-" + type_string + "-v" + version + ".apk";
-    relative_str = "../../health-kiosk-android/app/release/"+apk_name;
+    relative_str = "../../QuickExam/releases/"+apk_name;
     const apk_position = path.join(__dirname,relative_str);
     return apk_position;
 }

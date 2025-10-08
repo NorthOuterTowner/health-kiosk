@@ -92,7 +92,7 @@ const columns = [
   {
     title: t('device.columns.version'),
     key: "version",
-    width: 100,
+    width: 200,
   },
   {
     title: t('device.columns.type'),
@@ -159,7 +159,7 @@ const fetchDevices = async () => {
 
 const pagination = reactive({
   page: 1,
-  pageSize: 5,
+  pageSize: 10,
   itemCount: 0, // 数据总数
   showSizePicker: true,
   pageSizes: [5, 10, 20],

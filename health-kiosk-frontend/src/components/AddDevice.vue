@@ -9,6 +9,7 @@
         :options="typeOptions"
         :placeholder="$t('device.add.select')"
         style="margin-bottom: 16px; width: 200px;"
+        :disabled="!props.editable"
       />
       <label>{{ $t('device.add.description') }}     <input v-model="localApp.description" :disabled="!props.editable"></input></label>
       <label>{{ $t('device.add.upload') }}<input type="file" @change="handleFileChange" /></label>

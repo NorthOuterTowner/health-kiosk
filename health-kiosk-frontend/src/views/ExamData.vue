@@ -1,7 +1,7 @@
 <template>
     <div>
         <Sidebar />
-        This is user management page.
+        This is exam data page.
     </div>
 </template>
 
