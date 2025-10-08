@@ -2,7 +2,7 @@
   <div class="layout">
     <Sidebar />
     <div class="user-intruction-page">
-      <h2 class="page-title">体检系统管理员操作指南</h2>
+      <h2 class="page-title">体检系统用户操作指南</h2>
 
       <div class="scroll-container">
         <div class="content">

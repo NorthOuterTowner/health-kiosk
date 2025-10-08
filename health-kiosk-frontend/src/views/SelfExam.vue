@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <Sidebar/>
-        <div class="use-intruction-page">
+        <div class="self-exam-page">
 
         </div>
     </div>
@@ -19,7 +19,7 @@ import Sidebar from '../components/Sidebar.vue';
   gap: 20px;
 }
 
-.use-intruction-page {
+.self-exam-page {
   margin-left: 16rem;
   flex: 1;
   padding-left: 1em;

@@ -12,11 +12,11 @@ export const sidebarMessages = {
         data: {
             title: "体检数据",
             statistics: "整体情况统计",
-            self: "个人数据查询"
         },
         info: {
             title: "个人信息",
-            watch: "查看个人信息"
+            watch: "查看个人信息",
+            exam: "查看体检数据"
         },
         examItem: {
             title: "体检项目管理",
@@ -25,8 +25,8 @@ export const sidebarMessages = {
         },
         use: {
             title: "使用说明",
-            userintro: "用户使用说明",
-            managerintro: "管理员使用说明"
+            userintruction: "用户使用说明",
+            adminintruction: "管理员使用说明"
         }
     },
     en: {
@@ -42,11 +42,11 @@ export const sidebarMessages = {
         data: {
             title: "physical examination data",
             statistics: "information statistics",
-            self: "self health data"
         },
         info: {
             title: "self information",
-            watch: "self information"
+            watch: "self information",
+            exam: "view exam data"
         },
         examItem: {
             title: "Kiosk project management",
@@ -55,8 +55,8 @@ export const sidebarMessages = {
         },
         use: {
             title: "use intruction",
-            userintro: "user intruction",
-            managerintro: "admin intruction"
+            userintruction: "user intruction",
+            adminintruction: "admin intruction"
         }
     }
 }

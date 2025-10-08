@@ -120,14 +120,13 @@ const menuConfig = [
     ]
   },
   {
-    // 体检数据查询
+    // 体检数据趋势查询
     key: 'settings',
     title: 'sidebar.data.title',
     icon: Database,
     role: [2,3,4,5],
     children: [
-      { path: '/examdata', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]},
-      { path: '/settings', name: 'sidebar.data.self', icon: Database, role: [2,3,4,5] },
+      { path: '/examdata', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]}
     ]
   },
   {
@@ -137,7 +136,8 @@ const menuConfig = [
     icon: UserIcon,
     role: [1,2,3,4,5],
     children: [
-      { path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] }
+      { path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] },
+      { path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] }
     ]
   },
   {
@@ -157,8 +157,8 @@ const menuConfig = [
     icon:FileText,
     role:[0,1,2,3,4,5],
     children: [
-      { path: '/userintro', name: 'sidebar.use.userintro', icon: FileText , role: [0,1,2,3,4,5] },
-      { path: '/managerintro', name: 'sidebar.use.managerintro', icon: FileUser, role: [3,4,5] }
+      { path: '/userintruction', name: 'sidebar.use.userintruction', icon: FileText , role: [0,1,2,3,4,5] },
+      { path: '/adminintruction', name: 'sidebar.use.adminintruction', icon: FileUser, role: [3,4,5] }
     ]
   }
 ]

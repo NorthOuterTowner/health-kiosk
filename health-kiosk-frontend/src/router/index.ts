@@ -7,7 +7,8 @@ import ExamItem from "../views/ExamItem.vue";
 import ExamData from "../views/ExamData.vue";
 import SelfInfo from "../views/SelfInfo.vue";
 import AdminIntruction from "../views/adminIntruction.vue";
-import UseIntruction from "../views/useIntruction.vue";
+import SelfExam from "../views/SelfExam.vue";
+import UserIntruction from "../views/userIntruction.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -41,14 +42,19 @@ const routes: Array<RouteRecordRaw> = [
     component: SelfInfo
   },
   {
-    path: "/useintruction",
-    name: "UseIntruction",
-    component: UseIntruction
+    path: "/userintruction",
+    name: "UserIntruction",
+    component: UserIntruction
   },
   {
     path: "/adminintruction",
     name: "AdminIntruction",
     component: AdminIntruction
+  },
+  {
+    path: "/selfexam",
+    name: "SelfExam",
+    component: SelfExam
   }
 ];
 

@@ -172,7 +172,6 @@ router.post("/login", upload.single("photo") , async (req, res) => {
           user 
         });
       } else if (result.status === "ok") {
-        console.log(result.a)
         return res.status(404).json({ 
           code: 404, 
           msg: "未找到匹配用户" 

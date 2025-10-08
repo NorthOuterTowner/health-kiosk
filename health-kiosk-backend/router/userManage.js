@@ -119,6 +119,13 @@ router.get("/list", authMiddleware, async (req,res)=>{
     const searchSQL = "select * from `user` order by `account` limit ? offset ? ;"
     const {err,rows} = await db.async.all(searchSQL,[limit,offset]);
     const {err:countErr,rows:Countrows} = await db.async.all("select count(*) as cnt from `user`;",[]);
+    
+    for(let row of rows){
+        if(row.email_enc != null){
+            row.email = decryptEmail(row.email_enc);
+        }
+    };
+    
     if(err!=null){
         return res.status(500).json({
             code:500,
@@ -252,8 +259,6 @@ router.post("/change", authMiddleware, async (req,res) => {
     const {err,rows} = await db.async.all(searchSQL,[changeAccount]);
 
     if(err == null && rows.length > 0){
-        console.log(changeAccount)
-        console.log(account)
         if(role < 3 && changeAccount != account){
             return res.status(200).json({
                 code:401,
@@ -304,7 +309,6 @@ router.post("/change", authMiddleware, async (req,res) => {
  * }
  */
 router.post("/setEmail",authMiddleware,async (req,res) => {
-    console.log(req.body)
     const account = req.account;
     const email = req.body.email;
     if(!emailRegex.test(email)){
@@ -392,7 +396,7 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
     }
 
     const email = decryptEmail(emailEnc); 
-    console.log(email)
+
     if(!emailRegex.test(email)){
         return res.status(200).json({
             code:422,//unprocessable entity
@@ -474,7 +478,7 @@ router.post('/reset/pwd',authMiddleware, async (req, res) => {
  * }
  */
 router.post('/authorization',authMiddleware ,async (req,res) => { 
-    console.log(req.body)
+
     const authUser = req.body.authUser;
     const roleLevel = Number(req.body.roleLevel);
 
