@@ -70,7 +70,7 @@ public class CameraPreview2 extends TextureView implements TextureView.SurfaceTe
 //                rotation = 90;
 //                Log.d(TAG, "orientation: landscape");
 //            }
-            setCamera(mCamera, info, 180);
+            setCamera(mCamera, info, 180);//90°
             startPreview(surface);
         } catch (Exception e) {
             e.printStackTrace();
