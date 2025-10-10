@@ -34,6 +34,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.activity.FragmentActivity;
+import com.example.quickexam.activity.MainActivity;
+import com.example.quickexam.http.model.userGroup.LoginResponse;
+import com.example.quickexam.repository.UserRepository;
+import com.example.quickexam.session.UserSession;
 import com.seeta.sdk.SeetaImageData;
 import com.example.quickexam.R;
 import com.seeta.camera.CameraCallbacks;
@@ -46,6 +50,10 @@ import butterknife.ButterKnife;
 
 import static com.example.quickexam.MainApplication.m_iMenuTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 @SuppressWarnings("deprecation")
 public class MainFragment extends Fragment
         implements VerificationContract.View {
@@ -54,27 +62,19 @@ public class MainFragment extends Fragment
 
     private static final int REQUEST_CAMERA_PERMISSION = 200;
 
+    private byte[] latestFrame; // add by lrz
+
     @BindView(R.id.camera_preview)
     CameraPreview2 mCameraPreview;
 
     @BindView(R.id.surfaceViewOverlap)
     protected SurfaceView mOverlap;
 
-    @BindView(R.id.txt_name)
-    TextView txtTips;
+    @BindView(R.id.et_account)
+    EditText edit_account;
 
-    @BindView(R.id.et_registername)
-    EditText edit_name;
-    @BindView(R.id.et_registerid)
-    EditText edit_id;
-    @BindView(R.id.et_registerage)
-    EditText edit_age;
-    @BindView(R.id.et_registersex)
-    EditText edit_sex;
-    @BindView(R.id.et_registerheight)
-    EditText edit_height;
-    @BindView(R.id.et_registerweight)
-    EditText edit_weight;
+    @BindView(R.id.et_pwd)
+    EditText edit_pwd;
 
     @BindView(R.id.btn_register)
     Button btn_register;
@@ -85,7 +85,7 @@ public class MainFragment extends Fragment
     // Show compared score and start tip. Add by linhx 20170428 end
     private VerificationContract.Presenter mPresenter;
     private AlertDialog mCameraUnavailableDialog;
-    private Camera.Size mPreviewSize;
+    private static Camera.Size mPreviewSize;
 
     private SurfaceHolder mOverlapHolder;
     private Rect focusRect = new Rect();
@@ -104,6 +104,10 @@ public class MainFragment extends Fragment
 
     public SeetaImageData imageData = new SeetaImageData(480, 640, 3);
 
+    public static Camera.Size getmPreviewSize() {
+        return mPreviewSize;
+    }
+
     private CameraCallbacks mCameraCallbacks = new CameraCallbacks() {
         @Override
         public void onCameraUnavailable(int errorCode) {
@@ -111,8 +115,10 @@ public class MainFragment extends Fragment
             showCameraUnavailableDialog(errorCode);
         }
 
+        // Trigger execuated when Camera get 1 frame data
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+            latestFrame = data;
             if (mPreviewSize == null) {
                 mPreviewSize = camera.getParameters().getPreviewSize();
 
@@ -120,8 +126,8 @@ public class MainFragment extends Fragment
                 mPreviewScaleY = (float) (mCameraPreview.getWidth()) / mPreviewSize.height;
             }
 
-            mPresenter.detect(data, mPreviewSize.width, mPreviewSize.height,
-                    mCameraPreview.getCameraRotation());
+            /*mPresenter.detect(data, mPreviewSize.width, mPreviewSize.height,
+                    mCameraPreview.getCameraRotation());*/
         }
     };
     private FragmentActivity activity;
@@ -182,9 +188,26 @@ public class MainFragment extends Fragment
                 change();
             }
         });
+
+        // Change to :
+        //  Send HTTP Request to backend service
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /** TODO: SEND HTTP REQUEST HERE */
+                UserRepository userRepo = new UserRepository();
+                userRepo.login(edit_account.toString(), null, latestFrame, new UserRepository.LoginCallback(){
+                    @Override
+                    public void onSuccess(LoginResponse response) {
+                        Toast.makeText(activity.getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
+                        UserSession.getInstance().setCurrentUser(response.getUser());
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+                /** END*/
                 m_iMenuTask = 1;
                 //Application app = (Application)activity.getApplication();
                 if (activity.changeBP) {
@@ -198,10 +221,10 @@ public class MainFragment extends Fragment
                 }
             }
         });
-        edit_name.setOnClickListener(new View.OnClickListener() {
+        edit_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                edit_name.setFocusable(true);
+                edit_account.setFocusable(true);
             }
         });
     }
@@ -215,13 +238,13 @@ public class MainFragment extends Fragment
     }
 
     private void change() {
-        registeredName = edit_name.getText().toString();
-        activity.recognizedName = edit_name.getText().toString();
-        activity.id = edit_id.getText().toString();
-        activity.age = edit_age.getText().toString();
-        activity.sex = edit_sex.getText().toString();
-        activity.height = edit_height.getText().toString();
-        activity.weight = edit_weight.getText().toString();
+        registeredName = edit_account.getText().toString();
+        activity.recognizedName = edit_account.getText().toString();
+        activity.id = edit_account.getText().toString();
+        activity.age = String.valueOf(UserSession.getInstance().getCurrentUser().getAge());//edit_age.getText().toString();
+        activity.sex = String.valueOf(UserSession.getInstance().getCurrentUser().getGender());//edit_sex.getText().toString();
+        activity.height = String.valueOf(UserSession.getInstance().getCurrentUser().getHeight());//edit_height.getText().toString();
+        activity.weight = String.valueOf(UserSession.getInstance().getCurrentUser().getWeight());//edit_weight.getText().toString();
         activity = (FragmentActivity) getActivity();
         activity.changeBlood();
         mCameraPreview.setCameraCallbacks(null);
@@ -339,7 +362,7 @@ public class MainFragment extends Fragment
 
         //显示识别结果
         //txtTips.setText(name);
-        edit_name.setText(name);
+        edit_account.setText(name);
     }
 
     @Override
@@ -359,8 +382,8 @@ public class MainFragment extends Fragment
         //提示注册成功
         Toast.makeText(getContext(), tip, Toast.LENGTH_LONG).show();
         //还原EditView
-        edit_name.setText("");
-        edit_name.setHint("enter name");
+        edit_account.setText("");
+        edit_account.setHint("enter name");
         //edit_name.setFocusable(false);
     }
 

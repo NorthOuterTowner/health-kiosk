@@ -46,10 +46,11 @@
             android:layout_marginTop="40px"
             android:layout_marginBottom="20px" />
 
+        <!-- Account label and textedit -->
         <TextView
-            android:id="@+id/txt_name"
+            android:id="@+id/txt_account"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_below="@id/title"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30px"
@@ -59,28 +60,29 @@
             android:gravity="center"
             android:paddingLeft="10px"
             android:paddingRight="10px"
-            android:text="姓名:"
+            android:text="账号:"
             android:textColor="@color/white"
             android:visibility="visible" />
 
         <EditText
-            android:id="@+id/et_registername"
+            android:id="@+id/et_account"
             android:layout_width="120dp"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_below="@id/title"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="30px"
             android:layout_marginRight="10dp"
-            android:layout_toRightOf="@id/txt_name"
+            android:layout_toRightOf="@id/txt_account"
             android:gravity="center"
             android:hint="enter name"
             android:singleLine="true" />
 
+        <!-- Password label and textedit -->
         <TextView
-            android:id="@+id/txt_id"
+            android:id="@+id/txt_pwd"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_below="@id/txt_name"
+            android:layout_height="48dp"
+            android:layout_below="@id/txt_account"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="20px"
             android:layout_marginRight="10dp"
@@ -94,18 +96,19 @@
             android:visibility="visible" />
 
         <EditText
-            android:id="@+id/et_registerid"
+            android:id="@+id/et_pwd"
             android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_below="@id/et_registername"
+            android:layout_height="48dp"
+            android:layout_below="@id/et_account"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="20px"
             android:layout_marginRight="10dp"
-            android:layout_toRightOf="@id/txt_name"
+            android:layout_toRightOf="@id/txt_account"
             android:gravity="center"
             android:hint="enter id"
             android:singleLine="true" />
 
+        <!-- Any information
         <TextView
             android:id="@+id/txt_age"
             android:layout_width="wrap_content"
@@ -224,28 +227,28 @@
             android:layout_toRightOf="@id/txt_name"
             android:gravity="center"
             android:hint="enter weight"
-            android:singleLine="true" />
+            android:singleLine="true" /> -->
 
         <Button
             android:id="@+id/btn_ok"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/et_registerweight"
+            android:layout_below="@id/et_pwd"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="80px"
             android:layout_toRightOf="@id/surfaceViewOverlap"
-            android:text="确定" />
+            android:text="登录" />
 
         <Button
             android:id="@+id/btn_register"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/et_registerweight"
+            android:layout_below="@id/et_pwd"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="80px"
             android:layout_toRightOf="@id/btn_ok"
             android:gravity="center"
-            android:text="注册人脸" />
+            android:text="注册" />
     </RelativeLayout>
 
 </FrameLayout>
