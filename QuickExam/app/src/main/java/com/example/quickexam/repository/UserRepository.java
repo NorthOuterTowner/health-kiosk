@@ -1,11 +1,17 @@
 package com.example.quickexam.repository;
 
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+
 import com.example.quickexam.http.HttpRequest;
 import com.example.quickexam.http.api.userGroup.LoginApi;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -16,6 +22,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import com.example.quickexam.http.api.userGroup.RegisterApi;
 import com.example.quickexam.http.model.userGroup.RegisterResponse;
+import com.seeta.mvp.MainFragment;
 
 
 public class UserRepository {
@@ -28,16 +35,16 @@ public class UserRepository {
         loginApi = retrofit.create(LoginApi.class);
         registerApi = retrofit.create(RegisterApi.class);
     }
-
-    public void login(String account, String pwd, File photoFile, final LoginCallback callback) {
+    public void login(String account, String pwd, byte[] photoYUVBytes, final LoginCallback callback) {
         // 构建 RequestBody
         RequestBody accountBody = account != null ? RequestBody.create(MediaType.parse("text/plain"), account) : null;
         RequestBody pwdBody = pwd != null ? RequestBody.create(MediaType.parse("text/plain"), pwd) : null;
 
         MultipartBody.Part photoPart = null;
-        if (photoFile != null && photoFile.exists()) {
-            RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoFile);
-            photoPart = MultipartBody.Part.createFormData("photo", photoFile.getName(), photoBody);
+        if (photoYUVBytes != null) {
+            byte[] photoBytes = yuvToJpeg(photoYUVBytes,MainFragment.getmPreviewSize().width,MainFragment.getmPreviewSize().height);
+            RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoBytes);
+            photoPart = MultipartBody.Part.createFormData("photo", "face.jpg", photoBody);
         }
 
         Call<LoginResponse> call = loginApi.login(accountBody, pwdBody, photoPart);
@@ -84,6 +91,27 @@ public class UserRepository {
             }
         });
     }
+
+    /**
+     * 将 YUV420/NV21 数据转换为 JPEG 数据
+     *
+     * @param yuvData Camera 预览得到的 byte[] 数据
+     * @param width   预览宽度
+     * @param height  预览高度
+     * @return JPEG 格式的 byte[]
+     */
+    private byte[] yuvToJpeg(byte[] yuvData, int width, int height) {
+        // 创建 YuvImage 对象
+        YuvImage yuvImage = new YuvImage(yuvData, ImageFormat.NV21, width, height, null);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // 压缩为 JPEG，质量 100 表示无损压缩
+        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 100, baos);
+
+        return baos.toByteArray();
+    }
+
 
     public interface LoginCallback {
         void onSuccess(LoginResponse response);

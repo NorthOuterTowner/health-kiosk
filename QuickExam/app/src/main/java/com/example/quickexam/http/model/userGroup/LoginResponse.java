@@ -1,5 +1,7 @@
 package com.example.quickexam.http.model.userGroup;
 
+import com.example.quickexam.bean.User;
+
 /**
  * 登录接口返回数据结构
  */
@@ -14,19 +16,4 @@ public class LoginResponse {
     public String getMsg() { return msg; }
     public User getUser() { return user; }
 
-    public static class User {
-        private String account;
-        private String name;
-        private int role;
-        private String gender;
-        private int age;
-        private String token;
-
-        public String getAccount() { return account; }
-        public String getName() { return name; }
-        public int getRole() { return role; }
-        public String getGender() { return gender; }
-        public int getAge() { return age; }
-        public String getToken() { return token; }
-    }
 }
