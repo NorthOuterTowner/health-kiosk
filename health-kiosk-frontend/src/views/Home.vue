@@ -49,6 +49,7 @@
       </div>
       <div class="buttons">
         <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
+        <button class="btn-primary" @click="forget_pwd">{{ $t('login.forget') }}</button>
       </div>
     </div>
       <!-- Register Box: show after the user click register button -->
@@ -87,6 +88,7 @@ import { ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { loginApi,registerApi, testApi } from "../api/auth";
+import { resetPasswordApi } from "../api/user";
 import { useMessage } from 'naive-ui'
 import { User } from 'lucide-vue-next';
 import { KeyRound } from 'lucide-vue-next';
@@ -146,6 +148,11 @@ const learnMore = async () =>{
   if(res.data.code === 200){
     message.info(res.data.msg)
   }
+}
+
+const forget_pwd = async () => {
+  message.info("确认邮件已发送至邮箱");
+  resetPasswordApi(password.value, username.value);
 }
 
 </script>

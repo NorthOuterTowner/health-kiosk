@@ -39,9 +39,10 @@ export function deleteUserApi(account: string){
     });
 }
 
-export function resetPasswordApi(password: string){
+export function resetPasswordApi(password: string, account: string | null){
     return instance.post("/user/reset/pwd",{
-        newPassword: password
+        newPassword: password,
+        account: account
     })
 }
 

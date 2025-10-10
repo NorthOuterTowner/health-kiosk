@@ -34,14 +34,16 @@ export const loginMessages = {
     username: "账号",
     password: "密码",
     button: "登录",
-    alert: "请输入账号和密码"
+    alert: "请输入账号和密码",
+    forget: "重置密码"
   },
   en: {
     title: "Login",
     username: "Username",
     password: "Password",
     button: "Login",
-    alert: "Please enter username and password"
+    alert: "Please enter username and password",
+    forget: "reset password"
   }
 }
 

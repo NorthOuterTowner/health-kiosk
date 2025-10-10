@@ -192,7 +192,7 @@ const message = useMessage();
 
 const reset_pwd = () => {
   console.log(form.value.password)
-  const res = resetPasswordApi(form.value.password);
+  const res = resetPasswordApi(form.value.password,null);
   console.log(res)
   message.info("验证邮件已发送至您的邮箱");
 }
