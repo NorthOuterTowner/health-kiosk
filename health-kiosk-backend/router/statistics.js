@@ -82,8 +82,6 @@ router.get("/userRegister",async (req,res) => {
     });
 
     if(register_cnt_err == null && role_rate_err == null){
-        console.log(register_cnt_row)
-        console.log(role_rate)
         return res.status(200).json({
             code:200,
             register_counts:register_cnt_row,

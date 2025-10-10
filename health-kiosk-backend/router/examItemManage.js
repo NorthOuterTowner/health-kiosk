@@ -146,7 +146,7 @@ router.post("/delete",async (req,res) => {
  */
 router.post("/update",async(req,res) => {
     const { id, name, status, description, abbreviation, usage } = req.body;
-    console.log(usage)
+
     const updateSql = "update `item` set `name` = ?, `status` = ?, `abbreviation` = ?, `description` = ?, `usage` = ? where `id` = ? ;";
     try{
         await db.async.run(updateSql,[name, status, abbreviation, description, usage, id]);
