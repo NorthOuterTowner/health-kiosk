@@ -20,7 +20,32 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const {encryptEmail, decryptEmail, emailIndexHash} = require('../utils/EmailCrypto')
+const { decodeToken } = require("../utils/jwtHelper")
 
+/**
+ * @api {post} /user/add Add New User
+ * @apiGroup User
+ * @apiPermission Authenticated
+ *
+ * @apiBody {String} account User account (required).
+ * @apiBody {String} pwd User password (required, will be hashed with SHA-256).
+ * @apiBody {String} name User name (required).
+ * @apiBody {Number} [age] User age.
+ * @apiBody {String="male","female"} [gender] User gender.
+ * @apiBody {Number} [height] User height (cm).
+ * @apiBody {Number} [weight] User weight (kg).
+ *
+ * @apiSuccess {json} Success Response:
+ * {
+ *   "code": 200,
+ *   "msg": "添加成功"
+ * }
+ *
+ * @apiDescription
+ * This API adds a new user into the system.  
+ * Passwords are stored securely after being hashed using the SHA-256 algorithm.  
+ * Only authenticated users (via `authMiddleware`) are allowed to access this endpoint.
+ */
 router.post("/add",authMiddleware, async (req,res) => {
     let account = req.body.account ?? null ;
     let pwd     = req.body.pwd     ?? null ;
@@ -62,6 +87,24 @@ router.post("/add",authMiddleware, async (req,res) => {
     }
 });
 
+/**
+ * @api {post} /user/delete Delete User
+ * @apiGroup User
+ * @apiPermission Authenticated
+ *
+ * @apiBody {String} account User account to delete (required).
+ *
+ * @apiSuccess {json} Success Response:
+ * {
+ *   "code": 200,
+ *   "msg": "删除成功"
+ * }
+ *
+ * @apiDescription
+ * This API deletes a user record by the given account.  
+ * Only authenticated users (via `authMiddleware`) can perform this operation.  
+ * The user will be permanently removed from the database.
+ */
 router.post("/delete",authMiddleware,async (req,res) =>{
     const account = req.body.account;
     const delSql = "delete from `user` where `account` = ? ;";
@@ -373,8 +416,19 @@ router.post("/setEmail",authMiddleware,async (req,res) => {
  *   "msg": "Password reset verification email sent, please check your inbox"
  * }
  */
-router.post('/reset/pwd',authMiddleware, async (req, res) => {
-    const account = req.account;
+router.post('/reset/pwd', async (req, res) => {
+    let account = null;
+    try{
+        const authorization = req.headers.authorization;
+        const token = authorization.split(" ")[1];
+        const decoded = decodeToken(token);
+        account = decoded.data.account;
+    }catch{
+        account = null;
+    }
+    if(account == null || account == undefined){
+        account = req.body.account
+    }
     const searchSQL = "select `email_enc` from `user` where `account` = ? ;"
     const {err,rows} = await db.async.all(searchSQL,[account]);
     let emailEnc = rows[0].email_enc;
