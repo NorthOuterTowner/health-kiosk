@@ -47,6 +47,17 @@
           :placeholder="$t('login.password')"
         />
       </div>
+
+      <div class="inputln">
+        <qr-code class="icon" />
+        <input
+          type="text"
+          v-model="captcha"
+          :placeholder="$t('login.captcha') || '请输入验证码' "
+          style="width: 85px;"
+        />
+        <div v-html="captchaSvg" @click="getCaptcha" style="cursor:pointer;margin-left:10px;"></div>
+      </div>
       <div class="buttons">
         <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
         <button class="btn-primary" @click="forget_pwd">{{ $t('login.forget') }}</button>
@@ -84,14 +95,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
-import { loginApi,registerApi, testApi } from "../api/auth";
+import { loginApi, registerApi, testApi, getCaptchaInfoApi } from '../api/auth';
 import { resetPasswordApi } from "../api/user";
 import { useMessage } from 'naive-ui'
 import { User } from 'lucide-vue-next';
-import { KeyRound } from 'lucide-vue-next';
+import { KeyRound,QrCode } from 'lucide-vue-next';
 
 const router = useRouter();
 const { locale } = useI18n()
@@ -100,6 +111,10 @@ const toggleLang = () => {
 }
 const username = ref("");
 const password = ref("");
+
+const captcha = ref("")
+const captchaSvg = ref("")
+const captchaId = ref("")
 
 const isLogin = ref(true);
 
@@ -111,6 +126,18 @@ const change_to_register = async () => {
 
 const change_to_login = async () => {
   isLogin.value = true;
+}
+
+const getCaptcha = async () => {
+  try{
+    const res = await getCaptchaInfoApi();
+    console.log(res.data)
+    captchaId.value = res.data.data.captchaId;
+    captchaSvg.value = res.data.data.svg;
+  }catch(e){
+    message.error("获取验证码失败")
+    console.log(e)
+  }
 }
 
 const register = async () => {
@@ -129,13 +156,14 @@ const register = async () => {
 
 const login = async () =>{
   if(username.value && password.value){
-    const res = await loginApi(username.value,password.value);
+    const res = await loginApi(username.value,password.value,captchaId.value,captcha.value);
     if(res.data.code === 200){
       localStorage.setItem("token",res.data.user.token);
       localStorage.setItem("role",res.data.user.role);// this item is just using for show in frontend
       message.info("登录成功")
       router.push("/selfinfo");
     }else{
+      console.log(res.data.msg);
       message.error("登录失败")
     }
   }else {
@@ -155,6 +183,9 @@ const forget_pwd = async () => {
   resetPasswordApi(password.value, username.value);
 }
 
+onMounted(()=>{
+  getCaptcha();
+})
 </script>
 
 <style scoped>
@@ -263,7 +294,7 @@ const forget_pwd = async () => {
   bottom: 100px;
   right: 100px;
   width: 300px;
-  height: 200px;
+  height: 250px;
   perspective: 1000px;
   display: flex;
   justify-content: center;
