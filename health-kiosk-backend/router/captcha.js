@@ -15,8 +15,8 @@ router.get("/", async (req, res) => {
     noise: 1, // number of noise line
     color: false, // whether has color or not
     background: "#ccf2ff",
-    width: 80,   // ✅ 控制宽度
-    height: 40,   // ✅ 控制高度
+    width: 80,  
+    height: 40,   
     fontSize: 40,
   });
 

@@ -58,6 +58,9 @@
         />
         <div v-html="captchaSvg" @click="getCaptcha" style="cursor:pointer;margin-left:10px;"></div>
       </div>
+      <div>
+        <input type="checkbox" v-model="rememberMe" style="margin-left: 200px;">{{ $t('login.rememberMe') }}</input>
+      </div>
       <div class="buttons">
         <button class="btn-primary" @click="login">{{ $t('login.button') }}</button>
         <button class="btn-primary" @click="forget_pwd">{{ $t('login.forget') }}</button>
@@ -84,6 +87,9 @@
           v-model="password"
           :placeholder="$t('register.password')"
         />
+      </div>
+      <div>
+        <input type="checkbox" v-model="rememberMe" style="margin-left: 200px;">{{ $t('login.rememberMe') }}</input>
       </div>
       <div class="buttons">
         <button class="btn-primary" @click="register">{{ $t('register.button') }}</button>
@@ -115,6 +121,8 @@ const password = ref("");
 const captcha = ref("")
 const captchaSvg = ref("")
 const captchaId = ref("")
+
+const rememberMe = ref<boolean>(false);
 
 const isLogin = ref(true);
 
@@ -159,7 +167,14 @@ const login = async () =>{
     const res = await loginApi(username.value,password.value,captchaId.value,captcha.value);
     if(res.data.code === 200){
       localStorage.setItem("token",res.data.user.token);
-      localStorage.setItem("role",res.data.user.role);// this item is just using for show in frontend
+      localStorage.setItem("role",res.data.user.role); // this item is just using for show in frontend
+      if(rememberMe.value == true){
+        localStorage.setItem("username",username.value);
+        localStorage.setItem("password",password.value);
+      }else{
+        localStorage.removeItem("username");
+        localStorage.removeItem("password");
+      }
       message.info("登录成功")
       router.push("/selfinfo");
     }else{
@@ -185,6 +200,8 @@ const forget_pwd = async () => {
 
 onMounted(()=>{
   getCaptcha();
+  username.value = localStorage.getItem("username") || "";
+  password.value = localStorage.getItem("password") || "";
 })
 </script>
 
@@ -293,8 +310,8 @@ onMounted(()=>{
   position: fixed;
   bottom: 100px;
   right: 100px;
-  width: 300px;
-  height: 250px;
+  width: 280px;
+  height: 280px;
   perspective: 1000px;
   display: flex;
   justify-content: center;
