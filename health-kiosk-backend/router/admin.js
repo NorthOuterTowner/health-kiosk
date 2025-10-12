@@ -10,6 +10,7 @@ const path = require('path');
 const fs = require('fs');
 const { generateToken } = require('../utils/jwtHelper')
 const authMiddleware = require('../middleware/authMiddleware')
+const redisClient = require('../db/redis')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -68,6 +69,23 @@ router.post("/login", upload.single("photo") , async (req, res) => {
   let { account, pwd } = req.body;
 
   if(account!=null && pwd !=null){
+    if(!req.file){ // Request from Web
+      const { captcha, captchaId, remember } = req.body;
+      const saved = await redisClient.get(`captcha:${captchaId}`);
+      if(!saved){
+        return res.status(200).json({
+          code:400,
+          msg:"验证码已过期"
+        })
+      }
+      if(saved!= captcha.toLowerCase()){
+        return res.status(200).json({
+          code:400,
+          msg:"验证码错误"
+        })
+      }
+      await redisClient.del(`captcha:${captchaId}`);
+    }
     //delete picture saved from request.
     if (req.file) {
       const del_file_string = path.join(__dirname, "../uploads/" + req.file?.filename);
