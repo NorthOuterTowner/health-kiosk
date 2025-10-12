@@ -35,7 +35,8 @@ export const loginMessages = {
     password: "密码",
     button: "登录",
     alert: "请输入账号和密码",
-    forget: "重置密码"
+    forget: "重置密码",
+    captcha: "请输入验证码"
   },
   en: {
     title: "Login",
@@ -43,7 +44,8 @@ export const loginMessages = {
     password: "Password",
     button: "Login",
     alert: "Please enter username and password",
-    forget: "reset password"
+    forget: "reset password",
+    captcha: "input veryfy code"
   }
 }
 

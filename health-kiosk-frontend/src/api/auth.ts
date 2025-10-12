@@ -1,10 +1,12 @@
 import instance from "./axios";
 
 //login api
-export function loginApi(account: string, pwd: string) {
+export function loginApi(account: string, pwd: string, captchaId: string, captcha: string) {
   return instance.post("/admin/login", {
     account,
     pwd,
+    captchaId,
+    captcha
   });
 }
 
@@ -14,6 +16,10 @@ export function registerApi(account: string, pwd: string) {
     account,
     pwd
   });
+}
+
+export function getCaptchaInfoApi(){
+  return instance.get("/captcha");
 }
 
 export function testApi(){
