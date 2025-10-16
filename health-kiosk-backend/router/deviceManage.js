@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const { version, type } = req.body;
         const type_string = (type === '1') ? "release" : "debug";
-        const apk_name = "HealthKiosk-" + type_string + "-v" + version + ".apk";
+        const apk_name = "HealthKiosk-" + type_string + "-" + version + ".apk";
         cb(null, `${apk_name}`);
     }
 });
@@ -28,7 +28,7 @@ async function calculate_adk_position(version,type){
     }else{
         type_string = "debug"
     }
-    apk_name = "HealthKiosk-" + type_string + "-v" + version + ".apk";
+    apk_name = "HealthKiosk-" + type_string + "-" + version + ".apk";
     relative_str = "../../QuickExam/releases/"+apk_name;
     const apk_position = path.join(__dirname,relative_str);
     return apk_position;
