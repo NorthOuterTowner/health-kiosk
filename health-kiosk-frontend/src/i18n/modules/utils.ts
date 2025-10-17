@@ -9,7 +9,8 @@ export const utilsMessages = {
         update: "更新",
         cancel: "取消",
         confirm: "确认",
-        edit: "编辑"
+        edit: "编辑",
+        confirm_delete: "是否确认删除？",
     },
     en: {
         gender: {
@@ -21,6 +22,7 @@ export const utilsMessages = {
         update: "update",
         cancel: "cancel",
         confirm: "confirm",
-        edit: "edit"
+        edit: "edit",
+        confirm_delete: "Do you confirm to delete it ?"
     }
 }
