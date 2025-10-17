@@ -32,7 +32,7 @@
 import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
 import { getDeviceInfoApi,downloadDeviceApi,deleteDeviceApi } from "../api/device";
-import { NButton, useMessage } from "naive-ui";
+import { NButton, useMessage,useDialog } from "naive-ui";
 import AddDevice from "../components/AddDevice.vue";
 import { useI18n } from 'vue-i18n'
 
@@ -40,12 +40,33 @@ const { t } = useI18n();
 const addDeviceView = ref<boolean>(false)
 
 const message = useMessage();
+const dialog = useDialog();
+
 const editable = ref(true)
 const currentDevice = ref<any | null>(null);
 
 const updatePage = ()=>{
   fetchDevices();
   addDeviceView.value = false;
+}
+
+async function confirmDelete(row: any) {
+  try {
+    await dialog.warning({
+      title: t("utils.confirm"),
+      content: t("utils.confirm_delete"), // 你可以在 i18n 中定义提示文本
+      positiveText: t("utils.confirm"),
+      negativeText: t("utils.cancel"),
+      async onPositiveClick(e) {
+        await handleDelete(row);
+      },
+      async onNegativeClick(e) {
+        message.info("删除已取消")
+      }
+    });
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 async function handleDownload(row: any) {
@@ -65,7 +86,6 @@ async function handleDownload(row: any) {
 
     message.info("已开始下载");
   } catch (err: any) {
-    console.error("下载出错:", err);
     message.error("下载失败");
   }
 }
@@ -78,11 +98,12 @@ async function handleUpdate(row: any){
 
 async function handleDelete(row: any){
     const res = await deleteDeviceApi(row.version,row.type);
-    if(res.data.code === 200){
+    if(res.data.code == '200'){
       fetchDevices()
       message.info("删除成功")
     }else{
-      message.error(res.data.msg);
+      console.log(res.data)
+      message.error("这是干啥"/*res.data.msg*/);
     }
 }
 
@@ -127,7 +148,7 @@ const columns = [
             size: "small",
             type: "info",
             style: "margin-right: 6px;",
-            onClick: () => handleDelete(row),
+            onClick: () => confirmDelete(row),
           },
           { default: () => t("utils.delete") }
         ) : null,
