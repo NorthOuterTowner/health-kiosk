@@ -54,7 +54,7 @@ async function confirmDelete(row: any) {
   try {
     await dialog.warning({
       title: t("utils.confirm"),
-      content: t("utils.confirm_delete"), // 你可以在 i18n 中定义提示文本
+      content: t("utils.confirm_delete"),
       positiveText: t("utils.confirm"),
       negativeText: t("utils.cancel"),
       async onPositiveClick(e) {
@@ -103,7 +103,7 @@ async function handleDelete(row: any){
       message.info("删除成功")
     }else{
       console.log(res.data)
-      message.error("这是干啥"/*res.data.msg*/);
+      message.error("删除失败"/*res.data.msg*/);
     }
 }
 

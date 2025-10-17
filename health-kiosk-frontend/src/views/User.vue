@@ -59,13 +59,14 @@ import Sidebar from "../components/Sidebar.vue";
 import { UserListApi, authApi,deleteUserApi } from "../api/user";
 import { NButton } from "naive-ui";
 import UserInfo from "../components/UserInfo.vue";
-import { useMessage } from 'naive-ui'
+import { useMessage, useDialog } from 'naive-ui'
 import UserBarchart from "../components/UserBarchart.vue";
 import AddUser from "../components/AddUser.vue";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();
 const message = useMessage();
+const dialog = useDialog();
 
 const users = ref<any[]>([]);
 
@@ -175,7 +176,7 @@ const columns = [
           {
             size: "small",
             type: "error",
-            onClick: () => handleDelete(row),
+            onClick: () => confirmDelete(row),
           },
           { default: () => t('utils.delete') }
         )
@@ -234,6 +235,25 @@ const updateUser = (updatedUser: any) => {
 const updateUserAfterAdd = () => {
   fetchUsers();
   addUserView.value = false;
+}
+
+async function confirmDelete(row: any) {
+  try {
+    await dialog.warning({
+      title: t("utils.confirm"),
+      content: t("utils.confirm_delete"), // 你可以在 i18n 中定义提示文本
+      positiveText: t("utils.confirm"),
+      negativeText: t("utils.cancel"),
+      async onPositiveClick(e) {
+        await handleDelete(row);
+      },
+      async onNegativeClick(e) {
+        message.info("删除已取消")
+      }
+    });
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 const handleDelete = async (row: any) => {
