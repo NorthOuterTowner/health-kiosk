@@ -6,8 +6,8 @@
 
       <div class="scroll-container">
         <div class="content">
-          <div >
-            操作指南
+          <div>
+            操作指南：
           </div>
         </div>
       </div>
