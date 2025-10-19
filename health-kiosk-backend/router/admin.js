@@ -28,7 +28,7 @@ const upload = multer({ storage: storage });
 
 /**
  * @api {post} /user/login User Login
- * @apiGroup User
+ * @apiGroup Login
  * 
  * @apiHeader {String} Content-Type multipart/form-data
  * 
@@ -219,7 +219,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
 
 /**
  * @api {post} /user/register Register New User
- * @apiGroup User
+ * @apiGroup Login
  * 
  * @apiHeader {String} Content-Type multipart/form-data
  * 
