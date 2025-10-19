@@ -3,8 +3,6 @@
       <header class="navbar">
       <div class="logo">{{ $t('home.title') }}</div>
       <nav>
-        <a href="#">{{ $t('navbar.intro') }}</a>
-        <a href="#">{{ $t('navbar.features') }}</a>
         <a href="#" @click="toggleLang">{{ $t('navbar.language') }}</a>
       </nav>
   </header>
@@ -202,6 +200,7 @@ onMounted(()=>{
   getCaptcha();
   username.value = localStorage.getItem("username") || "";
   password.value = localStorage.getItem("password") || "";
+  localStorage.setItem("role",'0');
 })
 </script>
 

@@ -21,6 +21,9 @@ function encryptEmail(plaintext) {
 }
 
 function decryptEmail(payloadBase64) {
+  if(payloadBase64 == null) {
+    return "";
+  }
   const data = Buffer.from(payloadBase64, 'base64');
   const iv = data.slice(0, 12);
   const tag = data.slice(12, 28);

@@ -9,6 +9,10 @@ import SelfInfo from "../views/SelfInfo.vue";
 import AdminIntruction from "../views/adminIntruction.vue";
 import SelfExam from "../views/SelfExam.vue";
 import UserIntruction from "../views/userIntruction.vue";
+import About from "../views/About.vue";
+import Forbidden403 from "../views/statusViews/Forbidden403.vue";
+import NotFound404 from "../views/statusViews/NotFound404.vue";
+import Server500 from "../views/statusViews/Server500.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -55,7 +59,32 @@ const routes: Array<RouteRecordRaw> = [
     path: "/selfexam",
     name: "SelfExam",
     component: SelfExam
-  }
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: About
+  },
+  {
+    path: "/403",
+    name: "Forbidden403",
+    component: Forbidden403
+  },
+  {
+    path: "/404",
+    name: "NotFound404",
+    component: NotFound404
+  },
+  {
+    path: "/500",
+    name: "Server500",
+    component: Server500
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    component: NotFound404,
+  },
 ];
 
 const router = createRouter({

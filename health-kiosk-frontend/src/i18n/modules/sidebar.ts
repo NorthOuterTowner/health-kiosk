@@ -26,6 +26,7 @@ export const sidebarMessages = {
         use: {
             title: "使用说明",
             userintruction: "用户使用说明",
+            about:"关于本项目",
             adminintruction: "管理员使用说明"
         }
     },
@@ -56,6 +57,7 @@ export const sidebarMessages = {
         use: {
             title: "use intruction",
             userintruction: "user intruction",
+            about: "about",
             adminintruction: "admin intruction"
         }
     }

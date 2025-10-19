@@ -114,9 +114,9 @@ const menuConfig = [
     key: 'app',
     title: 'sidebar.devices.title',
     icon: LayoutGrid,
-    role: [1,2,3,4,5],
+    role: [0,1,2,3,4,5],
     children: [
-      { path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [1,2,3,4,5] }
+      { path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [0,1,2,3,4,5] }
     ]
   },
   {
@@ -158,6 +158,7 @@ const menuConfig = [
     role:[0,1,2,3,4,5],
     children: [
       { path: '/userintruction', name: 'sidebar.use.userintruction', icon: FileText , role: [0,1,2,3,4,5] },
+      { path: '/about', name: 'sidebar.use.about', icon: FileText, role: [0,1,2,3,4,5]},
       { path: '/adminintruction', name: 'sidebar.use.adminintruction', icon: FileUser, role: [3,4,5] }
     ]
   }
