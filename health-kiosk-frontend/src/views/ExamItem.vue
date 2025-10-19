@@ -36,7 +36,7 @@
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
-import { NButton, useMessage } from "naive-ui";
+import { NButton, useMessage, useDialog } from "naive-ui";
 import AddExamItem from '../components/AddExamItem.vue';
 import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../api/examitem';
 import { useI18n } from 'vue-i18n'
@@ -46,6 +46,8 @@ const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)
 
 const message = useMessage();
+const dialog = useDialog();
+
 const editable = ref(true)
 const currentExamItem = ref<any | null>(null);
 
@@ -119,7 +121,7 @@ const columns = [
             size: "small",
             type: "error",
             style: "margin-right: 6px;",
-            onClick: () => handleDelete(row),
+            onClick: () => confirmDelete(row),
           },
           { default: () => t("utils.delete") }
         ),
@@ -148,6 +150,25 @@ const columns = [
   },
 ];
 
+async function confirmDelete(row: any) {
+  try {
+    await dialog.warning({
+      title: t("utils.confirm"),
+      content: t("utils.confirm_delete"),
+      positiveText: t("utils.confirm"),
+      negativeText: t("utils.cancel"),
+      async onPositiveClick(e) {
+        await handleDelete(row);
+      },
+      async onNegativeClick(e) {
+        message.info("删除已取消")
+      }
+    });
+  } catch(err) {
+    console.log(err);
+  }
+}
+
 const fetchExamItems = async () => {
   try {
     const res = await getExamItemInfoApi(pagination.page, pagination.pageSize);
@@ -162,7 +183,7 @@ const fetchExamItems = async () => {
 
 const pagination = reactive({
   page: 1,
-  pageSize: 5,
+  pageSize: 10,
   itemCount: 0, // 数据总数
   showSizePicker: true,
   pageSizes: [5, 10, 20],

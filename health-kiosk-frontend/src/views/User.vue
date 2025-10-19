@@ -14,6 +14,22 @@
       
       <UserBarchart />
 
+	  <!--<div style="display: flex;margin-left: 55px;padding-right: 50px;">
+	  		<n-input
+	  		    v-model:value="searchKeyword"
+	  		    placeholder="请输入搜索内容"
+	  		    clearable
+	  		    :input-props="{ onKeyup: handleEnter }"
+	  		    suffix="🔍"
+	  		  />
+	  		<n-button @click="searchUsers" 
+				size="small"
+				type="success"
+				style="align-items: right; margin-left: 25px;">
+				查询
+			</n-button>
+	  </div>-->
+	  
       <n-data-table
         remote
         :columns="columns"
@@ -69,6 +85,16 @@ const message = useMessage();
 const dialog = useDialog();
 
 const users = ref<any[]>([]);
+
+const searchKeyword = ref<string>("");
+
+/*const searchUsers = async () => {
+	await searchUserApi();
+}
+
+const handleEnter = async () => {
+	await searchUsers();
+}*/
 
 // user editting currently
 const editingUser = ref<any | null>(null);
