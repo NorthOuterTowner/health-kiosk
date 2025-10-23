@@ -106,7 +106,7 @@ const menuConfig = [
     icon: UserStar,
     role: [3,4,5],
     children: [
-      { path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
+      { key: 'users:list',path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
     ]
   },
   { 
@@ -116,17 +116,17 @@ const menuConfig = [
     icon: LayoutGrid,
     role: [0,1,2,3,4,5],
     children: [
-      { path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [0,1,2,3,4,5] }
+      { key: 'devices:list', path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [0,1,2,3,4,5] }
     ]
   },
   {
     // 体检数据趋势查询
-    key: 'settings',
+    key: 'examdata',
     title: 'sidebar.data.title',
     icon: Database,
     role: [2,3,4,5],
     children: [
-      { path: '/examdata', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]}
+      { key: 'examdata:list', path: '/examdata', name: 'sidebar.data.statistics', icon: ChartNoAxesCombined, role: [2,3,4,5]}
     ]
   },
   {
@@ -136,18 +136,18 @@ const menuConfig = [
     icon: UserIcon,
     role: [1,2,3,4,5],
     children: [
-      { path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] },
-      { path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] }
+      { key: 'info:selfinfo', path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] },
+      { key: 'info:selfexam', path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] }
     ]
   },
   {
     // 体检项目管理
-    key: 'examItem',
+    key: 'item',
     title: 'sidebar.examItem.title',
     icon: HeartPulse,
     role: [3,4,5],
     children: [
-      { path: '/ExamItem', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] }
+      { key: 'item:list', path: '/ExamItem', name: 'sidebar.examItem.list', icon: HeartPulse, role: [3,4,5] }
     ]
   },
   {
@@ -157,9 +157,9 @@ const menuConfig = [
     icon:FileText,
     role:[0,1,2,3,4,5],
     children: [
-      { path: '/userintruction', name: 'sidebar.use.userintruction', icon: FileText , role: [0,1,2,3,4,5] },
-      { path: '/about', name: 'sidebar.use.about', icon: FileText, role: [0,1,2,3,4,5]},
-      { path: '/adminintruction', name: 'sidebar.use.adminintruction', icon: FileUser, role: [3,4,5] }
+      { key: 'use:instruction', path: '/userintruction', name: 'sidebar.use.userintruction', icon: FileText , role: [0,1,2,3,4,5] },
+      { key: 'use:about', path: '/about', name: 'sidebar.use.about', icon: FileText, role: [0,1,2,3,4,5]},
+      { key: 'use:admin', path: '/adminintruction', name: 'sidebar.use.adminintruction', icon: FileUser, role: [3,4,5] }
     ]
   }
 ]
