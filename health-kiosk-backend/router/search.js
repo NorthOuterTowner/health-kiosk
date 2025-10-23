@@ -34,6 +34,10 @@ const authMiddleware = require('../middleware/authMiddleware')
 router.get("/user", authMiddleware, async (req,res) => {
 	const keyword = req.query.keyword;
 	
+	const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
 	if (!keyword || keyword.trim() === "") {
 	  return res.status(200).json({
 	    code: 400,
@@ -45,8 +49,10 @@ router.get("/user", authMiddleware, async (req,res) => {
 	// dynamic generate fuzzy matching SQL
 	const whereClause = fields.map(f => `${f} LIKE ?`).join(' OR ');
 	const params = fields.map(() => `%${keyword}%`);
-	
-	const searchSql = `select * from \`user\` where ${whereClause};`;
+	params.push(limit);
+	params.push(offset);
+
+	const searchSql = `select * from \`user\` where ${whereClause}; order by \`id\` limit ? offset ? ;`;
 	try{
 		const {err,rows} = await db.async.all(searchSql,params);
 		if(err==null && rows.length > 0){
@@ -104,6 +110,10 @@ router.get("/user", authMiddleware, async (req,res) => {
 router.get("/device", authMiddleware, async (req,res) => {
 	const keyword = req.query.keyword;
 	
+	const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
 	if (!keyword || keyword.trim() === "") {
 	  return res.status(200).json({
 	    code: 400,
@@ -115,8 +125,10 @@ router.get("/device", authMiddleware, async (req,res) => {
 	// dynamic generate fuzzy matching SQL
 	const whereClause = fields.map(f => `${f} LIKE ?`).join(' OR ');
 	const params = fields.map(() => `%${keyword}%`);
-	
-	const searchSql = `select * from \`device\` where ${whereClause};`;
+	params.push(limit);
+	params.push(offset);
+
+	const searchSql = `select * from \`device\` where ${whereClause}; order by \`version\` limit ? offset ? ;`;
 	try{
 		const {err,rows} = await db.async.all(searchSql,params);
 		if(err==null && rows.length > 0){
@@ -176,6 +188,10 @@ router.get("/device", authMiddleware, async (req,res) => {
 router.get("/item", authMiddleware, async (req,res) => {
 	const keyword = req.query.keyword;
 	
+	const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+	
 	if (!keyword || keyword.trim() === "") {
 	  return res.status(200).json({
 	    code: 400,
@@ -187,8 +203,10 @@ router.get("/item", authMiddleware, async (req,res) => {
 	// dynamic generate fuzzy matching SQL
 	const whereClause = fields.map(f => `${f} LIKE ?`).join(' OR ');
 	const params = fields.map(() => `%${keyword}%`);
-	
-	const searchSql = `select * from \`item\` where ${whereClause};`;
+	params.push(limit);
+	params.push(offset);
+
+	const searchSql = `select * from \`item\` where ${whereClause} order by \`id\` limit ? offset ? ;`;
 	try{
 		const {err,rows} = await db.async.all(searchSql,params);
 		if(err==null && rows.length > 0){
