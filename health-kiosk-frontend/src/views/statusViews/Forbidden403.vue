@@ -1,29 +1,34 @@
 <template>
-  <Sidebar/>
+  <Sidebar />
   <div class="error-page">
     <div class="card">
       <div class="icon red">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="50" height="50">
-          <path fill-rule="evenodd" d="M3.05 3.05a7 7 0 1 1 9.9 9.9 7 7 0 0 1-9.9-9.9Zm1.627.566 7.707 7.707a5.501 5.501 0 0 0-7.707-7.707Zm6.646 8.768L3.616 4.677a5.501 5.501 0 0 0 7.707 7.707Z" clip-rule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 16 16"
+             fill="currentColor"
+             width="50"
+             height="50">
+          <path fill-rule="evenodd"
+                d="M3.05 3.05a7 7 0 1 1 9.9 9.9 7 7 0 0 1-9.9-9.9Zm1.627.566 7.707 7.707a5.501 5.501 0 0 0-7.707-7.707Zm6.646 8.768L3.616 4.677a5.501 5.501 0 0 0 7.707 7.707Z"
+                clip-rule="evenodd" />
         </svg>
       </div>
 
       <div class="title">
-        <h2>403</h2>
-        <h2>Access Denied</h2>
-        <p>You don't have permission to access this resource.</p>
+        <h2>{{ t('forbidden.title') }}</h2>
+        <h2>{{ t('forbidden.subtitle') }}</h2>
+        <p>{{ t('forbidden.description') }}</p>
       </div>
 
       <div class="divider"></div>
 
       <div class="message red-bg">
-        It looks like you're trying to access a restricted area.  
-        If you believe this is a mistake, please contact the administrator.
+        {{ t('forbidden.message') }}
       </div>
 
       <div class="buttons">
-        <button class="btn primary" @click="goHome">Back to Home →</button>
-        <button class="btn secondary" @click="goBack">Go Back</button>
+        <button class="btn primary" @click="goHome">{{ t('forbidden.backHome') }} →</button>
+        <button class="btn secondary" @click="goBack">{{ t('forbidden.goBack') }}</button>
       </div>
     </div>
 
@@ -35,7 +40,11 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import Sidebar from "../../components/Sidebar.vue";
+import { useI18n } from "vue-i18n";
+
 const router = useRouter();
+const { t } = useI18n();
+
 const goHome = () => router.push("/");
 const goBack = () => router.back();
 </script>
@@ -49,7 +58,8 @@ const goBack = () => router.back();
   background: #fff;
   border-radius: 20px;
   padding: 3rem 2rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   width: 100%;
   max-width: 400px;
   max-height: 500px;
@@ -74,19 +84,7 @@ const goBack = () => router.back();
   background: linear-gradient(135deg, #ff6b6b, #e63946);
   box-shadow: 0 0 25px rgba(230, 57, 70, 0.5);
 }
-.icon-svg {
-  width: 48px;
-  height: 48px;
-  color: white;
-}
 
-.title h1 {
-  font-size: 4.5rem;
-  background: linear-gradient(90deg, #ff6b6b, #e63946);
-  -webkit-background-clip: text;
-  color: transparent;
-  margin-bottom: 0.3rem;
-}
 .title h2 {
   color: #333;
   margin-bottom: 0.5rem;

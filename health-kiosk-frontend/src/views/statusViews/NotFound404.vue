@@ -3,32 +3,30 @@
   <div class="error-page">
     <div class="card">
       <div class="icon blue">
-        <svg xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 16 16" 
-            fill="currentColor" 
-            width="50" 
+        <svg xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            width="50"
             height="50">
           <path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" />
         </svg>
-
       </div>
 
       <div class="title">
-        <h2>404</h2>
-        <h2>Page Not Found</h2>
-        <p>The page you're looking for doesn't seem to exist.</p>
+        <h2>{{ t('notfound.title') }}</h2>
+        <h2>{{ t('notfound.subtitle') }}</h2>
+        <p>{{ t('notfound.description') }}</p>
       </div>
 
       <div class="divider"></div>
 
       <div class="message blue-bg">
-        Oops! The page may have been moved or deleted.  
-        Please check the URL or return to the homepage.
+        {{ t('notfound.message') }}
       </div>
 
       <div class="buttons">
-        <button class="btn primary" @click="goHome">Back to Home →</button>
-        <button class="btn secondary" @click="goBack">Go Back</button>
+        <button class="btn primary" @click="goHome">{{ t('notfound.backHome') }} →</button>
+        <button class="btn secondary" @click="goBack">{{ t('notfound.goBack') }}</button>
       </div>
     </div>
 
@@ -40,7 +38,10 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import Sidebar from "../../components/Sidebar.vue";
+import { useI18n } from "vue-i18n";
+
 const router = useRouter();
+const { t } = useI18n();
 const goHome = () => router.push("/");
 const goBack = () => router.back();
 </script>
@@ -75,23 +76,11 @@ const goBack = () => router.back();
   justify-content: center;
   align-items: center;
 }
-.icon.red {
-  background: linear-gradient(135deg, #ff6b6b, #e63946);
-  box-shadow: 0 0 25px rgba(230, 57, 70, 0.5);
-}
-.icon-svg {
-  width: 48px;
-  height: 48px;
-  color: white;
+.icon.blue {
+  background: linear-gradient(135deg, #4facfe, #00c6ff);
+  box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
 }
 
-.title h1 {
-  font-size: 4.5rem;
-  background: linear-gradient(90deg, #ff6b6b, #e63946);
-  -webkit-background-clip: text;
-  color: transparent;
-  margin-bottom: 0.3rem;
-}
 .title h2 {
   color: #333;
   margin-bottom: 0.5rem;
@@ -115,9 +104,9 @@ const goBack = () => router.back();
   color: #333;
   border: 1px solid transparent;
 }
-.message.red-bg {
-  background: linear-gradient(135deg, #ffe5e5, #fff1e1);
-  border-color: #ffd1d1;
+.message.blue-bg {
+  background: linear-gradient(135deg, #e0f7ff, #f0faff);
+  border-color: #b3ecff;
 }
 
 .buttons {
@@ -169,14 +158,5 @@ const goBack = () => router.back();
   width: 180px;
   height: 180px;
   background: rgba(255, 255, 255, 0.08);
-}
-
-.icon.blue {
-  background: linear-gradient(135deg, #4facfe, #00c6ff);
-  box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
-}
-.message.blue-bg {
-  background: linear-gradient(135deg, #e0f7ff, #f0faff);
-  border-color: #b3ecff;
 }
 </style>
