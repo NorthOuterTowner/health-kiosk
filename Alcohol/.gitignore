@@ -1,0 +1,59 @@
+# ========================
+# Keil STM32 Project .gitignore
+# ========================
+
+# Ignore Keil uVision temp/project files
+*.uvguix.*
+*.uvoptx
+*.uvopt
+*.bak
+*.dep
+*.lst
+*.lnp
+*.plg
+*.map
+*.htm
+*.uvprojx.bak
+*.uvproj.bak
+*.sbr
+*.crf
+*.o
+*.d
+*.i
+*.axf
+
+# Ignore build output folders
+Objects/
+Listings/
+Output/
+Debug/
+Release/
+
+# Ignore Keil build output binaries
+*.hex
+*.elf
+*.axf
+*.bin
+
+# Ignore Library folder (STM32 firmware/HAL library)
+Library/
+Start/
+DebugConfig/
+
+# Ignore IDE/editor/system temp files
+*.swp
+*.swo
+*.swn
+*.tmp
+*.log
+~$*
+
+# Ignore IDE configs (optional)
+.vscode/
+.idea/
+
+# Ignore STM32CubeMX auto-generated folders (if used)
+Middlewares/
+Drivers/
+Core/Inc/
+Core/Src/
