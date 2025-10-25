@@ -120,7 +120,7 @@ const captcha = ref("")
 const captchaSvg = ref("")
 const captchaId = ref("")
 
-const rememberMe = ref<boolean>(false);
+const rememberMe = ref<boolean>(true);
 
 const isLogin = ref(true);
 

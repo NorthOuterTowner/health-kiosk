@@ -10,6 +10,8 @@ import { aboutMessages } from './modules/about'
 import { serverMessages } from './modules/status/server500'
 import { forbiddenMessages } from './modules/status/forbidden403'
 import { notfoundMessages } from './modules/status/notFound404'
+import { userInstructionMessages } from './modules/userInstruction'
+import { adminInstructionMessages } from './modules/adminInstruction'
 
 const Messages = {
   zh: {
@@ -26,7 +28,9 @@ const Messages = {
     about: aboutMessages.zh,
     server: serverMessages.zh,
     forbidden: forbiddenMessages.zh,
-    notfound: notfoundMessages.zh
+    notfound: notfoundMessages.zh,
+    userInstruction: userInstructionMessages.zh,
+    adminInstruction: adminInstructionMessages.zh,
   },
   en: {
     navbar: navbarMessages.en,
@@ -42,7 +46,9 @@ const Messages = {
     about: aboutMessages.en,
     server: serverMessages.en,
     forbidden: forbiddenMessages.en,
-    notfound: notfoundMessages.en
+    notfound: notfoundMessages.en,
+    userInstruction: userInstructionMessages.en,
+    adminInstruction: adminInstructionMessages.en
   }
 }
 
