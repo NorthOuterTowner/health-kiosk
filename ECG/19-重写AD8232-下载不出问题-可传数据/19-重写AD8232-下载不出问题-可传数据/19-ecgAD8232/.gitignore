@@ -1,0 +1,51 @@
+# Keil MDK 项目 Gitignore
+# 排除构建输出和临时文件，保留源代码和项目配置文件
+
+# Keil 对象文件和输出文件
+*.o
+*.axf
+*.crf
+*.d
+*.dep
+*.elf
+*.hex
+*.htm
+*.lnp
+*.map
+*.lst
+*.bak
+*.ioc
+
+# Keil 构建输出目录
+Objects/
+Listings/
+*.uvguix.*
+*.uvoptx
+*.uvprojx.bak
+*.build_log.htm
+
+# 排除所有构建输出文件夹，但保留必要的项目结构
+# 匹配所有直接子文件夹中的内容
+*/*
+# 但保留 hardware 文件夹及其所有内容
+!*/hardware/
+!*/hardware/**
+# 并且保留 main.c 文件
+!*/main.c
+# 保留所有 .c 和 .h 源文件
+!**/*.c
+!**/*.h
+!**/*.cpp
+!**/*.hpp
+!**/*.s
+!**/*.inc
+
+!**/core/
+!**/core/**
+
+
+# 保留 Keil 项目文件（但排除用户特定设置）
+!*.uvprojx
+# 排除用户特定的工作区设置
+*.uvguix.*
+*.uvoptx
