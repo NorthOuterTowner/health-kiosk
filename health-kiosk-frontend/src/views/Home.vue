@@ -185,10 +185,11 @@ const login = async () =>{
 };
 
 const learnMore = async () =>{
-  const res = await testApi();
-  if(res.data.code === 200){
-    message.info(res.data.msg)
-  }
+  //const res = await testApi();
+  //if(res.data.code === 200){
+  //  message.info(res.data.msg)
+  //}
+  router.push("/about");
 }
 
 const forget_pwd = async () => {

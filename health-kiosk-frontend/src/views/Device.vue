@@ -6,7 +6,7 @@
           <div style="display: flex;">
             <h2>{{ $t('device.title') }}</h2>
             <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addDeviceView = true; editable = true">{{ $t('device.add_button') }}</n-button>
+              @click="addDeviceView = true; editable = true" v-show="addDevicePermission">{{ $t('device.add_button') }}</n-button>
           </div>
         
             <n-data-table
@@ -38,6 +38,14 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();
 const addDeviceView = ref<boolean>(false)
+
+let rawPermission: string | null = localStorage.getItem("role");
+let addDevicePermissionNumber : number = 0;
+let addDevicePermission = ref<boolean>(false);
+if(rawPermission!==null){
+  addDevicePermissionNumber = Number.parseInt(rawPermission);
+  addDevicePermission.value = (addDevicePermissionNumber >= 3) ? true : false;
+}
 
 const message = useMessage();
 const dialog = useDialog();
