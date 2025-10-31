@@ -35,7 +35,7 @@ pool.getConnection((err, connection) => {
 // 封装异步方法
 const db = {
   async: {
-    // 查询多条数据
+    // Select data
     all: (sql, params) => {
       return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, rows) => {
@@ -48,7 +48,7 @@ const db = {
       });
     },
 
-    // 执行 SQL 语句（如 INSERT, UPDATE, DELETE）
+    // Insert, Update, Delete data
     run: (sql, params) => {
       return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, result) => {
@@ -63,5 +63,4 @@ const db = {
   },
 };
 
-// 导出模块
 module.exports = { db,genid };
