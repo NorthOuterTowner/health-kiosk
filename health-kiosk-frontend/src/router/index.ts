@@ -10,6 +10,7 @@ import AdminIntruction from "../views/adminIntruction.vue";
 import SelfExam from "../views/SelfExam.vue";
 import UserIntruction from "../views/userIntruction.vue";
 import About from "../views/About.vue";
+import Role from "../views/roleManage.vue"
 import Forbidden403 from "../views/statusViews/Forbidden403.vue";
 import NotFound404 from "../views/statusViews/NotFound404.vue";
 import Server500 from "../views/statusViews/Server500.vue";
@@ -64,6 +65,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/about",
     name: "About",
     component: About
+  },
+  {
+    path: "/role",
+    name: "Role",
+    component: Role
   },
   {
     path: "/403",
