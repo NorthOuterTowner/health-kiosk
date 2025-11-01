@@ -157,4 +157,82 @@ router.post("/useChange", async (req,res)=> {
   }
 });
 
+router.post("/delete", async (req,res) => {
+  const name = req.body.name;
+  const searchSql = "select 1 from `role` where `role_name` = ? ;";
+  try {
+    const { err, rows } = await db.async.all(searchSql,[name]);
+    if (rows.length == 0) {
+      return res.status(200).json({
+        code:400,
+        msg:"该角色不存在"
+      })
+    }
+    if (err!=null){
+      return res.status(200).json({
+        code:500,
+        msg: "服务器错误"
+    })
+    }
+  }catch(err) {
+    return res.status(200).json({
+      code:500,
+      msg: "服务器错误"
+    })
+  }
+  const delSql = "delete from `role` where `role_name` = ?;";
+  try {
+    await db.async.run(delSql,[name]);
+    return res.status(200).json({
+      code:200,
+      msg:"删除成功"
+    });
+  }catch(err){
+    return res.status(200).json({
+      code:500,
+      msg:"服务器错误"
+    })
+  }
+})
+
+router.post("/update", async (req,res) => {
+  const { role_name, remark, use } = req.body;
+
+  const searchSql = "select 1 from `role` where `role_name` = ? ;";
+  try {
+    const { err, rows } = await db.async.all(searchSql,[role_name]);
+    if (rows.length == 0) {
+      return res.status(200).json({
+        code:400,
+        msg:"该角色不存在"
+      })
+    }
+    if (err!=null){
+      return res.status(200).json({
+        code:500,
+        msg: "服务器错误"
+    })
+    }
+  }catch(err) {
+    return res.status(200).json({
+      code:500,
+      msg: "服务器错误"
+    })
+  }
+
+  const updateSql = "update `role` set `role_name` = ?, `remark` = ?, `use` = ? ;";
+  try {
+    await db.async.run(updateSql,[role_name,remark,use]);
+    return res.status(200).json({
+      code:200,
+      msg:"更新成功"
+    })
+  }catch (err) {
+    return res.status(200).json({
+      code:500,
+      msg: "服务器错误"
+    })
+  }
+})
+
 module.exports = router

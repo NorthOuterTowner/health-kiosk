@@ -86,6 +86,7 @@ app.use("/examitem",require("./router/examItemManage"))
 app.use("/captcha",require("./router/captcha"))
 app.use("/search",require("./router/search"))
 app.use("/role",require("./router/role"))
+app.use("/permission",require("./router/permission"))
 
 app.listen(port,'0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);

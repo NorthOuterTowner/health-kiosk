@@ -4,7 +4,7 @@ const router = express.Router()
 const {db,genid} = require('../db/dbUtils');
 
 /**
- * @api {get} /role/config Get Role Permission Config
+ * @api {get} /permission/config Get Role Permission Config
  * @apiName GetRolePermissionConfig
  * @apiGroup Role
  * @apiPermission Authenticated
@@ -20,7 +20,7 @@ const {db,genid} = require('../db/dbUtils');
  *     {
  *       "key": "system_manage",
  *       "permission": [1, 2, 3]
- *     }
+ *     }...
  *   ],
  *   "cnt": 1
  * }
