@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import {
   ChevronDownIcon,
   InboxIcon,
@@ -66,6 +66,9 @@ import {
   FileUser
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { getPermissions } from '../api/permission'
+
+let permissions = {};
 
 const { locale } = useI18n()
 
@@ -98,7 +101,7 @@ const toggleSection = (section) => {
  * 4 => 超级管理员（可进行管理员授权）
  * 5 => 开发者（可访问测试和开发期的内容）
  */
-const menuConfig = [
+let menuConfig = [
   {
     // 用户管理模块
     key: 'users',
@@ -107,6 +110,16 @@ const menuConfig = [
     role: [3,4,5],
     children: [
       { key: 'users:list',path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
+    ]
+  },
+  {
+    //权限模块
+    key: 'role',
+    title: 'sidebar.role.title',
+    icon: UserStar,
+    role:[1],
+    children: [
+      { key: 'role:role', path: '/role', name: 'sidebar.role.role', icon: UserStar, role: [1]}
     ]
   },
   { 
@@ -176,8 +189,48 @@ function filterMenu(config, role) {
     .filter(section => section.children.length > 0 || !section.children)
 }
 
-const visibleMenuConfig = filterMenu(menuConfig, visitRight);
-console.log(visibleMenuConfig)
+const visibleMenuConfig = ref([])
+visibleMenuConfig.value = filterMenu(menuConfig, visitRight);
+
+onMounted(async () => {
+  // 获取权限数据
+  const res = await getPermissions();
+  if (!res || !res.data.config) return;
+
+  const permissionList = res.data.config; // [{key, permission}, ...]
+  console.log(permissionList)
+  // 重置每个菜单及子菜单的 role
+  for (let menu of menuConfig) {
+    menu.role = [];
+    if (menu.children) {
+      for (let sub of menu.children) {
+        sub.role = [];
+      }
+    }
+  }
+
+  // 根据 permissionList 填充 role
+  for (const { key, permission } of permissionList) {
+    // 先匹配一级菜单
+    const foundMenu = menuConfig.find(m => m.key === key);
+    if (foundMenu) {
+      console.log("setset")
+      foundMenu.role = permission;
+      continue;
+    }
+
+    // 再匹配子菜单
+    for (let menu of menuConfig) {
+      if (!menu.children) continue;
+      const sub = menu.children.find(child => child.key === key);
+      if (sub) {
+        sub.role = permission;
+        break;
+      }
+    }
+  }
+  visibleMenuConfig.value = filterMenu(menuConfig, visitRight);
+});
 
 </script>
 
