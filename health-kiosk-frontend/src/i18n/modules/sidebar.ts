@@ -3,7 +3,8 @@ export const sidebarMessages = {
         title: "健康检测系统后台",
         users: {
             title: "用户管理",
-            list: "用户列表"
+            list: "用户列表",
+            role: "角色管理"
         },
         devices: {
             title: "软件版本管理",
@@ -28,13 +29,18 @@ export const sidebarMessages = {
             userintruction: "用户使用说明",
             about:"关于本项目",
             adminintruction: "管理员使用说明"
+        },
+        role: {
+            title: "权限管理",
+            role: "角色列表"
         }
     },
     en: {
         title: "",
         users: {
             title:"User Management",
-            list: "User list"
+            list: "User list",
+            role: "Role list"
         },
         devices: {
             title: "Software Version Management",
@@ -59,6 +65,10 @@ export const sidebarMessages = {
             userintruction: "user intruction",
             about: "about",
             adminintruction: "admin intruction"
+        },
+        role: {
+            title: "Permission Management",
+            role: "Role List"
         }
     }
 }
