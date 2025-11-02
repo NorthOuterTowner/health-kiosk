@@ -19,8 +19,25 @@ export function deleteRole (name: string) {
     })
 }
 
-export function updateRole (name: string) {
+export function updateRole (id: string, name: string, remark: string, use: number) {
     return instance.post("/role/update",{
-        role_name:name
+        role_id: id,
+        role_name:name,
+        remark,
+        use
+    })
+}
+
+export function enableRole (name: string) {
+    return instance.post("/role/useChange",{
+        role_name: name,
+        use: 1
+    })
+}
+
+export function disableRole (name: string) {
+    return instance.post("/role/useChange",{
+        role_name: name,
+        use: 0
     })
 }

@@ -27,6 +27,7 @@
               v-if="editingItem"
               :role="editingItem"
               :editable="editable"
+              @update="updatePage"
               @close="editingItem=null"
             />
 
@@ -39,7 +40,7 @@ import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
 import AddRole from '../components/AddRole.vue';
-import { deleteRole, addRole, updateRole, getRoles } from '../api/role';
+import { deleteRole, enableRole, disableRole, getRoles } from '../api/role';
 import { useI18n } from 'vue-i18n'
 import RoleInfo from '../components/roleInfo.vue';
 
@@ -60,7 +61,7 @@ const updatePage = ()=>{
 }
 
 async function handleDelete(row: any){
-  const res = await deleteRole(row.name);
+  const res = await deleteRole(row.role_name);
   console.log(res.data)
   if(res.data.code === '200'){
     await fetchRoles()
@@ -80,6 +81,19 @@ async function handleEdit(row: any) {
   editable.value = true;
 }
 
+async function handleUseChange(row: any) {
+  if(row.use == '1'){
+    await disableRole(row.role_name);
+  }else if(row.use == '0'){
+    await enableRole(row.role_name);
+  }else{
+    message.error("系统出错啦")
+    return ;
+  }
+  await fetchRoles();
+  return;
+}
+
 const roles = ref<any[]>([]);
 
 const columns = [
@@ -97,7 +111,7 @@ const columns = [
     title: t('role.columns.status'),
     key: "status",
     render(row: any) {
-      return row.status == '1' ? t('role.add_item.enable') : t('role.add_item.disable')
+      return row.use == '1' ? t('role.add_item.enable') : t('role.add_item.disable')
     }
   },
   {
@@ -138,6 +152,16 @@ const columns = [
             onClick: () => handleEdit(row),
           },
           { default: () => t("utils.edit") }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "info",
+            style: "margin-right:6px;",
+            onClick: () => handleUseChange(row),
+          },
+          { default: () => t(`role.use${row.use}`)}
         )
       ];
     },
@@ -166,7 +190,6 @@ async function confirmDelete(row: any) {
 const fetchRoles = async () => {
   try {
     const res = await getRoles();
-    console.log(res)
     roles.value = res.data.roles || [];
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {

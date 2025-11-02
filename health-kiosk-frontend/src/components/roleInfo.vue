@@ -20,37 +20,10 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onBeforeMount, onBeforeUnmount, reactive, toRefs, watch } from "vue";
-import { addExamItemApi, updateExamItemApi } from "../api/examitem";
+<script setup lang="ts">
+import { ref, reactive, toRefs, watch } from "vue";
+import { updateRole } from "../api/role";
 import { useI18n } from "vue-i18n";
-import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
-import "@wangeditor/editor/dist/css/style.css"
-
-// 编辑器引用
-const editorRef = ref(null)
-
-const readonlyEditorRef = ref(null)
-
-const toolbarConfig = {
-  excludeKeys: ["fullScreen","group-video"]
-}   // 工具栏配置
-const editorConfig = { placeholder: "请输入内容..." }
-const readonlyConfig = { readOnly: true }  // 只读配置
-
-const handleCreated = (editor) => {
-  editorRef.value = editor
-}
-
-const handleCreatedReadonly = (editor) => {
-  readonlyEditorRef.value = editor
-  editor.disable() // 禁止编辑
-}
-
-onBeforeUnmount(() => {
-  if (editorRef.value) editorRef.value.destroy()
-  if (readonlyEditorRef.value) readonlyEditorRef.value.destroy()
-})
 
 const { t } = useI18n();
 
@@ -72,23 +45,23 @@ const localItem = reactive({ ...props.role });
 
 const save = async () => {
   try {
-    const { id, name, abbreviation, description, status, usage } = localItem;
-    console.log(usage)
-    const res = await updateExamItemApi(id, name, status, description, abbreviation, usage); // 调用后端接口
+    const { role_id, role_name, remark, use } = localItem;
+    const res = await updateRole(role_id, role_name, remark, use); // 调用后端接口
     if(res.data.code == 200){
         console.log("update success")
     }else{
         console.log(res)
     }
-    emit("update",{ ...localItem }); // 通知父组件更新表格
+    emit("update",{ ...localItem });
+    emit("close")
   } catch (err) {
     console.error("更新失败", err);
   }
 };
 
 // 当 props.user 改变时，更新本地状态
-watch(() => props.user, (newVal) => {
-  Object.assign(localUser, newVal);
+watch(() => props.role, (newVal) => {
+  Object.assign(localItem, newVal);
 });
 </script>
 

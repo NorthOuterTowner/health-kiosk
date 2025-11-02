@@ -32,7 +32,8 @@ export const sidebarMessages = {
         },
         role: {
             title: "权限管理",
-            role: "角色列表"
+            role: "角色列表",
+            permission: "权限授予"
         }
     },
     en: {

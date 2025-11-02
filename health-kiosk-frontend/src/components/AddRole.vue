@@ -2,6 +2,8 @@
   <div class="overlay-child">
     <div class="user-info">
       <h3>{{ $t(`role.add_item.${header}`) }}</h3>
+      
+      <label>id:   <input v-model="localItem.id" /></label>
       <label>{{ $t('role.add_item.name') }}:   <input v-model="localItem.name" /></label>
       <label>{{ $t('role.add_item.status') }}:   
         <n-select 
@@ -20,9 +22,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, toRefs, watch } from "vue";
-import { addExamItemApi } from "../api/examitem";
+import { addRole } from "../api/role";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -44,8 +46,8 @@ const localItem = reactive({ ...props.examItem });
 
 const save = async () => {
   try {
-    const { name, abbreviation, description, status } = { ... localItem}
-    const res = await addExamItemApi(name, abbreviation, description, status); // 调用后端接口
+    const { id, name, description, status } = { ... localItem}
+    const res = await addRole(id, name, description, status); // 调用后端接口
     if(res.data.code == 200){
         console.log("add success")
     }else{

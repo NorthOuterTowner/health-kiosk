@@ -63,7 +63,9 @@ import {
   HeartPulse,
   FilePenLine,
   FileText,
-  FileUser
+  FileUser,
+  CircleChevronRight,
+  TicketCheck
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { getPermissions } from '../api/permission'
@@ -109,17 +111,9 @@ let menuConfig = [
     icon: UserStar,
     role: [3,4,5],
     children: [
-      { key: 'users:list',path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] }
-    ]
-  },
-  {
-    //权限模块
-    key: 'role',
-    title: 'sidebar.role.title',
-    icon: UserStar,
-    role:[1],
-    children: [
-      { key: 'role:role', path: '/role', name: 'sidebar.role.role', icon: UserStar, role: [1]}
+      { key: 'users:list',path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] },
+      { key: 'users:role', path: '/role', name: 'sidebar.role.role', icon: CircleChevronRight, role: [3,4,5]},
+      { key: 'users:permission', path: 'permission', name: 'sidebar.role.permission' , icon: TicketCheck, role: [3,4,5]}
     ]
   },
   { 
@@ -129,7 +123,7 @@ let menuConfig = [
     icon: LayoutGrid,
     role: [0,1,2,3,4,5],
     children: [
-      { key: 'devices:list', path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [0,1,2,3,4,5] }
+      { key: 'app:list', path: '/device', name: 'sidebar.devices.list', icon: LayoutGrid, role: [0,1,2,3,4,5] }
     ]
   },
   {

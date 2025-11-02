@@ -20,7 +20,9 @@ export const roleMessages = {
             enable: "启用",
             disable: "不启用"
         },
-        info: "查看详情"
+        info: "查看详情",
+        use1: "停用",
+        use0: "启用"
     },
     en: {
 

@@ -94,7 +94,6 @@ const localItem = reactive({ ...props.examItem });
 const save = async () => {
   try {
     const { id, name, abbreviation, description, status, usage } = localItem;
-    console.log(usage)
     const res = await updateExamItemApi(id, name, status, description, abbreviation, usage); // 调用后端接口
     if(res.data.code == 200){
         console.log("update success")

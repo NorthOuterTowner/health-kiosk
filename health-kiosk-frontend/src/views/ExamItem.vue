@@ -173,7 +173,6 @@ const fetchExamItems = async () => {
   try {
     const res = await getExamItemInfoApi(pagination.page, pagination.pageSize);
     examItems.value = res.data.rows || [];
-    console.log(res.data)
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
     examItems.value = [];
