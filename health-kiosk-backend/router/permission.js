@@ -124,7 +124,7 @@ router.post("/reassign", async (req, res) => {
       return res.status(200).json({ 
         code: 500, 
         msg: "服务器错误（插入新权限失败）" 
-    });
+      });
     }
   }
 
@@ -133,5 +133,55 @@ router.post("/reassign", async (req, res) => {
     msg: "角色权限已重新分配成功"
   });
 });
+
+/**
+ * @api {get} /permission/functionTree Get Function Tree
+ * @apiName GetFunctionTree
+ * @apiGroup Role
+ * @apiPermission Authenticated
+ *
+ * @apiDescription
+ * Retrieve the list of all functions and their hierarchical relationships.
+ * Useful for displaying the permission tree structure in frontend.
+ *
+ * @apiSuccessExample {json} Success Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": 200,
+ *   "functions": [
+ *     { "function_id": 1, "function_key": "system_manage", "parent": 0 },
+ *     { "function_id": 2, "function_key": "user_manage", "parent": 1 }
+ *   ]
+ * }
+ *
+ */
+router.get("/functionTree", async (req,res) => {
+  const treeSql = "select `function_id`, `function_key`, `parent` from `function`;";
+  try {
+    const { err, rows } = await db.async.all(treeSql,[]);
+    if(err == null && rows.length > 0) {
+      return res.status(200).json({
+        code:200,
+        functions: rows
+      });
+    }else if( rows.length === 0 ) {
+      return res.status(200).json({
+        code:200,
+        msg: "未找到数据"
+      });
+    }else {
+      return res.status(200).json({ 
+        code: 500, 
+        msg: "服务器错误（插入新权限失败）" 
+      });
+    }
+  }
+  catch (err) {
+    return res.status(200).json({ 
+        code: 500, 
+        msg: "服务器错误（插入新权限失败）" 
+      });
+  }
+})
 
 module.exports = router

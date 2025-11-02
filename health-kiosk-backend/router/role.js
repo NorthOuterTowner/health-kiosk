@@ -157,6 +157,24 @@ router.post("/useChange", async (req,res)=> {
   }
 });
 
+/**
+ * @api {post} /role/delete Delete Role
+ * @apiName DeleteRole
+ * @apiGroup Role
+ * @apiPermission Authenticated
+ *
+ * @apiDescription
+ * Delete a role from the system by its name.
+ *
+ * @apiBody {String} name Role name to delete
+ *
+ * @apiSuccessExample {json} Success Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": 200,
+ *   "msg": "删除成功"
+ * }
+ */
 router.post("/delete", async (req,res) => {
   const name = req.body.name;
   const searchSql = "select 1 from `role` where `role_name` = ? ;";
@@ -195,12 +213,33 @@ router.post("/delete", async (req,res) => {
   }
 })
 
+/**
+ * @api {post} /role/update Update Role
+ * @apiName UpdateRole
+ * @apiGroup Role
+ * @apiPermission Authenticated
+ *
+ * @apiDescription
+ * Update role information, including name, remark, and usage status.
+ *
+ * @apiBody {String} role_id Role ID to update
+ * @apiBody {String} role_name Updated role name
+ * @apiBody {String} remark Updated remark
+ * @apiBody {Number} use Updated status (1=enabled, 0=disabled)
+ *
+ * @apiSuccessExample {json} Success Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": 200,
+ *   "msg": "更新成功"
+ * }
+ */
 router.post("/update", async (req,res) => {
-  const { role_name, remark, use } = req.body;
+  const { role_id, role_name, remark, use } = req.body;
 
-  const searchSql = "select 1 from `role` where `role_name` = ? ;";
+  const searchSql = "select 1 from `role` where `role_id` = ? ;";
   try {
-    const { err, rows } = await db.async.all(searchSql,[role_name]);
+    const { err, rows } = await db.async.all(searchSql,[role_id]);
     if (rows.length == 0) {
       return res.status(200).json({
         code:400,
@@ -220,9 +259,9 @@ router.post("/update", async (req,res) => {
     })
   }
 
-  const updateSql = "update `role` set `role_name` = ?, `remark` = ?, `use` = ? ;";
+  const updateSql = "update `role` set `role_name` = ?, `remark` = ?, `use` = ? where `role_id` = ? ;";
   try {
-    await db.async.run(updateSql,[role_name,remark,use]);
+    await db.async.run(updateSql,[role_name,remark,use,role_id]);
     return res.status(200).json({
       code:200,
       msg:"更新成功"

@@ -122,7 +122,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         user.token = token
         //const updateSql = "UPDATE `user` SET `token` = ? WHERE `account` = ?";
         //await db.async.run(updateSql, [token, user.account]);
-        return res.status(200).json({ 
+        return res.status(200).json({
           code: 200, 
           msg: "登录成功",
           user
