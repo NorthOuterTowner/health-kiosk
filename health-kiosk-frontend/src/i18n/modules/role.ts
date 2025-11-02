@@ -22,9 +22,43 @@ export const roleMessages = {
         },
         info: "查看详情",
         use1: "停用",
-        use0: "启用"
+        use0: "启用",
+        assign: {
+            title: "角色权限分配",
+            save: "保存权限",
+            select_role: "选择角色",
+            permission_tree: "权限树"
+        }
     },
     en: {
-
+        title: "Role Management",
+        add_button: "Add New Role",
+        columns: {
+            name: "Role",
+            status: "Status",
+            description: "Description",
+            action: "Action"
+        },
+        add_item: {
+            edit_title: "Edit Role Information",
+            view_title: "View Role Information",
+            id: "ID",
+            name: "Role Name",
+            status: "Role Status",
+            description: "Role Description",
+            add_button: "Add",
+            placeholder: "Select Enable/Disable",
+            enable: "Enable",
+            disable: "Disable"
+        },
+        info: "View Details",
+        use1: "Disable",
+        use0: "Enable",
+        assign: {
+            title: "Role Permission Assignment",
+            save: "Save Permissions",
+            select_role: "Select Role",
+            permission_tree: "Permission Tree"
+        }
     }
 }

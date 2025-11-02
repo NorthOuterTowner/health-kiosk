@@ -69,7 +69,8 @@ export const sidebarMessages = {
         },
         role: {
             title: "Permission Management",
-            role: "Role List"
+            role: "Role List",
+            permission: "Permission Grant"
         }
     }
 }
