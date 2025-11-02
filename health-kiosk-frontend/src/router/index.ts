@@ -14,6 +14,7 @@ import Role from "../views/roleManage.vue"
 import Forbidden403 from "../views/statusViews/Forbidden403.vue";
 import NotFound404 from "../views/statusViews/NotFound404.vue";
 import Server500 from "../views/statusViews/Server500.vue";
+import RoleAssign from "../views/RoleAssign.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -70,6 +71,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/role",
     name: "Role",
     component: Role
+  },
+  {
+    path: "/roleassign",
+    name: "RoleAssign",
+    component: RoleAssign
   },
   {
     path: "/403",

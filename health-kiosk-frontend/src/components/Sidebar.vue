@@ -65,7 +65,10 @@ import {
   FileText,
   FileUser,
   CircleChevronRight,
-  TicketCheck
+  TicketCheck,
+  User,
+  ShieldUser,
+  Info
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { getPermissions } from '../api/permission'
@@ -108,12 +111,12 @@ let menuConfig = [
     // 用户管理模块
     key: 'users',
     title: 'sidebar.users.title',
-    icon: UserStar,
+    icon: User,
     role: [3,4,5],
     children: [
       { key: 'users:list',path: '/user', name: 'sidebar.users.list', icon: UserStar, role: [3,4,5] },
       { key: 'users:role', path: '/role', name: 'sidebar.role.role', icon: CircleChevronRight, role: [3,4,5]},
-      { key: 'users:permission', path: 'permission', name: 'sidebar.role.permission' , icon: TicketCheck, role: [3,4,5]}
+      { key: 'users:permission', path: '/roleAssign', name: 'sidebar.role.permission' , icon: TicketCheck, role: [3,4,5]}
     ]
   },
   { 
@@ -140,10 +143,10 @@ let menuConfig = [
     // 个人信息设置
     key: 'info',
     title: 'sidebar.info.title',
-    icon: UserIcon,
+    icon: ShieldUser,
     role: [1,2,3,4,5],
     children: [
-      { key: 'info:selfinfo', path: '/selfinfo', name: 'sidebar.info.watch', icon: UserIcon, role: [1,2,3,4,5] },
+      { key: 'info:selfinfo', path: '/selfinfo', name: 'sidebar.info.watch', icon: Info, role: [1,2,3,4,5] },
       { key: 'info:selfexam', path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] }
     ]
   },
