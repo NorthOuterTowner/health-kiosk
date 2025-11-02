@@ -28,7 +28,8 @@ const {db,genid} = require('../db/dbUtils');
 router.get("/config", async (req, res) => {
   const sql = `
     SELECT
-      \`function\`.\`function_key\` AS \`key\`,
+      \`function\`.\`function_key\` AS \`key\`, 
+      \`function\`.\`function_id\` AS \`function_id\`,
       GROUP_CONCAT(DISTINCT \`permission\`.\`role_id\` ORDER BY \`permission\`.\`role_id\` ASC) AS permission
     FROM \`function\`
     LEFT JOIN \`permission\` ON \`function\`.\`function_id\` = \`permission\`.\`function_id\`
@@ -50,7 +51,8 @@ router.get("/config", async (req, res) => {
     key: row.key,
     permission: row.permission
       ? row.permission.split(',').map(id => Number(id))
-      : [] // 没权限时返回空数组
+      : [], // 没权限时返回空数组
+    function_id: row.function_id
   }));
 
   return res.status(200).json({
@@ -80,15 +82,15 @@ router.get("/config", async (req, res) => {
  * }
  */
 router.post("/reassign", async (req, res) => {
-  const { assignName, permissions } = req.body; // permissions 是一个数组
+  const { assignId, permissions } = req.body; // permissions 是一个数组
 
-  if (!assignName || !Array.isArray(permissions)) {
+  if (!assignId || !Array.isArray(permissions)) {
     return res.status(400).json({ code: 400, msg: "参数错误" });
   }
 
   // search users' id 
-  const findRoleSql = "SELECT `role_id` FROM `role` WHERE `role_name` = ?;";
-  const { err: findErr, rows } = await db.async.all(findRoleSql, [assignName]);
+  const findRoleSql = "SELECT `role_id` FROM `role` WHERE `role_id` = ?;";
+  const { err: findErr, rows } = await db.async.all(findRoleSql, [assignId]);
   if (findErr) {
     return res.status(200).json({
          code: 500, 
@@ -101,12 +103,11 @@ router.post("/reassign", async (req, res) => {
         msg: "未找到该角色" 
     });
   }
-  const roleId = rows[0].role_id;
 
   // delete old permissions
   const delSql = "DELETE FROM `permission` WHERE `role_id` = ?;";
   try {
-    await db.async.run(delSql, [roleId]);
+    await db.async.run(delSql, [assignId]);
   } catch (err) {
     return res.status(500).json({ 
         code: 500, 
@@ -116,7 +117,7 @@ router.post("/reassign", async (req, res) => {
 
   // insert new permissions
   if (permissions.length > 0) {
-    const values = permissions.map(fid => [roleId, fid]);
+    const values = permissions.map(fid => [assignId, fid]);
     const insertSql = "INSERT INTO `permission`(`role_id`, `function_id`) VALUES ?;";
     try {
       await db.async.run(insertSql, [values]);
@@ -156,7 +157,7 @@ router.post("/reassign", async (req, res) => {
  *
  */
 router.get("/functionTree", async (req,res) => {
-  const treeSql = "select `function_id`, `function_key`, `parent` from `function`;";
+  const treeSql = "select `function_id`, `remark`, `parent` from `function`;";
   try {
     const { err, rows } = await db.async.all(treeSql,[]);
     if(err == null && rows.length > 0) {
