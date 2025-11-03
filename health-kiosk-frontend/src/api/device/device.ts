@@ -3,7 +3,7 @@
  * release type representative by '1' and debug type representative by '2'
  */
 
-import instance from "./axios";
+import instance from "../axios";
 import { version } from 'vue';
 
 export function getDeviceInfoApi(page: Number, limit: Number){

@@ -71,7 +71,7 @@ import {
   Info
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
-import { getPermissions } from '../api/permission'
+import { getPermissions } from '../api/permission/permission'
 
 let permissions = {};
 

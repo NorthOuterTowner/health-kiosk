@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "../axios";
 
 export function getRoles () {
     return instance.get("/role/list");

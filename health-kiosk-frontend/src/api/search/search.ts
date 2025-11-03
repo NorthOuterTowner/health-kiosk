@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "../axios";
 
 export function searchUser (keyword: string) {
     return instance.get("/search/user",{

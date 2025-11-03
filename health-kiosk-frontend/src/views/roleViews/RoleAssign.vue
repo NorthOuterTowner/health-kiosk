@@ -48,8 +48,8 @@
 import { ref, onMounted } from "vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useMessage } from "naive-ui";
-import { getRoles } from "../api/role";
-import { getPermissionTree, reassign, getPermissionsConfig } from "../api/permission";
+import { getRoles } from "../../api/permission/role";
+import { getPermissionTree, reassign, getPermissionsConfig } from "../../api/permission/permission";
 import { NTree } from "naive-ui";
 const message = useMessage();
 

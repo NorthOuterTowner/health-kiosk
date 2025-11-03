@@ -1,20 +1,16 @@
 <template>
   <div class="overlay-child">
     <div class="user-info">
-      <h3>{{ $t(`examitem.add_item.${header}`) }}</h3>
-      <label>{{ $t('examitem.add_item.name') }}:   <input v-model="localItem.name" /></label>
-      <label>{{ $t('examitem.add_item.status') }}:   
-        <n-select 
-          v-model:value="localItem.status"
-          :options="statusOptions"
-          :placeholder="$t('examitem.add_item.placeholder')"
-          style="margin-bottom: 16px; width: 200px;"
-        />
-      </label>
-      <label>{{ $t('examitem.add_item.abbreviation') }}:  <input v-model="localItem.abbreviation"/></label>
-      <label>{{ $t('examitem.add_item.description') }}:   <input v-model="localItem.description"/></label>
+      <h3>{{ $t(`user.add_user.${header}`) }}</h3>
+      <label>ID:     <input v-model="localUser.account"></input></label>
+      <label>{{ $t('user.add_user.name') }}:  <input v-model="localUser.name" /></label>
+      <label>{{ $t('user.add_user.pwd') }}:   <input v-model="localUser.pwd" /></label>
+      <label>{{ $t('user.add_user.gender') }}:   <input v-model="localUser.gender"/></label>
+      <label>{{ $t('user.add_user.age') }}:  <input v-model="localUser.age"/></label>
+      <label>{{ $t('user.add_user.height') }}:   <input v-model="localUser.height"/></label>
+      <label>{{ $t('user.add_user.weight') }}:   <input v-model="localUser.weight"/></label>
       <div class="buttons">
-        <button @click="save">{{ $t('examitem.add_item.add_button') }}</button>
+        <button @click="save">{{ $t('user.add_user.add_button') }}</button>
         <button @click="$emit('close')">{{ $t('utils.cancel') }}</button>
       </div>
     </div>
@@ -23,30 +19,24 @@
 
 <script setup>
 import { reactive, toRefs, watch } from "vue";
-import { addExamItemApi } from "../api/examitem";
+import { editApi,addUserApi } from "../../api/user/user"; // 调用后端更新接口
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const props = defineProps({
-  examItem: Object,
+  user: Object,
   editable: Boolean
 });
-
-const statusOptions = [
-    {label: t('examitem.add_item.enable'), value: 1},
-    {label: t('examitem.add_item.disable'), value: 0},
-]
 
 const header = props.editable ? "edit_title" : "view_title"
 
 const emit = defineEmits(["close", "update"]);
 
-const localItem = reactive({ ...props.examItem });
+const localUser = reactive({ ...props.user });
 
 const save = async () => {
   try {
-    const { name, abbreviation, description, status } = { ... localItem}
-    const res = await addExamItemApi(name, abbreviation, description, status); // 调用后端接口
+    const res = await addUserApi(localUser); // 调用后端接口
     if(res.data.code == 200){
         console.log("add success")
     }else{
@@ -59,8 +49,8 @@ const save = async () => {
 };
 
 // 当 props.user 改变时，更新本地状态
-watch(() => props.examItem, (newVal) => {
-  Object.assign(localItem, newVal);
+watch(() => props.user, (newVal) => {
+  Object.assign(localUser, newVal);
 });
 </script>
 

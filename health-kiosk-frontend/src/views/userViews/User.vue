@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { ref, onMounted, h, reactive } from "vue";
 import Sidebar from "../components/Sidebar.vue";
-import { UserListApi, authApi,deleteUserApi } from "../api/user";
+import { UserListApi, authApi,deleteUserApi } from "../../api/user/user";
 import { NButton } from "naive-ui";
 import UserInfo from "../components/UserInfo.vue";
 import { useMessage, useDialog } from 'naive-ui'

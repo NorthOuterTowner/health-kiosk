@@ -135,7 +135,7 @@ import {
 
 import type { FormInst, FormRules, UploadFileInfo } from "naive-ui";
 import Sidebar from "../components/Sidebar.vue";
-import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi, getInfoApi } from "../api/user";
+import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi, getInfoApi } from "../../api/user/user";
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n();
@@ -223,7 +223,7 @@ const reset_form = () => {
 }
 
 import type { UploadCustomRequestOptions } from "naive-ui";
-import router from "../router";
+import router from "../../router";
 
 const handleUpload = async (options: UploadCustomRequestOptions) => {
   if (options.file && options.file.file) {

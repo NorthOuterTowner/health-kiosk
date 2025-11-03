@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "../axios";
 
 //login api
 export function loginApi(account: string, pwd: string, captchaId: string, captcha: string) {

@@ -23,7 +23,7 @@
 
 <script setup lang ="ts">
 import { reactive, toRefs, watch, ref, version } from "vue";
-import { addDeviceApi, updateDeviceApi } from "../api/device";
+import { addDeviceApi, updateDeviceApi } from "../../api/device/device";
 import { pProps, useMessage } from "naive-ui";
 import { useI18n } from 'vue-i18n';
 

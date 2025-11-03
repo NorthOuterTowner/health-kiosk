@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref, onBeforeMount, onBeforeUnmount, reactive, toRefs, watch } from "vue";
-import { addExamItemApi, updateExamItemApi } from "../api/examitem";
+import { addExamItemApi, updateExamItemApi } from "../../api/examitem/examitem";
 import { useI18n } from "vue-i18n";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue"
 import "@wangeditor/editor/dist/css/style.css"

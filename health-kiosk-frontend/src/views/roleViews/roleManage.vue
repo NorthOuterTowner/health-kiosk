@@ -1,34 +1,36 @@
-<!-- Exam Item Management Page--> 
+<!-- Role Management Page--> 
 <template>
     <div class="layout">
         <Sidebar />
         <div class="device-page">
           <div style="display: flex;">
-            <h2>{{ $t('examitem.title') }}</h2>
+            <h2>{{ $t('role.title') }}</h2>
             <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addExamItemView = true; editable = true">{{ $t('examitem.add_button') }}</n-button>
+              @click="addRoleView = true; editable = true">{{ $t('role.add_button') }}</n-button>
           </div>
         
             <n-data-table
                 remote
                 :columns="columns"
-                :data="examItems"
+                :data="roles"
                 :pagination="pagination"
                 :bordered="true" 
                 class="dataTable"
             />
-            <AddExamItem
-              v-if="addExamItemView"
-              @close="addExamItemView = false"
+            <AddRole
+              v-if="addRoleView"
+              @close="addRoleView = false"
               @update="updatePage"
             />
-            <ExamItemInfo 
+
+            <RoleInfo
               v-if="editingItem"
-              :examItem="editingItem"
+              :role="editingItem"
               :editable="editable"
+              @update="updatePage"
               @close="editingItem=null"
-              @update="updateExamItem"
             />
+
         </div>
     </div>
 </template>
@@ -37,32 +39,32 @@
 import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import AddExamItem from '../components/AddExamItem.vue';
-import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../api/examitem';
+import AddRole from '../components/AddRole.vue';
+import { deleteRole, enableRole, disableRole, getRoles } from '../../api/permission/role';
 import { useI18n } from 'vue-i18n'
-import ExamItemInfo from '../components/ExamItemInfo.vue';
+import RoleInfo from '../components/roleInfo.vue';
 
 const { t } = useI18n();
-const addExamItemView = ref<boolean>(false)
+const addRoleView = ref<boolean>(false)
 
 const message = useMessage();
 const dialog = useDialog();
 
 const editable = ref(true)
-const currentExamItem = ref<any | null>(null);
+const currentRole = ref<any | null>(null);
 
 const editingItem = ref<any | null>(null);
 
 const updatePage = ()=>{
-  fetchExamItems();
-  addExamItemView.value = false;
+  fetchRoles();
+  addRoleView.value = false;
 }
 
 async function handleDelete(row: any){
-  const res = await deleteExamItemApi(row.id,row.name);
+  const res = await deleteRole(row.role_name);
   console.log(res.data)
   if(res.data.code === '200'){
-    await fetchExamItems()
+    await fetchRoles()
     message.info("删除成功")
   }else{
     message.error(res.data.msg);
@@ -79,39 +81,45 @@ async function handleEdit(row: any) {
   editable.value = true;
 }
 
-const updateExamItem = (updatedExamItem: any) => {
-  const index = examItems.value.findIndex(u => u.id === updatedExamItem.id);
-  if(index !== -1) {
-    examItems.value[index] = updatedExamItem;
+async function handleUseChange(row: any) {
+  if(row.use == '1'){
+    await disableRole(row.role_name);
+  }else if(row.use == '0'){
+    await enableRole(row.role_name);
+  }else{
+    message.error("系统出错啦")
+    return ;
   }
-  editingItem.value = null;
+  await fetchRoles();
+  return;
 }
 
-const examItems = ref<any[]>([]);
+const roles = ref<any[]>([]);
 
 const columns = [
   {
-    title: t('examitem.columns.name'),
-    key: "name",
+    title: "id",
+    key:"role_id",
+    width: 50
+  },
+  {
+    title: t('role.columns.name'),
+    key: "role_name",
     width: 100,
   },
   {
-    title: t('examitem.columns.status'),
+    title: t('role.columns.status'),
     key: "status",
     render(row: any) {
-      return row.status == '1' ? t('examitem.add_item.enable') : t('examitem.add_item.disable')
+      return row.use == '1' ? t('role.add_item.enable') : t('role.add_item.disable')
     }
   },
   {
-    title: t('examitem.columns.abbreviation'),
-    key: "abbreviation",
+    title: t('role.columns.description'),
+    key: "remark",
   },
   {
-    title: t('examitem.columns.description'),
-    key: "description",
-  },
-  {
-    title: t('examitem.columns.action'),
+    title: t('role.columns.action'),
     key: "actions",
     render(row: any) {
       return [
@@ -133,7 +141,7 @@ const columns = [
             style: "margin-right: 6px;",
             onClick: () => handleView(row),
           },
-          { default: () => t("examitem.info") }
+          { default: () => t("role.info") }
         ),
         h(
           NButton,
@@ -144,6 +152,16 @@ const columns = [
             onClick: () => handleEdit(row),
           },
           { default: () => t("utils.edit") }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "info",
+            style: "margin-right:6px;",
+            onClick: () => handleUseChange(row),
+          },
+          { default: () => t(`role.use${row.use}`)}
         )
       ];
     },
@@ -169,13 +187,13 @@ async function confirmDelete(row: any) {
   }
 }
 
-const fetchExamItems = async () => {
+const fetchRoles = async () => {
   try {
-    const res = await getExamItemInfoApi(pagination.page, pagination.pageSize);
-    examItems.value = res.data.rows || [];
+    const res = await getRoles();
+    roles.value = res.data.roles || [];
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
-    examItems.value = [];
+    roles.value = [];
     pagination.itemCount = 0;
   }
 };
@@ -188,16 +206,16 @@ const pagination = reactive({
   pageSizes: [5, 10, 20],
   onUpdatePage: (page: number) => {
     pagination.page = page;
-    fetchExamItems();
+    fetchRoles();
   },
   onUpdatePageSize: (pageSize: number) => {
     pagination.pageSize = pageSize;
     pagination.page = 1; 
-    fetchExamItems();
+    fetchRoles();
   }
 });
 
-onMounted(fetchExamItems)
+onMounted(fetchRoles)
 </script>
 
 <style scoped>

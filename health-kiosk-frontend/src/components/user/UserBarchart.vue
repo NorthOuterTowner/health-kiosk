@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue';
 import * as echarts from "echarts";
-import { userChartApi } from "../api/user";
+import { userChartApi } from "../../api/user/user";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();

@@ -17,7 +17,7 @@
 
 <script setup>
 import { reactive, toRefs, watch } from "vue";
-import { editApi } from "../api/user"; // 调用后端更新接口
+import { editApi } from "../../api/user/user"; // 调用后端更新接口
 
 const props = defineProps({
   user: Object,

@@ -102,8 +102,8 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
-import { loginApi, registerApi, testApi, getCaptchaInfoApi } from '../api/auth';
-import { resetPasswordApi } from "../api/user";
+import { loginApi, registerApi, testApi, getCaptchaInfoApi } from '../api/auth/auth';
+import { resetPasswordApi } from "../api/user/user";
 import { useMessage } from 'naive-ui'
 import { User } from 'lucide-vue-next';
 import { KeyRound,QrCode } from 'lucide-vue-next';

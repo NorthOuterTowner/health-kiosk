@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "../axios";
 import dayjs from "dayjs";
 
 export function UserListApi (page:Number,limit:Number) {

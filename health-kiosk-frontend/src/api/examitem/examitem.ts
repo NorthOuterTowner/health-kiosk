@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "../axios";
 
 export function getExamItemInfoApi(page: Number, limit: Number){
     return instance.get("/examitem/list",{
