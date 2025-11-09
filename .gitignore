@@ -42,3 +42,6 @@ fabric.properties
 
 # Keil Project files
 *.s
+
+/dataset/training2017
+/dataset/REFERENCE-v3.csv
