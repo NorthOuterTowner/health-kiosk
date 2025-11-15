@@ -1,16 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const {db,genid} = require('../db/dbUtils')
-const User = require('../entity/User')
-const crypto = require('crypto')
-const {v4:uuidv4} = require('uuid')
-
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { generateToken } = require('../utils/jwtHelper')
-const authMiddleware = require('../middleware/authMiddleware')
-const redisClient = require('../db/redis')
+import express from 'express';
+const router = express.Router();
+import { db, genid } from '../db/dbUtils.js';
+import User from '../entity/User.js';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { generateToken } from '../utils/jwtHelper.js';
+import authMiddleware from '../middleware/authMiddleware.js'
+import redisClient from '../db/redis.js';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -353,4 +352,4 @@ router.post('/addPicture', authMiddleware, upload.single('photo'),async (req,res
   }
 })
 
-module.exports = router
+export default router;

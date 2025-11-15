@@ -1,6 +1,6 @@
-const mysql = require("mysql2"); // 使用 mysql2 库
-const path = require("path");
-const Genid = require("../utils/SnowFlake");
+import mysql from 'mysql2'
+import path from 'path'
+import {Genid} from '../utils/SnowFlake.js';
 
 const genid = new Genid({WorkerId:1})
 
@@ -15,7 +15,9 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-require('events').EventEmitter.defaultMaxListeners = 150;
+import { EventEmitter } from 'events';
+
+EventEmitter.defaultMaxListeners = 150;
 
 pool.getConnection((err, connection) => {
   if (err) {
@@ -63,4 +65,4 @@ const db = {
   },
 };
 
-module.exports = { db,genid };
+export { db,genid };

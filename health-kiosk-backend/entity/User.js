@@ -1,6 +1,6 @@
-const express = require('express');
-const crypto = require('crypto');
-const {db,genid} = require('../db/dbUtils')
+import express from 'express'
+import crypto from 'crypto'
+import { db, genid} from '../db/dbUtils.js'
 
 class User {
     constructor({account,name,pwd}){
@@ -19,4 +19,4 @@ class User {
 
 }
 
-module.exports = User
+export default User;

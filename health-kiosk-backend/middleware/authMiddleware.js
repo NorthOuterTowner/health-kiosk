@@ -1,6 +1,5 @@
-// middleware/authMiddleware.js
-const { verifyToken,decodeToken } = require("../utils/jwtHelper");
-const {db,genId} = require("../db/dbUtils");
+import { verifyToken, decodeToken } from "../utils/jwtHelper.js";
+import { db, genid } from "../db/dbUtils.js";
 
 async function authMiddleware(req, res, next) {
   const authorization = req.headers.authorization;
@@ -17,12 +16,12 @@ async function authMiddleware(req, res, next) {
     const decoded = decodeToken(token);
     const account = decoded.data.account;
     const roleSQL = "select `role` from `user` where `account` = ? ;"
-    const {err, rows} = await db.async.all(roleSQL,[account])
+    const { err, rows } = await db.async.all(roleSQL, [account]);
 
-    if(err == null && rows.length > 0){
-      req.role = rows[0].role
-      req.account = account
-    }else{
+    if (err == null && rows.length > 0) {
+      req.role = rows[0].role;
+      req.account = account;
+    } else {
       return res.status(200).json({
         code: 401,
         msg: "无访问权限"
@@ -38,4 +37,4 @@ async function authMiddleware(req, res, next) {
   }
 }
 
-module.exports = authMiddleware;
+export default authMiddleware;

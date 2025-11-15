@@ -1,9 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const {db,genid} = require('../db/dbUtils');
-const { decodeToken } = require('../utils/jwtHelper');
-
-const path = require('path')
+import express from 'express';
+const router = express.Router();
+import { db, genid } from '../db/dbUtils.js';
+import User from '../entity/User.js';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { generateToken, decodeToken } from '../utils/jwtHelper.js';
+import authMiddleware from '../middleware/authMiddleware.js'
+import redisClient from '../db/redis.js';
 
 /**
  * @api {get} /examitem/list Get ExamItem List
@@ -162,4 +168,4 @@ router.post("/update",async(req,res) => {
     }
 });
 
-module.exports = router
+export default router;

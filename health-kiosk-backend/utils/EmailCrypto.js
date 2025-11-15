@@ -1,5 +1,5 @@
 // utils/emailCrypto.js
-const crypto = require('crypto');
+import crypto from 'crypto'
 
 const AES_KEY = Buffer.from(process.env.EMAIL_AES_KEY_BASE64, 'base64'); // 32 bytes
 const HMAC_KEY = Buffer.from(process.env.EMAIL_HMAC_KEY_BASE64, 'base64'); // 32 bytes
@@ -43,7 +43,7 @@ function emailIndexHash(email) {
   return `${hmac}`;
 }
 
-module.exports = {
+export {
   encryptEmail,
   decryptEmail,
   emailIndexHash,

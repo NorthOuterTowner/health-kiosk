@@ -1,12 +1,12 @@
 // routes/captcha.js
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const svgCaptcha = require("svg-captcha");
+import svgCaptcha from "svg-captcha";
 
-const redis = require("redis")
-const redisClient = require("../db/redis")
+import redis from "redis";
+import redisClient from "../db/redis.js";
 
 /**
  * @api {get} /captcha Get Captcha
@@ -54,4 +54,4 @@ router.get("/", async (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

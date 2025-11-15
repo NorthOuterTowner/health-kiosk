@@ -1,4 +1,4 @@
-var jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -20,4 +20,4 @@ function decodeToken(data){
     return jwt.verify(data,JWT_SECRET);
 }
 
-module.exports = {generateToken,verifyToken,decodeToken}
+export {generateToken,verifyToken,decodeToken}

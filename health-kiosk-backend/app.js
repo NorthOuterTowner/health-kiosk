@@ -1,21 +1,19 @@
-require('dotenv').config();
+import 'dotenv/config.js';
 
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import { db, genid } from './db/dbUtils.js';
+import redis from 'redis';
+import redisClient from './db/redis.js';
+import multer from 'multer';
+const upload = multer({ dest: 'uploads/' });
+import { spawn } from 'child_process';
+import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { verifyToken } from './utils/jwtHelper.js';
+
 const app = express();
 const port = process.env.PORT || 3000;
-
-const {db,genid} = require("./db/dbUtils")
-const redis = require("redis")
-const redisClient = require("./db/redis")
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const { spawn } = require("child_process");
-
-const rateLimit = require('express-rate-limit');
-
-const path = require('path');
-const { verifyToken } = require('./utils/jwtHelper');
 
 app.use(express.json());
 
@@ -28,10 +26,10 @@ app.use(express.json());
   next();
 });*/
 
-//启动常驻的子进程
+// 启动常驻的子进程
 const py = spawn("python", ["../face_recognition/face_service.py"]);
 
-const callbacks = [];
+const callbacks= [];
 
 py.stdout.on("data", (data) => {
   if (callbacks.length === 0) return;
@@ -59,11 +57,10 @@ const limiter = rateLimit({
 	limit: 10, // Limit each IP to 10 requests per `window` (here, per 1 second).
 	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-	// store: ... , // Redis, Memcached, etc. See below.
 })
 
 /* Cross-Origin Requests */
-app.use(function(req,res,next){
+app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers","*");
     res.header("Access-Control-Allow-Methods","DELETE,PUT,POST,GET,OPTIONS");
@@ -75,19 +72,30 @@ app.use(function(req,res,next){
 app.use(limiter);
 
 app.set('view engine','ejs');
-app.set('views',path.join(__dirname,'views'));
+app.set('views', path.join(process.cwd(), 'views'));
 
-app.use("/admin",require("./router/admin"))
-app.use("/func",require("./router/func"))
-app.use("/user",require("./router/userManage"))
-app.use("/device",require("./router/deviceManage"))
-app.use("/statistics",require("./router/statistics"))
-app.use("/examitem",require("./router/examItemManage"))
-app.use("/captcha",require("./router/captcha"))
-app.use("/search",require("./router/search"))
-app.use("/role",require("./router/role"))
-app.use("/permission",require("./router/permission"))
+import adminRouter from './router/admin.js';
+import funcRouter from './router/func.js';
+import userRouter from './router/userManage.js';
+import deviceRouter from './router/deviceManage.js';
+import statisticsRouter from './router/statistics.js';
+import examItemRouter from './router/examItemManage.js';
+import captchaRouter from './router/captcha.js';
+import searchRouter from './router/search.js';
+import roleRouter from './router/role.js';
+import permissionRouter from './router/permission.js';
 
-app.listen(port,'0.0.0.0', () => {
+app.use("/admin", adminRouter);
+app.use("/func", funcRouter);
+app.use("/user", userRouter);
+app.use("/device", deviceRouter);
+app.use("/statistics", statisticsRouter);
+app.use("/examitem", examItemRouter);
+app.use("/captcha", captchaRouter);
+app.use("/search", searchRouter);
+app.use("/role", roleRouter);
+app.use("/permission", permissionRouter);
+
+app.listen(port, '0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);
 });

@@ -5,23 +5,21 @@
  *  accourding to whether the user get admin permission,
  *  and using different request API to get data.
  */
-const express = require('express')
-const router = express.Router()
-const {db,genid} = require('../db/dbUtils');
-
-const crypto = require('crypto');
-const fs = require('fs');
-const nodemailer = require("nodemailer");
-const redis = require("redis")
-const redisClient = require("../db/redis")
-const ejs = require('ejs');
-const path = require('path');
-const authMiddleware = require('../middleware/authMiddleware');
+import express from 'express';
+const router = express.Router();
+import { db, genid } from '../db/dbUtils.js';
+import User from '../entity/User.js';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { generateToken, decodeToken } from '../utils/jwtHelper.js';
+import authMiddleware from '../middleware/authMiddleware.js'
+import redisClient from '../db/redis.js';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const {encryptEmail, decryptEmail, emailIndexHash} = require('../utils/EmailCrypto')
-const { decodeToken } = require("../utils/jwtHelper")
-
+import {encryptEmail, decryptEmail, emailIndexHash} from '../utils/EmailCrypto.js'
 /**
  * @api {post} /user/add Add New User
  * @apiGroup User
@@ -631,4 +629,4 @@ router.get('/verifyReset', async (req, res) => {
   }
 });
 
-module.exports = router
+export default router;

@@ -1,4 +1,4 @@
-const redis = require("redis");
+import redis from "redis";
 
 const redisClient = redis.createClient({
   socket: {
@@ -17,4 +17,4 @@ redisClient.on("connect", () => {
 
 redisClient.connect(); // v4 必须显式调用
 
-module.exports = redisClient;
+export default redisClient;

@@ -2,7 +2,7 @@
  * @description: 
  * @author: bubao
  */
-class Genid {
+export class Genid {
     /**
      *Creates an instance of Genid.
      * @author bubao
@@ -206,5 +206,3 @@ class Genid {
         }
     }
 }
-
-module.exports = Genid;
