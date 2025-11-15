@@ -71,13 +71,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, h, reactive } from "vue";
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { UserListApi, authApi,deleteUserApi } from "../../api/user/user";
 import { NButton } from "naive-ui";
-import UserInfo from "../components/UserInfo.vue";
+import UserInfo from "../../components/user/UserInfo.vue";
 import { useMessage, useDialog } from 'naive-ui'
-import UserBarchart from "../components/UserBarchart.vue";
-import AddUser from "../components/AddUser.vue";
+import UserBarchart from "../../components/user/UserBarchart.vue";
+import AddUser from "../../components/user/AddUser.vue";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();

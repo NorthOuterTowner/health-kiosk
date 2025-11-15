@@ -1,20 +1,20 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
-import User from "../views/User.vue";
-import Device from "../views/Device.vue";
-import ExamItem from "../views/ExamItem.vue";
-import ExamData from "../views/ExamData.vue";
-import SelfInfo from "../views/SelfInfo.vue";
-import AdminIntruction from "../views/adminIntruction.vue";
-import SelfExam from "../views/SelfExam.vue";
-import UserIntruction from "../views/userIntruction.vue";
-import About from "../views/About.vue";
-import Role from "../views/roleManage.vue"
+import User from "../views/userViews/User.vue";
+import Device from "../views/deviceViews/Device.vue";
+import ExamItem from "../views/examitemViews/ExamItem.vue";
+import ExamData from "../views/examdataViews/ExamData.vue";
+import SelfInfo from "../views/selfViews/SelfInfo.vue";
+import AdminIntruction from "../views/instructionViews/adminIntruction.vue";
+import SelfExam from "../views/selfViews/SelfExam.vue";
+import UserIntruction from "../views/instructionViews/userIntruction.vue";
+import About from "../views/instructionViews/About.vue";
+import Role from "../views/roleViews/roleManage.vue"
 import Forbidden403 from "../views/statusViews/Forbidden403.vue";
 import NotFound404 from "../views/statusViews/NotFound404.vue";
 import Server500 from "../views/statusViews/Server500.vue";
-import RoleAssign from "../views/RoleAssign.vue";
+import RoleAssign from "../views/roleViews/RoleAssign.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {

@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import Sidebar from '../components/Sidebar.vue'
+import Sidebar from '../../components/Sidebar.vue'
 const { t } = useI18n();
 </script>
 

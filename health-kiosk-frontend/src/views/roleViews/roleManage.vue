@@ -37,12 +37,12 @@
 
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive } from 'vue';
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import AddRole from '../components/AddRole.vue';
+import AddRole from '../../components/role/AddRole.vue';
 import { deleteRole, enableRole, disableRole, getRoles } from '../../api/permission/role';
 import { useI18n } from 'vue-i18n'
-import RoleInfo from '../components/roleInfo.vue';
+import RoleInfo from '../../components/role/roleInfo.vue';
 
 const { t } = useI18n();
 const addRoleView = ref<boolean>(false)

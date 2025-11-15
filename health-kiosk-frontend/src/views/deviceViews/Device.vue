@@ -30,10 +30,10 @@
 
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive } from 'vue';
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { getDeviceInfoApi,downloadDeviceApi,deleteDeviceApi } from "../../api/device/device";
 import { NButton, useMessage,useDialog } from "naive-ui";
-import AddDevice from "../components/AddDevice.vue";
+import AddDevice from "../../components/device/AddDevice.vue";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();

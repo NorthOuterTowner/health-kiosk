@@ -35,12 +35,12 @@
 
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive } from 'vue';
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import AddExamItem from '../components/AddExamItem.vue';
+import AddExamItem from '../../components/examitem/AddExamItem.vue';
 import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
-import ExamItemInfo from '../components/ExamItemInfo.vue';
+import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
 
 const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)

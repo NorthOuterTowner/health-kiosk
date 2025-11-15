@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { useMessage } from "naive-ui";
 import { getRoles } from "../../api/permission/role";
 import { getPermissionTree, reassign, getPermissionsConfig } from "../../api/permission/permission";

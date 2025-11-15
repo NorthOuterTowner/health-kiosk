@@ -134,7 +134,7 @@ import {
 } from "naive-ui";
 
 import type { FormInst, FormRules, UploadFileInfo } from "naive-ui";
-import Sidebar from "../components/Sidebar.vue";
+import Sidebar from "../../components/Sidebar.vue";
 import { changeInfoApi, resetPasswordApi, setEmailApi, uploadPictureApi, getInfoApi } from "../../api/user/user";
 import { useI18n } from 'vue-i18n'
 
