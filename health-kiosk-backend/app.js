@@ -84,6 +84,7 @@ import captchaRouter from './router/captcha.js';
 import searchRouter from './router/search.js';
 import roleRouter from './router/role.js';
 import permissionRouter from './router/permission.js';
+import examDataRouter from './router/examData.js';
 
 app.use("/admin", adminRouter);
 app.use("/func", funcRouter);
@@ -95,6 +96,7 @@ app.use("/captcha", captchaRouter);
 app.use("/search", searchRouter);
 app.use("/role", roleRouter);
 app.use("/permission", permissionRouter);
+app.use("/examData",examDataRouter);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://localhost:${port}`);
