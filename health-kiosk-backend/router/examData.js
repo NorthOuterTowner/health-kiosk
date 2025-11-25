@@ -547,12 +547,12 @@ router.get("/userId", (req, res) => {
             code:200,
             rows,
             msg:"查询成功",
-            cnt: cntRows[0].cnt;
+            cnt: cntRows[0].cnt
         });
     }else if (rows.length == 0) {
         return res.status(200).json({
             code:200,
-            rows:[]
+            rows:[],
             msg:"查询成功",
             cnt:0
         });
