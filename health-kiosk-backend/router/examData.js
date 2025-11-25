@@ -81,7 +81,18 @@ router.post("/setEcg",(req,res)=>{
     /**TODO: Adapt ECG data*/
 });
 
-router.post("/set/tempor", async (req,res) => {
+/**
+ * @api {post} /examData/set/tempor Upload Temperature Data
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Temperature value (float).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Upload successful"
+ * }
+ */
+router.post("/examData/set/tempor", async (req,res) => {
     let { data, user } = req.body;
     data = parseFloat(data);// store temport data by float form
     const {date, time} = await decideTime();
@@ -125,8 +136,18 @@ router.post("/set/tempor", async (req,res) => {
     }
 });
 
-// --- 1. /set/alcohol 路由 (float) ---
-router.post("/set/alcohol", async (req, res) => {
+/**
+ * @api {post} /examData/set/alcohol Upload Alcohol Concentration
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Alcohol concentration value (float).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update alcohol successful"
+ * }
+ */
+router.post("/examData/set/alcohol", async (req, res) => {
     let { data, user } = req.body;
     data = parseFloat(data);// store alcohol data by float form
 
@@ -176,8 +197,18 @@ router.post("/set/alcohol", async (req, res) => {
     }
 });
 
-// --- 2. /set/spo2 路由 (integer) ---
-router.post("/set/spo2", async (req, res) => {
+/**
+ * @api {post} /examData/set/spo2 Upload SpO2 Data
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Blood Oxygen Saturation (SpO2) value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update spo2 successful"
+ * }
+ */
+router.post("/examData/set/spo2", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store spo2 data by integer form
 
@@ -227,8 +258,18 @@ router.post("/set/spo2", async (req, res) => {
     }
 });
 
-// --- 3. /set/ppg 路由 (integer) ---
-router.post("/set/ppg", async (req, res) => {
+/**
+ * @api {post} /examData/set/ppg Upload PPG Data
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Photoplethysmography (PPG) value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update ppg successful"
+ * }
+ */
+router.post("/examData/set/ppg", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store ppg data by integer form
 
@@ -278,8 +319,18 @@ router.post("/set/ppg", async (req, res) => {
     }
 });
 
-// --- 4. /set/blood_sys 路由 (integer) ---
-router.post("/set/blood_sys", async (req, res) => {
+/**
+ * @api {post} /examData/set/blood_sys Upload Systolic Blood Pressure
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Systolic Blood Pressure value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update blood_sys successful"
+ * }
+ */
+router.post("/examData/set/blood_sys", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_sys data by integer form
 
@@ -329,8 +380,18 @@ router.post("/set/blood_sys", async (req, res) => {
     }
 });
 
-// --- 5. /set/blood_dia 路由 (integer) ---
-router.post("/set/blood_dia", async (req, res) => {
+/**
+ * @api {post} /examData/set/blood_dia Upload Diastolic Blood Pressure
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Diastolic Blood Pressure value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update blood_dia successful"
+ * }
+ */
+router.post("/examData/set/blood_dia", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_dia data by integer form
 
@@ -380,8 +441,18 @@ router.post("/set/blood_dia", async (req, res) => {
     }
 });
 
-// --- 6. /set/blood_hr 路由 (integer) ---
-router.post("/set/blood_hr", async (req, res) => {
+/**
+ * @api {post} /examData/set/blood_hr Upload Heart Rate
+ * @apiGroup ExamData
+ * * @apiParam {Number} data Heart Rate (HR) value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update blood_hr successful"
+ * }
+ */
+router.post("/examData/set/blood_hr", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_hr data by integer form
 
@@ -431,7 +502,34 @@ router.post("/set/blood_hr", async (req, res) => {
     }
 });
 
-
+/**
+ * @api {get} /userId Get User Health Data
+ * @apiGroup ExamData
+ * * @apiQuery {String} user_id User's unique ID.
+ * @apiQuery {Number} [page=1] Page number (starting from 1).
+ * @apiQuery {Number} [limit=20] Number of items per page.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "rows": [
+ * {
+ * "id": 1,
+ * "user_id": "user001",
+ * "tempor": 36.5,
+ * "alcohol": 0.05,
+ * "spo2": 98,
+ * "ppg": 85,
+ * "blood_sys": 120,
+ * "blood_dia": 80,
+ * "blood_hr": 75,
+ * "date": "2023-11-25",
+ * "time": 2
+ * }
+ * ],
+ * "msg": "Query successful",
+ * "cnt": 100
+ * }
+ */
 router.get("/userId", (req, res) => {
     const user_id = String(req.query.user_id);
 
