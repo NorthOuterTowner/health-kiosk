@@ -13,6 +13,7 @@ import { notfoundMessages } from './modules/status/notFound404'
 import { userInstructionMessages } from './modules/instruction/userInstruction'
 import { adminInstructionMessages } from './modules/instruction/adminInstruction'
 import { roleMessages } from './modules/role/role'
+import { selfExamMessages } from './modules/self/selfexam'
 
 const Messages = {
   zh: {
@@ -32,7 +33,8 @@ const Messages = {
     notfound: notfoundMessages.zh,
     userInstruction: userInstructionMessages.zh,
     adminInstruction: adminInstructionMessages.zh,
-    role: roleMessages.zh
+    role: roleMessages.zh,
+    selfExam: selfExamMessages.zh,
   },
   en: {
     navbar: navbarMessages.en,
@@ -51,7 +53,8 @@ const Messages = {
     notfound: notfoundMessages.en,
     userInstruction: userInstructionMessages.en,
     adminInstruction: adminInstructionMessages.en,
-    role:roleMessages.en
+    role:roleMessages.en,
+    selExam: selfExamMessages.en,
   }
 }
 
