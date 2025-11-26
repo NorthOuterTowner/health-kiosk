@@ -99,5 +99,5 @@ app.use("/permission", permissionRouter);
 app.use("/examData",examDataRouter);
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`health-kiosk-backend listening at http://localhost:${port}`);
+  console.log(`health-kiosk-backend listening at http://0.0.0.0:${port}`);
 });
