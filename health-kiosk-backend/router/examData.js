@@ -620,18 +620,18 @@ router.post("/examData/set/blood_hr", async (req, res) => {
  * "cnt": 100
  * }
  */
-router.get("/userId", (req, res) => {
-    const user_id = String(req.query.user_id);
+router.get("/userId", authMiddleware, async (req, res) => {
+    const user_id = req.account;
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 20;
     const offset = (page - 1) * limit;
     
     const select_sql = "select * from `data` where `user_id` = ? order by `id` limit ? offset ? ;";
-    const {rows, err} = db.async.all(select_sql,[user_id, limit, offset]);
+    const {rows, err} = await db.async.all(select_sql,[user_id, limit, offset]);
 
-    const cnt_sql = "select COUNT(*) as cnt from `date` where `user_id` = ? ;";
-    const {rows: cntRows, err: cntErr} = db.async.all(cnt_sql,[]);
+    const cnt_sql = "select COUNT(*) as cnt from `data` where `user_id` = ? ;";
+    const {rows: cntRows, err: cntErr} = await db.async.all(cnt_sql,[user_id]);
     if(rows.length > 0 && err == null && cntErr == null) {
         return res.status(200).json({
             code:200,
