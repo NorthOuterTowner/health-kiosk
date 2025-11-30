@@ -1,25 +1,33 @@
 export const selfExamMessages = {
     zh: {
         title: "健康数据",
-        add_button: "添加新的项目",
         columns: {
-            name: "项目",
-            status: "状态",
-            abbreviation: "简称",
-            description: "描述",
+            tempor: "体温",
+            alcohol: "酒精",
+            ecg: "心电",
+            ppg: "脉搏",
+            spo2: "血氧",
+            sys: "收缩压",
+            dia: "舒张压",
+            hr: "心率",
+            time: "时间",
             action: "操作"
         },
         info: "查看详情"
     },
     en: {
-        title: "Exam Item Management",
-        add_button: "Add New Exam Item",
+        title: "Exam Data Management",
         columns: {
-            name: "Item",
-            status: "Status",
-            abbreviation: "Abbreviation",
-            description: "Description",
-            action: "Action",
+            tempor: "Tempor",
+            alcohol: "Alcohol",
+            ecg: "ECG",
+            ppg: "PPG",
+            spo2: "SPO2",
+            sys: "Blood Sys",
+            dia: "Blood Dia",
+            hr: "Blood Hr",
+            time: "time",
+            action: "action"
         },
         info: "view details"
     }

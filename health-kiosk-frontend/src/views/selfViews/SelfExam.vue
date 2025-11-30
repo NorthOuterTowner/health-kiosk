@@ -5,8 +5,6 @@
         <div class="device-page">
           <div style="display: flex;">
             <h2>{{ $t('selfExam.title') }}</h2>
-            <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addExamItemView = true; editable = true">{{ $t('selfExam.add_button') }}</n-button>
           </div>
         
             <n-data-table
@@ -17,11 +15,7 @@
                 :bordered="true" 
                 class="dataTable"
             />
-            <!--<AddExamItem
-              v-if="addExamItemView"
-              @close="addExamItemView = false"
-              @update="updatePage"
-            />-->
+
             <ExamItemInfo
               v-if="editingItem"
               :examItem="editingItem"
@@ -37,8 +31,7 @@
 import { ref, onMounted, h, reactive } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import AddExamItem from '../../components/examitem/AddExamItem.vue';
-import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../../api/examitem/examitem';
+import { deleteExamItemApi,getExamItemInfoApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
 import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
 
@@ -91,40 +84,39 @@ const examItems = ref<any[]>([]);
 
 const columns = [
   {
-    title: t('selfExam.columns.name'),
-    key: "name",
+    title: t('selfExam.columns.tempor'),
+    key: "tempor",
     width: 100,
   },
   {
-    title: t('selfExam.columns.status'),
-    key: "status",
-    render(row: any) {
-      return row.status == '1' ? t('selfExam.add_item.enable') : t('selfExam.add_item.disable')
-    }
+    title: t('selfExam.columns.alcohol'),
+    key: "alcohol",
   },
   {
-    title: t('selfExam.columns.abbreviation'),
-    key: "abbreviation",
+    title: t('selfExam.columns.ecg'),
+    key: "ecg",
   },
   {
-    title: t('selfExam.columns.description'),
-    key: "description",
+    title: t('selfExam.columns.sys'),
+    key: "sys",
+  },
+  {
+    title: t('selfExam.columns.dia'),
+    key: "dia"
+  },
+  {
+    title: t('selfExam.columns.hr'),
+    key: "hr"
+  },
+  {
+    title: t('selfExam.columns.time'),
+    key: "time"
   },
   {
     title: t('selfExam.columns.action'),
     key: "actions",
     render(row: any) {
       return [
-        h(
-          NButton,
-          {
-            size: "small",
-            type: "error",
-            style: "margin-right: 6px;",
-            onClick: () => confirmDelete(row),
-          },
-          { default: () => t("utils.delete") }
-        ),
         h(
           NButton,
           {
