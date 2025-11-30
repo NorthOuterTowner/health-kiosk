@@ -28,12 +28,13 @@
 </template>
 
 <script setup lang = "ts">
-import { ref, onMounted, h, reactive } from 'vue';
+import { ref, onMounted, h, reactive, render } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
 import { deleteExamItemApi,getExamItemInfoApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
 import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
+import { getInfoApi } from '../../api/self/selfData';
 
 const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)
@@ -42,14 +43,8 @@ const message = useMessage();
 const dialog = useDialog();
 
 const editable = ref(true)
-const currentExamItem = ref<any | null>(null);
 
 const editingItem = ref<any | null>(null);
-
-const updatePage = ()=>{
-  fetchExamItems();
-  addExamItemView.value = false;
-}
 
 async function handleDelete(row: any){
   const res = await deleteExamItemApi(row.id,row.name);
@@ -82,6 +77,12 @@ const updateExamItem = (updatedExamItem: any) => {
 
 const examItems = ref<any[]>([]);
 
+const renderEcgPic = (row: any) => {
+  const BASE_URL = "/pic/";
+  const relative_path = row.ecg;
+  return BASE_URL+relative_path;
+}
+
 const columns = [
   {
     title: t('selfExam.columns.tempor'),
@@ -91,26 +92,56 @@ const columns = [
   {
     title: t('selfExam.columns.alcohol'),
     key: "alcohol",
+    width: 100,
   },
   {
     title: t('selfExam.columns.ecg'),
     key: "ecg",
+    width: 100,
+    render(row: any) {
+      return h(
+        NButton,
+        {
+          size: "small",
+          type: "success",
+          onClick: () => {
+            renderEcgPic(row);
+          }
+        },
+        {
+          default: () => {
+            return  "查看图像"
+          }
+        }
+      )
+    }
   },
   {
     title: t('selfExam.columns.sys'),
-    key: "sys",
+    key: "blood_sys",
+    width: 100,
   },
   {
     title: t('selfExam.columns.dia'),
-    key: "dia"
+    key: "blood_dia",
+    width: 100,
   },
   {
     title: t('selfExam.columns.hr'),
-    key: "hr"
+    key: "blood_hr",
+    width: 100,
   },
   {
     title: t('selfExam.columns.time'),
-    key: "time"
+    key: "time",
+    width: 100,
+    render(row: any){
+      if(row.time == 1) {
+        return "上午"
+      }else {
+        return "下午"
+      }
+    }
   },
   {
     title: t('selfExam.columns.action'),
@@ -163,7 +194,7 @@ async function confirmDelete(row: any) {
 
 const fetchExamItems = async () => {
   try {
-    const res = await getExamItemInfoApi(pagination.page, pagination.pageSize);
+    const res = await getInfoApi(pagination.page, pagination.pageSize);
     examItems.value = res.data.rows || [];
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
