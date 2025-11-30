@@ -5,12 +5,12 @@ import os
 
 # 1. 定义记录名称和文件夹路径
 # record_name 只需要文件名主体
-record_name = 'A00001'
+record_name = 'A00005'
 
 # 文件夹路径：根据您的要求，文件在 'training2017' 目录下
 # 注意：wfdb.rdrecord 可以直接通过 record_name='training2017/A00001' 来指定路径
 # 这样更简单直接。
-full_record_path = os.path.join('training2017', record_name)
+full_record_path = os.path.join('dataset/training2017', record_name)
 
 print(f"正在尝试读取记录: {full_record_path}.hea 和 {full_record_path}.mat")
 

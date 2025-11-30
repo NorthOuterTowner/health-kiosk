@@ -5,8 +5,6 @@
         <div class="device-page">
           <div style="display: flex;">
             <h2>{{ $t('selfExam.title') }}</h2>
-            <n-button style="margin-top: 20px; margin-bottom: 15px; margin-left: 20px; padding-right: 20px; padding-left: 20px; text-align: center; " size="medium" type="primary" 
-              @click="addExamItemView = true; editable = true">{{ $t('selfExam.add_button') }}</n-button>
           </div>
         
             <n-data-table
@@ -17,11 +15,7 @@
                 :bordered="true" 
                 class="dataTable"
             />
-            <!--<AddExamItem
-              v-if="addExamItemView"
-              @close="addExamItemView = false"
-              @update="updatePage"
-            />-->
+
             <ExamItemInfo
               v-if="editingItem"
               :examItem="editingItem"
@@ -34,13 +28,13 @@
 </template>
 
 <script setup lang = "ts">
-import { ref, onMounted, h, reactive } from 'vue';
+import { ref, onMounted, h, reactive, render } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import AddExamItem from '../../components/examitem/AddExamItem.vue';
-import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../../api/examitem/examitem';
+import { deleteExamItemApi,getExamItemInfoApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
 import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
+import { getInfoApi } from '../../api/self/selfData';
 
 const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)
@@ -49,14 +43,8 @@ const message = useMessage();
 const dialog = useDialog();
 
 const editable = ref(true)
-const currentExamItem = ref<any | null>(null);
 
 const editingItem = ref<any | null>(null);
-
-const updatePage = ()=>{
-  fetchExamItems();
-  addExamItemView.value = false;
-}
 
 async function handleDelete(row: any){
   const res = await deleteExamItemApi(row.id,row.name);
@@ -89,42 +77,77 @@ const updateExamItem = (updatedExamItem: any) => {
 
 const examItems = ref<any[]>([]);
 
+const renderEcgPic = (row: any) => {
+  const BASE_URL = "/pic/";
+  const relative_path = row.ecg;
+  return BASE_URL+relative_path;
+}
+
 const columns = [
   {
-    title: t('selfExam.columns.name'),
-    key: "name",
+    title: t('selfExam.columns.tempor'),
+    key: "tempor",
     width: 100,
   },
   {
-    title: t('selfExam.columns.status'),
-    key: "status",
+    title: t('selfExam.columns.alcohol'),
+    key: "alcohol",
+    width: 100,
+  },
+  {
+    title: t('selfExam.columns.ecg'),
+    key: "ecg",
+    width: 100,
     render(row: any) {
-      return row.status == '1' ? t('selfExam.add_item.enable') : t('selfExam.add_item.disable')
+      return h(
+        NButton,
+        {
+          size: "small",
+          type: "success",
+          onClick: () => {
+            renderEcgPic(row);
+          }
+        },
+        {
+          default: () => {
+            return  "查看图像"
+          }
+        }
+      )
     }
   },
   {
-    title: t('selfExam.columns.abbreviation'),
-    key: "abbreviation",
+    title: t('selfExam.columns.sys'),
+    key: "blood_sys",
+    width: 100,
   },
   {
-    title: t('selfExam.columns.description'),
-    key: "description",
+    title: t('selfExam.columns.dia'),
+    key: "blood_dia",
+    width: 100,
+  },
+  {
+    title: t('selfExam.columns.hr'),
+    key: "blood_hr",
+    width: 100,
+  },
+  {
+    title: t('selfExam.columns.time'),
+    key: "time",
+    width: 100,
+    render(row: any){
+      if(row.time == 1) {
+        return "上午"
+      }else {
+        return "下午"
+      }
+    }
   },
   {
     title: t('selfExam.columns.action'),
     key: "actions",
     render(row: any) {
       return [
-        h(
-          NButton,
-          {
-            size: "small",
-            type: "error",
-            style: "margin-right: 6px;",
-            onClick: () => confirmDelete(row),
-          },
-          { default: () => t("utils.delete") }
-        ),
         h(
           NButton,
           {
@@ -171,7 +194,7 @@ async function confirmDelete(row: any) {
 
 const fetchExamItems = async () => {
   try {
-    const res = await getExamItemInfoApi(pagination.page, pagination.pageSize);
+    const res = await getInfoApi(pagination.page, pagination.pageSize);
     examItems.value = res.data.rows || [];
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
