@@ -17,6 +17,14 @@ import fs from 'fs';
 import { generateToken, decodeToken } from '../utils/jwtHelper.js';
 import authMiddleware from '../middleware/authMiddleware.js'
 import redisClient from '../db/redis.js';
+import nodemailer from "nodemailer";
+
+import { fileURLToPath } from "url";
+import ejs from 'ejs'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 import {encryptEmail, decryptEmail, emailIndexHash} from '../utils/EmailCrypto.js'
@@ -377,11 +385,11 @@ router.post("/setEmail",authMiddleware,async (req,res) => {
 
     // send email from 163
     const transporter = nodemailer.createTransport({
-    service: '163',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+        service: '163',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
     });
 
     const verifyUrl = `http://localhost:3000/user/verify?code=${verifyCode}`;
