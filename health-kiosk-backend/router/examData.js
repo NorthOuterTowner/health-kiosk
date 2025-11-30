@@ -8,8 +8,9 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { generateToken, decodeToken } from '../utils/jwtHelper.js';
-import authMiddleware from '../middleware/authMiddleware.js'
+import authMiddleware from '../middleware/authMiddleware.js';
 import redisClient from '../db/redis.js';
+import Busboy from 'busboy'
 
 function pad(n) {
   return n.toString().padStart(2, '0');
@@ -77,8 +78,97 @@ async function examineRowExists(date, time, user) {
     };
 }
 
-router.post("/setEcg",(req,res)=>{
-    /**TODO: Adapt ECG data*/
+router.post("/set/ecg",(req,res)=>{
+    const busboy = Busboy({ headers: req.headers });
+
+    let userId = null;
+    let savedFilePath = null;
+
+    const baseDir = path.join("uploads", "ecg");
+    if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
+
+    // 接收字段（meta）
+    busboy.on("field", (name, value) => {
+    if (name === "user_id") {
+        userId = value;
+        console.log("接收到 userId =", userId);
+    }
+    });
+
+    // 接收二进制 ECG 文件（application/octet-stream）
+    busboy.on("file", (name, file, info) => {
+        const { filename, mimeType } = info;
+        console.log("接收到文件字段:", name, "mimeType:", mimeType);
+
+        // ——注意——
+        // 前端应把 ECG 数据放在 <input type="file" name="ecg"> 或 form.append("ecg", blob)
+        // 这里 name 必须保持一致
+
+        const targetName = `${Date.now()}_${userId}.bin`;
+        const targetPath = path.join(baseDir, targetName);
+
+        savedFilePath = targetPath;
+
+        const writeStream = fs.createWriteStream(targetPath);
+        file.pipe(writeStream);
+
+        writeStream.on("close", () => {
+            console.log("ECG 文件已保存：", targetPath);
+        });
+    });
+
+    // 所有字段 & 文件结束
+    busboy.on("close", async () => {
+        if (!userId || !savedFilePath) {
+            return res.status(200).json({ 
+                code: 400, 
+                message: "缺少 meta 或 ECG 数据" 
+            });
+        }
+
+        // insert filename into MySQL
+        const {date, time} = await decideTime();
+        const existRes = await examineRowExists(date, time, userId);
+        console.log(existRes);
+        if(existRes.exist == true) {
+            const updateSql = "update `data` set `ecg` = ? where id = ? ;";
+            try {
+                await db.async.run(updateSql,[targetName, existRes.id]);
+                return res.status(200).json({
+                    code:200,
+                    msg: "上传成功"
+                });
+            }catch(err) {
+                console.log(err);
+                return res.status(200).json({
+                    code:500,
+                    msg: "上传失败"
+                });
+            }
+        }else if(existRes.exist == false) {
+            const insertSQL = "insert `data` (`user_id`, `ecg`, `date`, `time`) values (?, ?, ?, ?);";
+            try {
+                await db.async.run(insertSQL,[userId, targetName, date, time]);
+                return res.status(200).json({
+                    code:200,
+                    msg: "上传成功"
+                });
+            }catch(err) {
+                console.log(err);
+                return res.status(200).json({
+                    code:500,
+                    msg: "上传失败"
+                });
+            }
+        }else {
+            return res.status(200).json({
+                    code:500,
+                    msg: existRes.msg
+                });
+        }
+    });
+
+    req.pipe(busboy);
 });
 
 /**
