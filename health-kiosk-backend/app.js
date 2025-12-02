@@ -85,6 +85,7 @@ import searchRouter from './router/search.js';
 import roleRouter from './router/role.js';
 import permissionRouter from './router/permission.js';
 import examDataRouter from './router/examData.js';
+import LLMRouter from './router/llm.js'
 
 app.use("/admin", adminRouter);
 app.use("/func", funcRouter);
@@ -97,6 +98,7 @@ app.use("/search", searchRouter);
 app.use("/role", roleRouter);
 app.use("/permission", permissionRouter);
 app.use("/examData",examDataRouter);
+app.use("/llm",LLMRouter);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://0.0.0.0:${port}`);
