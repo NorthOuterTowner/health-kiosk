@@ -83,6 +83,15 @@ ${JSON.stringify(health_data, null, 2)}
 `;
 }
 
+function cleanJSON(str) {
+    // 去掉对象或数组中结尾的多余逗号
+    return str
+        // 去掉 } 前的逗号
+        .replace(/,\s*}/g, "}")
+        // 去掉 ] 前的逗号
+        .replace(/,\s*]/g, "]");
+}
+
 /**
  * @api {post} /chatAi/analyze 健康数据分析
  * @apiName AnalyzeHealthData
@@ -117,8 +126,6 @@ ${JSON.stringify(health_data, null, 2)}
  * }
  */
 router.post("/analyze", async (req, res) => {
-    console.log("received AI request");
-
     const { start, end, user_id, model } = req.body || {};
 
     const use_model = model || "Qwen/Qwen3-8B";
@@ -155,7 +162,8 @@ router.post("/analyze", async (req, res) => {
         const data = await response.json();
 
         const raw = data.choices?.[0]?.message?.content || "{}";
-        const cleanData = JSON.parse(raw);
+        const cleanFirst = cleanJSON(raw);
+        const cleanData = JSON.parse(cleanFirst);
         
         return res.status(200).json({
             code: 200,

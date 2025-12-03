@@ -195,6 +195,7 @@ async function confirmDelete(row: any) {
 const fetchExamItems = async () => {
   try {
     const res = await getInfoApi(pagination.page, pagination.pageSize);
+    console.log(res)
     examItems.value = res.data.rows || [];
     pagination.itemCount = res.data.count || 0; // 后端返回总数
   } catch (err) {
