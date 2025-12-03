@@ -209,6 +209,20 @@ async function search_corpus(req_id) {
     }
 }
 
+/**
+ * @api {post} /chat AI 对话接口
+ * @apiName ChatWithAI
+ * @apiGroup Chat
+ * @apiVersion 1.0.0
+ * @apiDescription 调用 SiliconFlow 或查询 corpus 获取回复。
+ * @apiBody {String} [model="Qwen/Qwen3-8B"] 使用的模型名
+ * @apiBody {String} [req_id] 可选，用于查询 corpus
+ * @apiBody {String} input 用户输入文本（AI Prompt）
+ *
+ * @apiSuccess {Number} code 返回码（200 表成功）
+ * @apiSuccess {String} msg 消息
+ * @apiSuccess {String} data AI 返回文本内容（raw）
+ */
 router.post("/chat", async (req,res) => {
     const { model, req_id, input } = req.body || {};
     if(req_id) {
@@ -268,25 +282,141 @@ router.post("/chat", async (req,res) => {
     }
 });
 
+/**
+ * @api {get} /getCorpus 获取语料列表
+ * @apiName GetCorpus
+ * @apiGroup Corpus
+ * @apiVersion 1.0.0
+ * @apiDescription 分页获取 corpus 数据。建议使用查询参数：`/getCorpus?page=1&limit=10`
+ *
+ * @apiQuery {Number} page 页码，从 1 开始（默认 1）
+ * @apiQuery {Number} limit 每页数量（默认 10）
+ *
+ * @apiSuccess {json} success 返回结构（成功）
+ * {
+ *   "code": 200,
+ *   "data": [
+ *     {
+ *       "id": 1,
+ *       "request": "你好",
+ *       "response": "你好呀！"
+ *     }
+ *   ]
+ * }
+ */
 router.get("/getCorpus", async (req, res) => {
-    const { page, limit } = req.params;
+    const { page = 1, limit = 10 } = req.query; // 建议用 query
     const offset = (page - 1) * limit;
 
-    const select_corpus = "select `id`, `request` from `corpus` limit ? offset ? ; ";
+    const select_corpus = "SELECT `id`, `request`, `response` FROM `corpus` LIMIT ? OFFSET ?;";
 
-    const { err, rows } = await db.async.all(select_corpus, [limit, offset]);
+    const { err, rows } = await db.async.all(select_corpus, [Number(limit), Number(offset)]);
 
-    if(err) {
+    if (err) {
         return res.status(200).json({
-            code:500,
+            code: 500,
             msg: "服务器错误"
         });
-    }else{
+    } else {
         return res.status(200).json({
-            code:200,
+            code: 200,
             data: rows
         });
     }
+});
+
+/**
+ * @api {post} /updateCorpus 更新语料
+ * @apiName UpdateCorpus
+ * @apiGroup Corpus
+ * @apiVersion 1.0.0
+ * @apiDescription 根据 id 更新一条语料记录。请求体为 JSON：{ id, request, response }
+ *
+ * @apiBody {Number} id 语料 ID（必填）
+ * @apiBody {String} request 更新后的问题（可选）
+ * @apiBody {String} response 更新后的回答（可选）
+ *
+ * @apiSuccess {json} success 更新成功示例
+ * {
+ *   "code": 200,
+ *   "msg": "更新成功"
+ * }
+ */
+router.post("/updateCorpus", async (req, res) => {
+    const { id, request, response } = req.body || {};
+
+    if (!id) {
+        return res.status(200).json({
+            code: 400,
+            msg: "缺少 id"
+        });
+    }
+
+    const update_sql = `
+        UPDATE corpus 
+        SET request = ?, response = ?
+        WHERE id = ?;
+    `;
+
+    const { err } = await db.async.run(update_sql, [request, response, id]);
+
+    if (err) {
+        return res.status(200).json({
+            code: 500,
+            msg: "更新失败"
+        });
+    }
+
+    return res.status(200).json({
+        code: 200,
+        msg: "更新成功"
+    });
+});
+
+/**
+ * @api {post} /addCorpus 新增语料
+ * @apiName AddCorpus
+ * @apiGroup Corpus
+ * @apiVersion 1.0.0
+ * @apiDescription 添加一条新的语料记录。请求体为 JSON：{ request, response }
+ *
+ * @apiBody {String} request 问题（必填）
+ * @apiBody {String} response 回答（必填）
+ *
+ * @apiSuccess {json} success 添加成功示例
+ * {
+ *   "code": 200,
+ *   "msg": "添加成功"
+ * }
+ */
+router.post("/addCorpus", async (req, res) => {
+    const { request, response } = req.body || {};
+
+    if (!request || !response) {
+        return res.status(200).json({
+            code: 400,
+            msg: "缺少 request 或 response"
+        });
+    }
+
+    const insert_sql = `
+        INSERT INTO corpus (request, response)
+        VALUES (?, ?);
+    `;
+
+    const { err } = await db.async.run(insert_sql, [request, response]);
+
+    if (err) {
+        return res.status(200).json({
+            code: 500,
+            msg: "添加失败"
+        });
+    }
+
+    return res.status(200).json({
+        code: 200,
+        msg: "添加成功"
+    });
 });
 
 export default router;
