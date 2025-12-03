@@ -180,4 +180,92 @@ router.post("/analyze", async (req, res) => {
     }
 });
 
+async function search_corpus(req_id) {
+    req_id = Number(req_id);
+    const sql = "select `request`,`response` from `corpus` where `id` = ? ;";
+    const { err, rows } = await db.async.all(sql,[req_id]);
+
+    if(err) {
+        return {
+            code: 0,
+            request: "",
+            response: ""
+        };
+    }else if (rows.length === 0) {
+        return {
+            code: 1,
+            request: "",
+            response: ""
+        };
+    }else{
+        const get_req = rows[0].request;
+        const get_res = rows[0].response;
+
+        return {
+            code: 2,
+            request: get_req,
+            response: get_res
+        }
+    }
+}
+
+router.post("/chat", async (req,res) => {
+    const { model, req_id, input } = req.body || {};
+    if(req_id) {
+        const corpus_res = await search_corpus(req_id);
+
+        if(corpus_res.code === 0) {
+            return res.status(200).json({
+                code: 500,
+                msg: "corpus",
+                data: ""
+            })
+        }else if(corpus_res.code === 2){
+            return res.status(200).json({
+                code: 200,
+                msg: "corpus",
+                data: corpus_res.response
+            });
+        }
+    }
+    
+    const use_model = model || "Qwen/Qwen3-8B";
+    //"QwQ-32B"
+
+    const url = "https://api.siliconflow.cn/v1/chat/completions";
+    const options = {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${SILICON_API_KEY}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: use_model,
+            messages: [{ role: "user", content: input }],
+            stream: false,
+            thinking_budget: 128    
+        })
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        const raw = data.choices?.[0]?.message?.content;
+        
+        return res.status(200).json({
+            code: 200,
+            msg: "AI analysis success",
+            data: raw
+        });
+    } catch (error) {
+        console.error("AI request error:", error);
+        return res.status(500).json({
+            code: 500,
+            msg: "AI request failed",
+            error: error.toString()
+        });
+    }
+});
+
 export default router;
