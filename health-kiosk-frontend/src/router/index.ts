@@ -15,6 +15,7 @@ import Forbidden403 from "../views/statusViews/Forbidden403.vue";
 import NotFound404 from "../views/statusViews/NotFound404.vue";
 import Server500 from "../views/statusViews/Server500.vue";
 import RoleAssign from "../views/roleViews/RoleAssign.vue";
+import SelfAnalyze from "../views/selfViews/SelfAnalyze.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -76,6 +77,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/roleassign",
     name: "RoleAssign",
     component: RoleAssign
+  },
+  {
+    path: "/selfAnalyze",
+    name: "SelfAnalyze",
+    component: SelfAnalyze
   },
   {
     path: "/403",

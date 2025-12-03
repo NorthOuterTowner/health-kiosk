@@ -68,7 +68,8 @@ import {
   TicketCheck,
   User,
   ShieldUser,
-  Info
+  Info,
+  ChartBarBig
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { getPermissions } from '../api/permission/permission'
@@ -147,7 +148,8 @@ let menuConfig = [
     role: [1,2,3,4,5],
     children: [
       { key: 'info:selfinfo', path: '/selfinfo', name: 'sidebar.info.watch', icon: Info, role: [1,2,3,4,5] },
-      { key: 'info:selfexam', path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] }
+      { key: 'info:selfexam', path: '/selfexam', name: 'sidebar.info.exam', icon: Database, role: [2,3,4,5] },
+      { key: 'info:selfAnalyze', path: '/selfanalyze', name: 'sidebar.info.analyze', icon: ChartBarBig, role: [2,3,4,5]}
     ]
   },
   {
