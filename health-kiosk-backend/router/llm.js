@@ -268,4 +268,25 @@ router.post("/chat", async (req,res) => {
     }
 });
 
+router.get("/getCorpus", async (req, res) => {
+    const { page, limit } = req.params;
+    const offset = (page - 1) * limit;
+
+    const select_corpus = "select `id`, `request` from `corpus` limit ? offset ? ; ";
+
+    const { err, rows } = await db.async.all(select_corpus, [limit, offset]);
+
+    if(err) {
+        return res.status(200).json({
+            code:500,
+            msg: "服务器错误"
+        });
+    }else{
+        return res.status(200).json({
+            code:200,
+            data: rows
+        });
+    }
+});
+
 export default router;
