@@ -40,7 +40,7 @@ import { NButton, useMessage, useDialog } from "naive-ui";
 import AddExamItem from '../../components/examitem/AddExamItem.vue';
 import { deleteExamItemApi,getExamItemInfoApi, updateExamItemApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
-import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
+import ExamItemInfo from '../../components/examitem/ExamItemInfo.vue';
 
 const { t } = useI18n();
 const addExamItemView = ref<boolean>(false)
