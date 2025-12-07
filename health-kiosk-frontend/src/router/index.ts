@@ -16,6 +16,7 @@ import NotFound404 from "../views/statusViews/NotFound404.vue";
 import Server500 from "../views/statusViews/Server500.vue";
 import RoleAssign from "../views/roleViews/RoleAssign.vue";
 import SelfAnalyze from "../views/selfViews/SelfAnalyze.vue";
+import SelfLLM from "../views/selfViews/selfLLM.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -82,6 +83,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/selfAnalyze",
     name: "SelfAnalyze",
     component: SelfAnalyze
+  },
+  {
+    path: "/selfLLM",
+    name: "SelfLLM",
+    component: SelfLLM
   },
   {
     path: "/403",
