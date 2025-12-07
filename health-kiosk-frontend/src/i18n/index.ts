@@ -14,6 +14,7 @@ import { userInstructionMessages } from './modules/instruction/userInstruction'
 import { adminInstructionMessages } from './modules/instruction/adminInstruction'
 import { roleMessages } from './modules/role/role'
 import { selfExamMessages } from './modules/self/selfexam'
+import { selfLLM } from './modules/self/selfLLM'
 
 const Messages = {
   zh: {
@@ -35,6 +36,7 @@ const Messages = {
     adminInstruction: adminInstructionMessages.zh,
     role: roleMessages.zh,
     selfExam: selfExamMessages.zh,
+    selfLLM: selfLLM.zh,
   },
   en: {
     navbar: navbarMessages.en,
@@ -55,6 +57,7 @@ const Messages = {
     adminInstruction: adminInstructionMessages.en,
     role:roleMessages.en,
     selExam: selfExamMessages.en,
+    selfLLM: selfLLM.en
   }
 }
 

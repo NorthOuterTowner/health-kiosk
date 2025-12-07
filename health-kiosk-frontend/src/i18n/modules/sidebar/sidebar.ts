@@ -18,7 +18,8 @@ export const sidebarMessages = {
             title: "个人信息",
             watch: "查看个人信息",
             exam: "查看体检数据",
-            analyze: "数据分析"
+            analyze: "数据分析",
+            LLM: "AI助手"
         },
         examItem: {
             title: "体检项目管理",
@@ -56,7 +57,8 @@ export const sidebarMessages = {
             title: "self information",
             watch: "self information",
             exam: "view exam data",
-            analyze: "data analyze"
+            analyze: "data analyze",
+            LLM: "AI bot"
         },
         examItem: {
             title: "Kiosk project management",
