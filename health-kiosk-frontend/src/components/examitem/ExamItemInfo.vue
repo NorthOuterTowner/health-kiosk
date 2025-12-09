@@ -90,6 +90,7 @@ const header = props.editable ? "edit_title" : "view_title"
 const emit = defineEmits(["close", "update"]);
 
 const localItem = reactive({ ...props.examItem });
+console.log("localItem:",localItem)
 
 const save = async () => {
   try {
