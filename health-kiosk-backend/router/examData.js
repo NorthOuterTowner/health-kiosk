@@ -656,4 +656,55 @@ router.get("/userId", authMiddleware, async (req, res) => {
     }
 });
 
+/**
+ * @api {post} /data/delete 删除体检数据记录
+ * @apiName DeleteExamRecord
+ * @apiGroup ExamData
+ * @apiPermission admin
+ *
+ * @apiDescription 管理员删除指定体检数据记录
+ *
+ * @apiHeader {String} Authorization 用户登录后的 JWT Token
+ *
+ * @apiParam {Number} record_id 体检数据记录 ID
+ *
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {String} msg 返回信息
+ */
+router.post("/delete", authMiddleware, async (req, res) => {
+    try {
+        const { record_id } = req.body;
+
+        if (req.role < 3) {
+            return res.status(200).json({
+                code: 403,
+                msg: "仅管理员权限可以删除记录"
+            });
+        }
+
+        if (!record_id || isNaN(Number(record_id))) {
+            return res.status(200).json({
+                code: 400,
+                msg: "record_id 参数非法"
+            });
+        }
+
+        const deleteSql = "DELETE FROM `data` WHERE `id` = ?";
+
+        await db.async.run(deleteSql, [record_id]);
+
+        return res.status(200).json({
+            code: 200,
+            msg: "删除成功"
+        });
+
+    } catch (err) {
+        console.error("删除体检数据失败:", err);
+        return res.status(200).json({
+            code: 500,
+            msg: "服务器内部错误"
+        });
+    }
+});
+
 export default router;
