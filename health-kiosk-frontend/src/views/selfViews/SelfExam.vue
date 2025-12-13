@@ -122,6 +122,14 @@ const columns = [
     width: 100,
   },
   {
+    title: t('selfExam.columns.date'),
+    key: "date",
+    width: 150,
+    render(row: any) {
+      return row.date.split('T')[0];
+    }
+  },
+  {
     title: t('selfExam.columns.time'),
     key: "time",
     width: 100,
