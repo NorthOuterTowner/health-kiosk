@@ -11,3 +11,9 @@ export function getInfoApi (page:Number | undefined | null,
             }
         })
 }
+
+export function deleteExamDataApi (record_id: number) {
+    return instance.post("/examData/delete", {
+        record_id
+    })
+}

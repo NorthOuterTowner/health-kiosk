@@ -11,7 +11,8 @@ export const selfExamMessages = {
             dia: "舒张压",
             hr: "心率",
             time: "时间",
-            action: "操作"
+            action: "操作",
+            delete: "删除本条记录"
         },
         info: "查看详情"
     },
@@ -27,7 +28,8 @@ export const selfExamMessages = {
             dia: "Blood Dia",
             hr: "Blood Hr",
             time: "time",
-            action: "action"
+            action: "action",
+            delete: "delete this record"
         },
         info: "view details"
     }

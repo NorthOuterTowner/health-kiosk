@@ -1,4 +1,4 @@
-<!-- Exam Item Management Page--> 
+<!-- Self Exam Data Page--> 
 <template>
     <div class="layout">
         <Sidebar />
@@ -16,13 +16,6 @@
                 class="dataTable"
             />
 
-            <ExamItemInfo
-              v-if="editingItem"
-              :examItem="editingItem"
-              :editable="editable"
-              @close="editingItem=null"
-              @update="updateExamItem"
-            />
         </div>
     </div>
 </template>
@@ -31,13 +24,10 @@
 import { ref, onMounted, h, reactive, render } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import { deleteExamItemApi,getExamItemInfoApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
-import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
-import { getInfoApi } from '../../api/self/selfData';
+import { deleteExamDataApi, getInfoApi } from '../../api/self/selfData';
 
 const { t } = useI18n();
-const addExamItemView = ref<boolean>(false)
 
 const message = useMessage();
 const dialog = useDialog();
@@ -47,9 +37,9 @@ const editable = ref(true)
 const editingItem = ref<any | null>(null);
 
 async function handleDelete(row: any){
-  const res = await deleteExamItemApi(row.id,row.name);
+  const res = await deleteExamDataApi(row.id);
   console.log(res.data)
-  if(res.data.code === '200'){
+  if(res.data.code === 200){
     await fetchExamItems()
     message.info("删除成功")
   }else{
@@ -154,20 +144,10 @@ const columns = [
             size: "small",
             type: "info",
             style: "margin-right: 6px;",
-            onClick: () => handleView(row),
+            onClick: () => confirmDelete(row),
           },
-          { default: () => t("selfExam.info") }
+          { default: () => t("selfExam.columns.delete") }
         ),
-        h(
-          NButton,
-          {
-            size: "small",
-            type: "warning",
-            style: "margin-right: 6px;",
-            onClick: () => handleEdit(row),
-          },
-          { default: () => t("utils.edit") }
-        )
       ];
     },
   },
