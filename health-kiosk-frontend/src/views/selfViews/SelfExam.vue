@@ -1,10 +1,11 @@
-<!-- Exam Item Management Page--> 
+<!-- Self Exam Data Page--> 
 <template>
     <div class="layout">
         <Sidebar />
         <div class="device-page">
           <div style="display: flex;">
             <h2>{{ $t('selfExam.title') }}</h2>
+            <n-button @click="handleDownload">下载</n-button>
           </div>
         
             <n-data-table
@@ -16,63 +17,39 @@
                 class="dataTable"
             />
 
-            <ExamItemInfo
-              v-if="editingItem"
-              :examItem="editingItem"
-              :editable="editable"
-              @close="editingItem=null"
-              @update="updateExamItem"
-            />
         </div>
     </div>
+
+    <ExportOption 
+      v-if="export_option == true"
+      @close="handleClose"
+    />
 </template>
 
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive, render } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
-import { deleteExamItemApi,getExamItemInfoApi } from '../../api/examitem/examitem';
 import { useI18n } from 'vue-i18n'
-import ExamItemInfo from '../../components/examitem/AddExamItem.vue';
-import { getInfoApi } from '../../api/self/selfData';
+import { deleteExamDataApi, downloadDataApi, getInfoApi } from '../../api/self/selfData';
+import ExportOption from '../../components/examData/exportOption.vue';
 
 const { t } = useI18n();
-const addExamItemView = ref<boolean>(false)
+
+const export_option = ref(false);
 
 const message = useMessage();
 const dialog = useDialog();
 
-const editable = ref(true)
-
-const editingItem = ref<any | null>(null);
-
 async function handleDelete(row: any){
-  const res = await deleteExamItemApi(row.id,row.name);
+  const res = await deleteExamDataApi(row.id);
   console.log(res.data)
-  if(res.data.code === '200'){
+  if(res.data.code === 200){
     await fetchExamItems()
     message.info("删除成功")
   }else{
     message.error(res.data.msg);
   }
-}
-
-async function handleView(row: any) {
-  editingItem.value = { ...row };
-  editable.value = false;
-}
-
-async function handleEdit(row: any) {
-  editingItem.value = { ...row };
-  editable.value = true;
-}
-
-const updateExamItem = (updatedExamItem: any) => {
-  const index = examItems.value.findIndex(u => u.id === updatedExamItem.id);
-  if(index !== -1) {
-    examItems.value[index] = updatedExamItem;
-  }
-  editingItem.value = null;
 }
 
 const examItems = ref<any[]>([]);
@@ -132,6 +109,14 @@ const columns = [
     width: 100,
   },
   {
+    title: t('selfExam.columns.date'),
+    key: "date",
+    width: 150,
+    render(row: any) {
+      return row.date.split('T')[0];
+    }
+  },
+  {
     title: t('selfExam.columns.time'),
     key: "time",
     width: 100,
@@ -154,24 +139,22 @@ const columns = [
             size: "small",
             type: "info",
             style: "margin-right: 6px;",
-            onClick: () => handleView(row),
+            onClick: () => confirmDelete(row),
           },
-          { default: () => t("selfExam.info") }
+          { default: () => t("selfExam.columns.delete") }
         ),
-        h(
-          NButton,
-          {
-            size: "small",
-            type: "warning",
-            style: "margin-right: 6px;",
-            onClick: () => handleEdit(row),
-          },
-          { default: () => t("utils.edit") }
-        )
       ];
     },
   },
 ];
+
+const handleDownload = () => {
+  export_option.value = true;
+}
+
+const handleClose = () => {
+  export_option.value = false;
+}
 
 async function confirmDelete(row: any) {
   try {

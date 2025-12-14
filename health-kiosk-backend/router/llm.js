@@ -209,22 +209,9 @@ async function search_corpus(req_id) {
     }
 }
 
-/**
- * @api {post} /chat AI 对话接口
- * @apiName ChatWithAI
- * @apiGroup Chat
- * @apiVersion 1.0.0
- * @apiDescription 调用 SiliconFlow 或查询 corpus 获取回复。
- * @apiBody {String} [model="Qwen/Qwen3-8B"] 使用的模型名
- * @apiBody {String} [req_id] 可选，用于查询 corpus
- * @apiBody {String} input 用户输入文本（AI Prompt）
- *
- * @apiSuccess {Number} code 返回码（200 表成功）
- * @apiSuccess {String} msg 消息
- * @apiSuccess {String} data AI 返回文本内容（raw）
- */
-router.post("/chat", async (req,res) => {
+router.post("/chat", async (req, res) => {
     const { model, req_id, input } = req.body || {};
+    
     if(req_id) {
         const corpus_res = await search_corpus(req_id);
 
@@ -234,7 +221,7 @@ router.post("/chat", async (req,res) => {
                 msg: "corpus",
                 data: ""
             })
-        }else if(corpus_res.code === 2){
+        } else if(corpus_res.code === 2){
             return res.status(200).json({
                 code: 200,
                 msg: "corpus",
@@ -244,7 +231,6 @@ router.post("/chat", async (req,res) => {
     }
     
     const use_model = model || "Qwen/Qwen3-8B";
-    //"QwQ-32B"
 
     const url = "https://api.siliconflow.cn/v1/chat/completions";
     const options = {
@@ -256,29 +242,54 @@ router.post("/chat", async (req,res) => {
         body: JSON.stringify({
             model: use_model,
             messages: [{ role: "user", content: input }],
-            stream: false,
+            stream: true,
             thinking_budget: 128    
         })
     };
 
     try {
         const response = await fetch(url, options);
-        const data = await response.json();
-
-        const raw = data.choices?.[0]?.message?.content;
         
-        return res.status(200).json({
-            code: 200,
-            msg: "AI analysis success",
-            data: raw
-        });
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+        }
+
+        // 设置响应头为流式传输
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        // 读取流并转发给前端
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+                res.end();
+                break;
+            }
+
+            // 解码并发送数据块
+            const chunk = decoder.decode(value, { stream: true });
+            res.write(chunk);
+        }
+
     } catch (error) {
         console.error("AI request error:", error);
-        return res.status(500).json({
-            code: 500,
-            msg: "AI request failed",
-            error: error.toString()
-        });
+        
+        // 如果还没开始发送响应，返回 JSON 错误
+        if (!res.headersSent) {
+            return res.status(500).json({
+                code: 500,
+                msg: "AI request failed",
+                error: error.toString()
+            });
+        } else {
+            // 如果已经开始流式传输，只能结束连接
+            res.end();
+        }
     }
 });
 

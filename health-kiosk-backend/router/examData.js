@@ -182,7 +182,7 @@ router.post("/set/ecg",(req,res)=>{
  * "msg": "Upload successful"
  * }
  */
-router.post("/examData/set/tempor", async (req,res) => {
+router.post("/set/tempor", async (req,res) => {
     let { data, user } = req.body;
     data = parseFloat(data);// store temport data by float form
     const {date, time} = await decideTime();
@@ -237,7 +237,7 @@ router.post("/examData/set/tempor", async (req,res) => {
  * "msg": "Update alcohol successful"
  * }
  */
-router.post("/examData/set/alcohol", async (req, res) => {
+router.post("/set/alcohol", async (req, res) => {
     let { data, user } = req.body;
     data = parseFloat(data);// store alcohol data by float form
 
@@ -298,7 +298,7 @@ router.post("/examData/set/alcohol", async (req, res) => {
  * "msg": "Update spo2 successful"
  * }
  */
-router.post("/examData/set/spo2", async (req, res) => {
+router.post("/set/spo2", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store spo2 data by integer form
 
@@ -359,7 +359,7 @@ router.post("/examData/set/spo2", async (req, res) => {
  * "msg": "Update ppg successful"
  * }
  */
-router.post("/examData/set/ppg", async (req, res) => {
+router.post("/set/ppg", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store ppg data by integer form
 
@@ -420,7 +420,7 @@ router.post("/examData/set/ppg", async (req, res) => {
  * "msg": "Update blood_sys successful"
  * }
  */
-router.post("/examData/set/blood_sys", async (req, res) => {
+router.post("/set/blood_sys", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_sys data by integer form
 
@@ -481,7 +481,7 @@ router.post("/examData/set/blood_sys", async (req, res) => {
  * "msg": "Update blood_dia successful"
  * }
  */
-router.post("/examData/set/blood_dia", async (req, res) => {
+router.post("/set/blood_dia", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_dia data by integer form
 
@@ -542,7 +542,7 @@ router.post("/examData/set/blood_dia", async (req, res) => {
  * "msg": "Update blood_hr successful"
  * }
  */
-router.post("/examData/set/blood_hr", async (req, res) => {
+router.post("/set/blood_hr", async (req, res) => {
     let { data, user } = req.body;
     data = parseInt(data, 10);// store blood_hr data by integer form
 
@@ -590,6 +590,10 @@ router.post("/examData/set/blood_hr", async (req, res) => {
                 msg: existRes.msg
             });
     }
+});
+
+router.get("/get/ecg", async (req, res) => {
+
 });
 
 /**
@@ -653,6 +657,135 @@ router.get("/userId", authMiddleware, async (req, res) => {
             msg: err.msg,
             cnt: null
         })
+    }
+});
+
+router.post("/download", authMiddleware, async (req, res) => {
+    try {
+        const user_id = req.account;
+
+        const {
+            start_date,
+            end_date,
+            file_type
+        } = req.body;
+
+        if (!start_date || !end_date) {
+            return res.status(400).json({
+                code: 400,
+                msg: "缺少时间范围参数"
+            });
+        }
+
+        // ===== 2. 查询数据库 =====
+        const select_sql = `
+            SELECT *
+            FROM \`data\`
+            WHERE \`user_id\` = ?
+              AND \`date\` BETWEEN ? AND ?
+            ORDER BY \`id\`
+        `;
+
+        const { rows, err } = await db.async.all(select_sql, [
+            user_id,
+            start_date,
+            end_date
+        ]);
+
+        if (err) {
+            return res.status(500).json({
+                code: 500,
+                msg: err.msg
+            });
+        }
+
+        if (!rows || rows.length === 0) {
+            return res.status(200).json({
+                code: 200,
+                msg: "无可导出的数据"
+            });
+        }
+
+        // ===== 3. 生成 CSV 文件内容 =====
+        const headers = Object.keys(rows[0]).join(",");
+
+        const csvBody = rows.map(row =>
+            Object.values(row)
+                .map(v => `"${v ?? ""}"`)
+                .join(",")
+        ).join("\n");
+
+        const csvContent = headers + "\n" + csvBody;
+
+        // ===== 4. 设置下载响应头 =====
+        const filename = `data_${start_date}_${end_date}.csv`;
+
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=${encodeURIComponent(filename)}`
+        );
+
+        // ===== 5. 返回文件 =====
+        res.send(csvContent);
+
+    } catch (e) {
+        res.status(500).json({
+            code: 500,
+            msg: "服务器内部错误"
+        });
+    }
+});
+
+
+/**
+ * @api {post} /data/delete 删除体检数据记录
+ * @apiName DeleteExamRecord
+ * @apiGroup ExamData
+ * @apiPermission admin
+ *
+ * @apiDescription 管理员删除指定体检数据记录
+ *
+ * @apiHeader {String} Authorization 用户登录后的 JWT Token
+ *
+ * @apiParam {Number} record_id 体检数据记录 ID
+ *
+ * @apiSuccess {Number} code 状态码
+ * @apiSuccess {String} msg 返回信息
+ */
+router.post("/delete", authMiddleware, async (req, res) => {
+    try {
+        const { record_id } = req.body;
+
+        if (req.role < 3) {
+            return res.status(200).json({
+                code: 403,
+                msg: "仅管理员权限可以删除记录"
+            });
+        }
+
+        if (!record_id || isNaN(Number(record_id))) {
+            return res.status(200).json({
+                code: 400,
+                msg: "record_id 参数非法"
+            });
+        }
+
+        const deleteSql = "DELETE FROM `data` WHERE `id` = ?";
+
+        await db.async.run(deleteSql, [record_id]);
+
+        return res.status(200).json({
+            code: 200,
+            msg: "删除成功"
+        });
+
+    } catch (err) {
+        console.error("删除体检数据失败:", err);
+        return res.status(200).json({
+            code: 500,
+            msg: "服务器内部错误"
+        });
     }
 });
 
