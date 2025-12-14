@@ -5,6 +5,7 @@
         <div class="device-page">
           <div style="display: flex;">
             <h2>{{ $t('selfExam.title') }}</h2>
+            <n-button @click="handleDownload">下载</n-button>
           </div>
         
             <n-data-table
@@ -18,6 +19,11 @@
 
         </div>
     </div>
+
+    <ExportOption 
+      v-if="export_option == true"
+      @close="handleClose"
+    />
 </template>
 
 <script setup lang = "ts">
@@ -25,16 +31,15 @@ import { ref, onMounted, h, reactive, render } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
 import { useI18n } from 'vue-i18n'
-import { deleteExamDataApi, getInfoApi } from '../../api/self/selfData';
+import { deleteExamDataApi, downloadDataApi, getInfoApi } from '../../api/self/selfData';
+import ExportOption from '../../components/examData/exportOption.vue';
 
 const { t } = useI18n();
 
+const export_option = ref(false);
+
 const message = useMessage();
 const dialog = useDialog();
-
-const editable = ref(true)
-
-const editingItem = ref<any | null>(null);
 
 async function handleDelete(row: any){
   const res = await deleteExamDataApi(row.id);
@@ -45,24 +50,6 @@ async function handleDelete(row: any){
   }else{
     message.error(res.data.msg);
   }
-}
-
-async function handleView(row: any) {
-  editingItem.value = { ...row };
-  editable.value = false;
-}
-
-async function handleEdit(row: any) {
-  editingItem.value = { ...row };
-  editable.value = true;
-}
-
-const updateExamItem = (updatedExamItem: any) => {
-  const index = examItems.value.findIndex(u => u.id === updatedExamItem.id);
-  if(index !== -1) {
-    examItems.value[index] = updatedExamItem;
-  }
-  editingItem.value = null;
 }
 
 const examItems = ref<any[]>([]);
@@ -160,6 +147,14 @@ const columns = [
     },
   },
 ];
+
+const handleDownload = () => {
+  export_option.value = true;
+}
+
+const handleClose = () => {
+  export_option.value = false;
+}
 
 async function confirmDelete(row: any) {
   try {
