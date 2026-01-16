@@ -69,6 +69,16 @@ app.use((req, res, next) => {
     else next();
 });
 
+app.use((req,res,next) => {
+  console.log("\n======= Received Request =======\n");
+  console.log(req.method);
+  console.log(req.originalUrl);
+  console.log(req.baseUrl);
+  console.log(req.query);
+  console.log(req.ip);
+  next();
+});
+
 app.use(limiter);
 
 app.set('view engine','ejs');
@@ -85,7 +95,8 @@ import searchRouter from './router/search.js';
 import roleRouter from './router/role.js';
 import permissionRouter from './router/permission.js';
 import examDataRouter from './router/examData.js';
-import LLMRouter from './router/llm.js'
+import LLMRouter from './router/llm.js';
+import testRouter from './router/testRouter.js';
 
 app.use("/admin", adminRouter);
 app.use("/func", funcRouter);
@@ -99,6 +110,7 @@ app.use("/role", roleRouter);
 app.use("/permission", permissionRouter);
 app.use("/examData",examDataRouter);
 app.use("/llm",LLMRouter);
+app.use("/test",testRouter)
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://0.0.0.0:${port}`);
