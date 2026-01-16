@@ -6,6 +6,8 @@ import android.graphics.YuvImage;
 
 import com.example.quickexam.http.HttpRequest;
 import com.example.quickexam.http.api.userGroup.LoginApi;
+import com.example.quickexam.http.api.userGroup.TestApi;
+import com.example.quickexam.http.model.TestResponse;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
 import com.google.gson.Gson;
 
@@ -28,13 +30,16 @@ import com.seeta.mvp.MainFragment;
 public class UserRepository {
     private final LoginApi loginApi;
     private final RegisterApi registerApi;
+    private final TestApi testApi;
 
     public UserRepository(){
         Gson gson = new Gson();
         Retrofit retrofit = HttpRequest.getRetrofit(gson);
         loginApi = retrofit.create(LoginApi.class);
         registerApi = retrofit.create(RegisterApi.class);
+        testApi = retrofit.create(TestApi.class);
     }
+
     public void login(String account, String pwd, byte[] photoYUVBytes, final LoginCallback callback) {
         // 构建 RequestBody
         RequestBody accountBody = account != null ? RequestBody.create(MediaType.parse("text/plain"), account) : null;
@@ -92,6 +97,30 @@ public class UserRepository {
         });
     }
 
+    public void test(final TestCallback callback) {
+
+        Call<TestResponse> call = testApi.test();
+
+        call.enqueue(new Callback<TestResponse>() {
+            @Override
+            public void onResponse(Call<TestResponse> call, Response<TestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(
+                            new Exception("test 接口失败，响应码：" + response.code())
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TestResponse> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+
     /**
      * 将 YUV420/NV21 数据转换为 JPEG 数据
      *
@@ -120,6 +149,11 @@ public class UserRepository {
 
     public interface RegisterCallback {
         void onSuccess(RegisterResponse response);
+        void onError(Throwable t);
+    }
+
+    public interface TestCallback {
+        void onSuccess(TestResponse response);
         void onError(Throwable t);
     }
 

@@ -10,11 +10,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.icu.util.Calendar;
@@ -35,7 +36,7 @@ import com.example.quickexam.BuildConfig;
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.R;
 import com.example.quickexam.adapter.ProjectAdapter;
-
+import com.example.quickexam.broadcast.Constants;
 import android_serialport_api.DataUtils;
 import android_serialport_api.SerialPortGY;
 import android_serialport_api.SerialPortUtil;
@@ -45,6 +46,7 @@ import com.example.quickexam.bean.ResultBean;
 import com.example.quickexam.databinding.ActivityMainBinding;
 import com.example.quickexam.db.DBLog;
 import com.example.quickexam.db.Loginfo;
+import com.example.quickexam.session.UserSession;
 import com.example.quickexam.utils.FFT;
 import com.example.quickexam.utils.FileUtils;
 import com.example.quickexam.utils.IflyTts;
@@ -269,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //adapter.getDataList().set(4, m_beanbloodPress);
         //adapter.getDataList().set(3, m_beanspo2);
         //adapter.changeData();
+        //binding.name.setText(UserSession.getInstance().getCurrentUser().getName());
         binding.name.setText("--");//姓名
         binding.result.setText("--");//体温
         binding.result2.setText("--");//酒精
@@ -600,6 +603,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 收到广播执行操作
+            Toast.makeText(context, "收到信号", Toast.LENGTH_SHORT).show();
+            String setName = intent.getStringExtra("name");
+            binding.name.setText(setName);
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(receiver, new IntentFilter(Constants.ACTION_CHANGE_INFO));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(receiver);
+    }
     private void getConfig() {
         String json = "";
         if (FileUtils.isExists(FileUtils.pathHead + FileUtils.settingFileName)) {
