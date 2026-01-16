@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.activity.FragmentActivity;
 import com.example.quickexam.activity.MainActivity;
+import com.example.quickexam.http.model.TestResponse;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
 import com.example.quickexam.repository.UserRepository;
 import com.example.quickexam.session.UserSession;
@@ -196,6 +197,19 @@ public class MainFragment extends Fragment
             public void onClick(View view) {
                 /** TODO: SEND HTTP REQUEST HERE */
                 UserRepository userRepo = new UserRepository();
+
+                userRepo.test(new UserRepository.TestCallback() {
+                    @Override
+                    public void onSuccess(TestResponse response) {
+                        Toast.makeText(activity.getApplicationContext(),"测试成功",Toast.LENGTH_SHORT).show();
+                        System.out.println("测试成功");
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        Toast.makeText(activity.getApplicationContext(),"访问不到",Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
                 userRepo.login(edit_account.toString(), null, latestFrame, new UserRepository.LoginCallback(){
                     @Override
                     public void onSuccess(LoginResponse response) {

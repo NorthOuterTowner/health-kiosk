@@ -75,6 +75,7 @@ app.use((req,res,next) => {
   console.log(req.originalUrl);
   console.log(req.baseUrl);
   console.log(req.query);
+  console.log(req.body);
   console.log(req.ip);
   next();
 });
