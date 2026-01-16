@@ -35,6 +35,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.activity.FragmentActivity;
 import com.example.quickexam.activity.MainActivity;
+import com.example.quickexam.broadcast.Constants;
 import com.example.quickexam.http.model.TestResponse;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
 import com.example.quickexam.repository.UserRepository;
@@ -195,44 +196,43 @@ public class MainFragment extends Fragment
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /** TODO: SEND HTTP REQUEST HERE */
+
                 UserRepository userRepo = new UserRepository();
 
-                userRepo.test(new UserRepository.TestCallback() {
-                    @Override
-                    public void onSuccess(TestResponse response) {
-                        Toast.makeText(activity.getApplicationContext(),"测试成功",Toast.LENGTH_SHORT).show();
-                        System.out.println("测试成功");
-                    }
-                    @Override
-                    public void onError(Throwable t) {
-                        Toast.makeText(activity.getApplicationContext(),"访问不到",Toast.LENGTH_SHORT).show();
-                        t.printStackTrace();
-                    }
-                });
-                userRepo.login(edit_account.toString(), null, latestFrame, new UserRepository.LoginCallback(){
+                userRepo.login(edit_account.getText().toString().trim(), edit_pwd.getText().toString().trim(), latestFrame, new UserRepository.LoginCallback(){
                     @Override
                     public void onSuccess(LoginResponse response) {
-                        Toast.makeText(activity.getApplicationContext(),"登录成功",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity.getApplicationContext(),response.getMsg(),Toast.LENGTH_SHORT).show();
                         UserSession.getInstance().setCurrentUser(response.getUser());
+
+                        // Send a broadcast to activity intend to change info in MainActivity
+                        Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
+                        changeInfoIntent.putExtra("name",response.getUser().getName());
+                        activity.getApplicationContext().sendBroadcast(changeInfoIntent);
+
+                        // start examination after login successfully
+                        if (activity.changeBP) {
+                            change();
+                            Intent intent = new Intent();
+                            intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
+                            activity.setResult(2000, intent);
+                            activity.finish();
+                        } else {
+                            Intent intent = new Intent();
+                            if (!activity.recognizedName.isEmpty())
+                                intent.putExtra("name", activity.recognizedName);
+                            activity.setResult(2000, intent);
+                            activity.finish();
+                        }
                     }
                     @Override
                     public void onError(Throwable t) {
-                        t.printStackTrace();
+                        Toast.makeText(activity.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
-                /** END*/
+
                 m_iMenuTask = 1;
                 //Application app = (Application)activity.getApplication();
-                if (activity.changeBP) {
-                    change();
-                } else {
-                    Intent intent = new Intent();
-                    if (!activity.recognizedName.isEmpty())
-                        intent.putExtra("name", activity.recognizedName);
-                    activity.setResult(2000, intent);
-                    activity.finish();
-                }
             }
         });
         edit_account.setOnClickListener(new View.OnClickListener() {

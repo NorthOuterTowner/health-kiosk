@@ -10,6 +10,8 @@ import fs from 'fs';
 import { generateToken } from '../utils/jwtHelper.js';
 import authMiddleware from '../middleware/authMiddleware.js'
 import redisClient from '../db/redis.js';
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -64,10 +66,10 @@ const upload = multer({ storage: storage });
  * }
  */
 router.post("/login", upload.single("photo") , async (req, res) => {
+  console.log(req.body);
   //upload.fields([{ name: "photo", maxCount: 1 }])
   let { account, pwd } = req.body;
-
-  if(account!=null && pwd !=null){
+  if(account!=null && pwd !=null && account != ''){
     if(!req.file){ // Request from Web
       const { captcha, captchaId, remember } = req.body;
       const saved = await redisClient.get(`captcha:${captchaId}`);
@@ -87,6 +89,8 @@ router.post("/login", upload.single("photo") , async (req, res) => {
     }
     //delete picture saved from request.
     if (req.file) {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = dirname(__filename);
       const del_file_string = path.join(__dirname, "../uploads/" + req.file?.filename);
       fs.unlink(del_file_string, err => {
         if (err) console.log(err);
@@ -94,10 +98,12 @@ router.post("/login", upload.single("photo") , async (req, res) => {
     }
 
     try { 
+      console.log(account);
       const { err, rows } = await db.async.all( 
         "SELECT * FROM user WHERE account = ?", 
         [account] 
       );
+      console.log(rows);
       if (err) {
         console.log(err)
         return res.status(500).json({ 
@@ -113,6 +119,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
           msg: "不存在该用户" }); 
         } 
       const user = rows[0];
+      console.log(user);
       pwd = crypto.createHash('sha256').update(pwd.toString()).digest('hex');
       if (user.pwd === pwd) { 
         user.pwd = ""
@@ -145,6 +152,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
    * Login logic when just having the picture.
    * Using face recognition function to recognize whether a face saved in database is as same as the input picture.
    */
+  console.log("人脸识别");
     const py = req.py;
     const callbacks = req.pyCallbacks;
 
@@ -166,10 +174,11 @@ router.post("/login", upload.single("photo") , async (req, res) => {
       const result = await faceMatch();
       // find user information in MysQL through db_filename
       if (result.status === "ok" && result.match) {
+        console.log("match");
         const file_name = result.match
         const find_user_sql = "select * from `user` where `pic` = ? ;"
         const {err:userErr,rows:userRows} = await db.async.all(find_user_sql,[file_name])
-
+        console.log(file_name)
         if(userErr != null || userRows.length == 0){
           return res.status(500).json({
             code: 500,
@@ -184,7 +193,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         //const updateSql = "UPDATE `user` SET `token` = ? WHERE `account` = ?";
         //await db.async.run(updateSql, [token, user.account]);
         //py.kill()
-        return res.json({ code: 200, 
+        return res.status(200).json({ code: 200, 
           msg: "人脸匹配成功", 
           user 
         });
@@ -194,6 +203,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
           msg: "未找到匹配用户" 
         });
       } else {
+        //未检测到人脸
         return res.status(500).json({ 
           code: 500, 
           msg: result.msg 
@@ -207,6 +217,8 @@ router.post("/login", upload.single("photo") , async (req, res) => {
       });
     } finally {
       if (req.file) {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
         const del_file_string = path.join(__dirname, "../uploads/" + req.file?.filename);
         fs.unlink(del_file_string, err => {
           if (err) console.log(err);
