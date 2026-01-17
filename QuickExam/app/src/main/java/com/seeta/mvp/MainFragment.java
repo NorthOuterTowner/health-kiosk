@@ -35,9 +35,11 @@ import androidx.fragment.app.Fragment;
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.activity.FragmentActivity;
 import com.example.quickexam.activity.MainActivity;
+import com.example.quickexam.bean.User;
 import com.example.quickexam.broadcast.Constants;
 import com.example.quickexam.http.model.TestResponse;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
+import com.example.quickexam.http.model.userGroup.RegisterResponse;
 import com.example.quickexam.repository.UserRepository;
 import com.example.quickexam.session.UserSession;
 import com.seeta.sdk.SeetaImageData;
@@ -177,16 +179,41 @@ public class MainFragment extends Fragment
             public void onClick(View view) {
                 //人脸注册
                 needFaceRegister = true;
-//                if (activity.feats == null &&activity.feats.length == 0){
-//                    MainApplication.miflytts.playText("请对准摄像头录入人脸");
-//                    Toast.makeText(getActivity(), "请对准摄像头录入人脸", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if (edit_name.getText().toString() == null && edit_name.getText().toString().length() == 0) {
-//                    MainApplication.miflytts.playText("请输入姓名");
-//                    Toast.makeText(getActivity(), "请输入姓名", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
+                /* START: Original logic when REGISTER button clicked. */
+                try{
+                    if (activity.feats == null && activity.feats.length == 0){
+                        MainApplication.miflytts.playText("请对准摄像头录入人脸");
+                        Toast.makeText(getActivity(), "请对准摄像头录入人脸", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (edit_account.getText().toString().isEmpty()) {
+                        MainApplication.miflytts.playText("请输入姓名");
+                        Toast.makeText(getActivity(), "请输入姓名", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (edit_pwd.getText().toString().isEmpty()) {
+                        MainApplication.miflytts.playText("请输入密码");
+                        Toast.makeText(getActivity(), "请输入密码", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }catch (NullPointerException e) {
+                    Log.e("Null Pointer Exception: ",e.getMessage());
+                }
+                /* END: Original logic*/
+
+                /* START: New logic transmit photo and personal info to the server.*/
+                UserRepository userRepo = new UserRepository();
+                userRepo.register(edit_account.getText().toString(), edit_pwd.getText().toString(), latestFrame, new UserRepository.RegisterCallback() {
+                    @Override
+                    public void onSuccess(RegisterResponse response) {
+                        Toast.makeText(activity.getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
+                        MainApplication.miflytts.playText("注册成功，请前往登录");
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        Toast.makeText(activity.getApplicationContext(), "发生未知错误", Toast.LENGTH_LONG).show();
+                    }
+                });
                 change();
             }
         });
@@ -203,11 +230,16 @@ public class MainFragment extends Fragment
                     @Override
                     public void onSuccess(LoginResponse response) {
                         Toast.makeText(activity.getApplicationContext(),response.getMsg(),Toast.LENGTH_SHORT).show();
-                        UserSession.getInstance().setCurrentUser(response.getUser());
+
+                        User curUser = response.getUser();
+
+                        UserSession.getInstance().setCurrentUser(curUser);
 
                         // Send a broadcast to activity intend to change info in MainActivity
                         Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
-                        changeInfoIntent.putExtra("name",response.getUser().getName());
+                        changeInfoIntent.putExtra("name",curUser.getName());
+                        changeInfoIntent.putExtra("age", curUser.getAge());
+                        changeInfoIntent.putExtra("gender", curUser.getGender());
                         activity.getApplicationContext().sendBroadcast(changeInfoIntent);
 
                         // start examination after login successfully
