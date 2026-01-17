@@ -1,19 +1,20 @@
 package com.example.quickexam.repository;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 
 import com.example.quickexam.http.HttpRequest;
 import com.example.quickexam.http.api.userGroup.LoginApi;
-import com.example.quickexam.http.api.userGroup.TestApi;
 import com.example.quickexam.http.model.TestResponse;
 import com.example.quickexam.http.model.userGroup.LoginResponse;
 import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Arrays;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -26,18 +27,17 @@ import com.example.quickexam.http.api.userGroup.RegisterApi;
 import com.example.quickexam.http.model.userGroup.RegisterResponse;
 import com.seeta.mvp.MainFragment;
 
+import org.opencv.core.Mat;
 
 public class UserRepository {
     private final LoginApi loginApi;
     private final RegisterApi registerApi;
-    private final TestApi testApi;
 
     public UserRepository(){
         Gson gson = new Gson();
         Retrofit retrofit = HttpRequest.getRetrofit(gson);
         loginApi = retrofit.create(LoginApi.class);
         registerApi = retrofit.create(RegisterApi.class);
-        testApi = retrofit.create(TestApi.class);
     }
 
     public void login(String account, String pwd, byte[] photoYUVBytes, final LoginCallback callback) {
@@ -47,7 +47,34 @@ public class UserRepository {
 
         MultipartBody.Part photoPart = null;
         if (photoYUVBytes != null) {
-            byte[] photoBytes = yuvToJpeg(photoYUVBytes,MainFragment.getmPreviewSize().width,MainFragment.getmPreviewSize().height);
+            byte[] photoBytes = yuvToJpeg(
+                    photoYUVBytes,
+                    MainFragment.getmPreviewSize().width,
+                    MainFragment.getmPreviewSize().height
+            );
+
+            /* Solve the problem of up-down */
+            // Transform JPEG to Bitmap
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+//
+//            // Flipped picture
+//            Matrix matrix = new Matrix();
+//            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+//
+//            Bitmap flipped = Bitmap.createBitmap(
+//                    bitmap,
+//                    0,0,
+//                    bitmap.getWidth(),
+//                    bitmap.getHeight(),
+//                    matrix,
+//                    true
+//            );
+//
+//            // Transform Bitmap to JPEG byte[]
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+//            photoBytes = baos.toByteArray();
+
             RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoBytes);
             photoPart = MultipartBody.Part.createFormData("photo", "face.jpg", photoBody);
         }
@@ -69,14 +96,42 @@ public class UserRepository {
             }
         });
     }
-    public void register(String account, String pwd, File photoFile, final RegisterCallback callback) {
+    public void register(String account, String pwd, byte[] photoYUVBytes, final RegisterCallback callback) {
         RequestBody accountBody = RequestBody.create(MediaType.parse("text/plain"), account);
         RequestBody pwdBody = RequestBody.create(MediaType.parse("text/plain"), pwd);
 
         MultipartBody.Part photoPart = null;
-        if (photoFile != null && photoFile.exists()) {
-            RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoFile);
-            photoPart = MultipartBody.Part.createFormData("photo", photoFile.getName(), photoBody);
+        if (photoYUVBytes != null) {
+            byte[] photoBytes = yuvToJpeg(
+                    photoYUVBytes,
+                    MainFragment.getmPreviewSize().width,
+                    MainFragment.getmPreviewSize().height
+            );
+
+            /* Solve the problem of up-down */
+            // Transform JPEG to Bitmap
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+//
+//            // Flipped picture
+//            Matrix matrix = new Matrix();
+//            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+//
+//            Bitmap flipped = Bitmap.createBitmap(
+//                    bitmap,
+//                    0,0,
+//                    bitmap.getWidth(),
+//                    bitmap.getHeight(),
+//                    matrix,
+//                    true
+//            );
+//
+//            // Transform Bitmap to JPEG byte[]
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+//            photoBytes = baos.toByteArray();
+
+            RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoBytes);
+            photoPart = MultipartBody.Part.createFormData("photo", "face.jpg", photoBody);
         }
 
         Call<RegisterResponse> call = registerApi.register(accountBody, pwdBody, photoPart);
@@ -96,30 +151,6 @@ public class UserRepository {
             }
         });
     }
-
-    public void test(final TestCallback callback) {
-
-        Call<TestResponse> call = testApi.test();
-
-        call.enqueue(new Callback<TestResponse>() {
-            @Override
-            public void onResponse(Call<TestResponse> call, Response<TestResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
-                } else {
-                    callback.onError(
-                            new Exception("test 接口失败，响应码：" + response.code())
-                    );
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TestResponse> call, Throwable t) {
-                callback.onError(t);
-            }
-        });
-    }
-
 
     /**
      * 将 YUV420/NV21 数据转换为 JPEG 数据
