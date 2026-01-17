@@ -69,14 +69,11 @@ app.use((req, res, next) => {
     else next();
 });
 
+// Debug HTTP information send by Android conveniently
 app.use((req,res,next) => {
-  console.log("\n======= Received Request =======\n");
-  console.log(req.method);
+  console.log("======= Received HTTP Request =======");
   console.log(req.originalUrl);
-  console.log(req.baseUrl);
-  console.log(req.query);
   console.log(req.body);
-  console.log(req.ip);
   next();
 });
 
