@@ -2,16 +2,13 @@ package com.example.quickexam.repository;
 
 import com.example.quickexam.http.HttpRequest;
 import com.example.quickexam.http.api.dataGroup.DataApi;
-import com.example.quickexam.http.api.userGroup.LoginApi;
-import com.example.quickexam.http.api.userGroup.RegisterApi;
 import com.example.quickexam.http.model.dataGroup.DataResponse;
+import com.example.quickexam.http.model.dataGroup.HealthGeneralRequest;
 import com.google.gson.Gson;
-
-import java.lang.reflect.Array;
-
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.http.Multipart;
 
 public class DataRepository {
     private final DataApi dataApi;
@@ -20,5 +17,63 @@ public class DataRepository {
         Gson gson = new Gson();
         Retrofit retrofit = HttpRequest.getRetrofit(gson);
         dataApi = retrofit.create(DataApi.class);
+    }
+
+    public void submitECGInfo() {
+
+    }
+
+    public void submitAlcoholInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setAlcohol(req), callback);
+    }
+
+    public void submitSPO2Info(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setSpo2(req), callback);
+    }
+
+    public void submitPPGInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setPPG(req), callback);
+    }
+
+    public void submitBloodDiaInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setBloodDia(req), callback);
+    }
+
+    public void submitBloodSysInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setBloodSys(req), callback);
+    }
+
+    public void submitBloodHrInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setBloodHr(req), callback);
+    }
+
+    public void submitTemporInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setTempor(req), callback);
+    }
+
+    private void executeCall(Call<DataResponse> call, final DataCallback callback) {
+        call.enqueue(new Callback<DataResponse>() {
+            @Override
+            public void onResponse(Call<DataResponse> call, Response<DataResponse> response) {
+                if (response.isSuccessful() && response.body() != null) callback.onSuccess(response.body());
+                else callback.onError(new Exception("发送失败，响应码：" + response.code()));
+            }
+            @Override
+            public void onFailure(Call<DataResponse> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    public interface DataCallback {
+        void onSuccess(DataResponse response);
+        void onError(Throwable t);
     }
 }
