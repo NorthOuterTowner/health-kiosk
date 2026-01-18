@@ -183,11 +183,6 @@ public class UserRepository {
         void onError(Throwable t);
     }
 
-    public interface TestCallback {
-        void onSuccess(TestResponse response);
-        void onError(Throwable t);
-    }
-
 }
 /** Using Example Of Login
  *

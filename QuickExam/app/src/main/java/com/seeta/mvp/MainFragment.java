@@ -181,11 +181,11 @@ public class MainFragment extends Fragment
                 needFaceRegister = true;
                 /* START: Original logic when REGISTER button clicked. */
                 try{
-                    if (activity.feats == null && activity.feats.length == 0){
+                    /*if (activity.feats == null || activity.feats.length == 0){
                         MainApplication.miflytts.playText("请对准摄像头录入人脸");
                         Toast.makeText(getActivity(), "请对准摄像头录入人脸", Toast.LENGTH_SHORT).show();
                         return;
-                    }
+                    }*/
                     if (edit_account.getText().toString().isEmpty()) {
                         MainApplication.miflytts.playText("请输入姓名");
                         Toast.makeText(getActivity(), "请输入姓名", Toast.LENGTH_SHORT).show();
