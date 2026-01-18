@@ -77,3 +77,19 @@ public class DataRepository {
         void onError(Throwable t);
     }
 }
+
+//Using Example Of Data transmission
+//DataRepository dataRepo = new DataRepository();
+//
+//        dataRepo.submitAlcoholInfo("admin", "1", new DataRepository.DataCallback() {
+//    @Override
+//    public void onSuccess(DataResponse response) {
+//        System.out.println("发送成功：");
+//        // Show Success Toast
+//    }
+//    @Override
+//    public void onError(Throwable t) {
+//        t.printStackTrace();
+//        // Show Error Toast
+//    }
+//});
