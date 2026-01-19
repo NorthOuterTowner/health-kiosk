@@ -47,6 +47,18 @@ async function decideTime () {
     }
 }
 
+/**
+ * @description examine whether the user finished health examination
+ * on day and time input.
+ * @param {*} date 
+ * @param {*} time 
+ * @param {*} user 
+ * @returns {
+ *  exist: boolean,
+ *  id: string,
+ *  msg: string
+ * }
+ */
 async function examineRowExists(date, time, user) {
     const sql = "select * from `data` where `date` = ? and `time` = ? and `user_id` = ? ;";
     const {err, rows} = await db.async.all(sql,[date,time, user]);
@@ -177,7 +189,15 @@ router.post("/set/ecg",(req,res)=>{
  */
 router.post("/set/tempor", async (req,res) => {
     let { data, user } = req.body;
-    data = parseFloat(data);// store temport data by float form
+    data = parseFloat(data);// store tempor data by float form
+
+    if (isNaN(data)) {
+        return res.status(200).json({
+            code: 400,
+            msg: "数据格式错误，期望 float 类型。"
+        });
+    }
+
     const {date, time} = await decideTime();
     const existRes = await examineRowExists(date, time, user);
     console.log(existRes);
@@ -235,7 +255,7 @@ router.post("/set/alcohol", async (req, res) => {
     data = parseFloat(data);// store alcohol data by float form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 float 类型。"
         });
@@ -253,7 +273,7 @@ router.post("/set/alcohol", async (req, res) => {
                 msg: "更新 alcohol 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 alcohol 失败"
             });
@@ -296,7 +316,7 @@ router.post("/set/spo2", async (req, res) => {
     data = parseInt(data, 10);// store spo2 data by integer form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 integer 类型。"
         });
@@ -314,7 +334,7 @@ router.post("/set/spo2", async (req, res) => {
                 msg: "更新 spo2 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 spo2 失败"
             });
@@ -328,7 +348,7 @@ router.post("/set/spo2", async (req, res) => {
                 msg: "插入 spo2 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 spo2 失败"
             });
@@ -357,7 +377,7 @@ router.post("/set/ppg", async (req, res) => {
     data = parseInt(data, 10);// store ppg data by integer form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 integer 类型。"
         });
@@ -375,7 +395,7 @@ router.post("/set/ppg", async (req, res) => {
                 msg: "更新 ppg 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 ppg 失败"
             });
@@ -389,13 +409,13 @@ router.post("/set/ppg", async (req, res) => {
                 msg: "插入 ppg 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 ppg 失败"
             });
         }
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
                 code:500,
                 msg: existRes.msg
             });
@@ -418,7 +438,7 @@ router.post("/set/blood_sys", async (req, res) => {
     data = parseInt(data, 10);// store blood_sys data by integer form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 integer 类型。"
         });
@@ -436,7 +456,7 @@ router.post("/set/blood_sys", async (req, res) => {
                 msg: "更新 blood_sys 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_sys 失败"
             });
@@ -450,13 +470,13 @@ router.post("/set/blood_sys", async (req, res) => {
                 msg: "插入 blood_sys 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_sys 失败"
             });
         }
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
                 code:500,
                 msg: existRes.msg
             });
@@ -479,7 +499,7 @@ router.post("/set/blood_dia", async (req, res) => {
     data = parseInt(data, 10);// store blood_dia data by integer form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 integer 类型。"
         });
@@ -497,7 +517,7 @@ router.post("/set/blood_dia", async (req, res) => {
                 msg: "更新 blood_dia 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_dia 失败"
             });
@@ -511,13 +531,13 @@ router.post("/set/blood_dia", async (req, res) => {
                 msg: "插入 blood_dia 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_dia 失败"
             });
         }
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
                 code:500,
                 msg: existRes.msg
             });
@@ -540,7 +560,7 @@ router.post("/set/blood_hr", async (req, res) => {
     data = parseInt(data, 10);// store blood_hr data by integer form
 
     if (isNaN(data)) {
-        return res.status(400).json({
+        return res.status(200).json({
             code: 400,
             msg: "数据格式错误，期望 integer 类型。"
         });
@@ -558,7 +578,7 @@ router.post("/set/blood_hr", async (req, res) => {
                 msg: "更新 blood_hr 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_hr 失败"
             });
@@ -572,13 +592,13 @@ router.post("/set/blood_hr", async (req, res) => {
                 msg: "插入 blood_hr 成功"
             });
         } catch(err) {
-            return res.status(500).json({
+            return res.status(200).json({
                 code:500,
                 msg: "上传 blood_hr 失败"
             });
         }
     } else {
-        return res.status(500).json({
+        return res.status(200).json({
                 code:500,
                 msg: existRes.msg
             });
@@ -586,7 +606,7 @@ router.post("/set/blood_hr", async (req, res) => {
 });
 
 router.get("/get/ecg", async (req, res) => {
-
+    /**TODO: Get ECG data on stream. */
 });
 
 /**
