@@ -94,20 +94,18 @@ router.post("/set/ecg",(req,res)=>{
 
     // 接收字段（meta）
     busboy.on("field", (name, value) => {
-    if (name === "user_id") {
+    if (name === "account") {
         userId = value;
-        console.log("接收到 userId =", userId);
+        console.log("接收到 account =", userId);
     }
     });
 
     // 接收二进制 ECG 文件（application/octet-stream）
     busboy.on("file", (name, file, info) => {
-        const { filename, mimeType } = info;
-        console.log("接收到文件字段:", name, "mimeType:", mimeType);
+        if(name != "data") return;
 
-        // ——注意——
-        // 前端应把 ECG 数据放在 <input type="file" name="ecg"> 或 form.append("ecg", blob)
-        // 这里 name 必须保持一致
+        const { filename, mimeType } = info;
+        console.log("接收到文件字段:", name, mimeType);
 
         const targetName = `${Date.now()}_${userId}.bin`;
         const targetPath = path.join(baseDir, targetName);
