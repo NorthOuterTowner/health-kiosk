@@ -5,6 +5,12 @@ import com.example.quickexam.http.api.dataGroup.DataApi;
 import com.example.quickexam.http.model.dataGroup.DataResponse;
 import com.example.quickexam.http.model.dataGroup.HealthGeneralRequest;
 import com.google.gson.Gson;
+
+import java.io.File;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,8 +25,52 @@ public class DataRepository {
         dataApi = retrofit.create(DataApi.class);
     }
 
-    public void submitECGInfo() {
+    /**
+     * @param accountStr account of examination people
+     * @param ecgFile transform ECG stream data into file and input here
+     * @param callback things to do after result come back
+     */
+    public void submitECGInfo(String accountStr, File ecgFile, final DataCallback callback) {
+        RequestBody accountBody = accountStr != null ? RequestBody.create(
+                MediaType.parse("text/plain"),
+                accountStr
+        ) : null;
 
+        RequestBody fileBody = ecgFile != null ? RequestBody.create(
+                MediaType.parse("application/octet-stream"),
+                ecgFile
+        ) : null;
+
+        MultipartBody.Part dataPart = null;
+        if(ecgFile != null) {
+            dataPart = MultipartBody.Part.createFormData(
+                    "data",
+                    ecgFile.getName(),
+                    fileBody
+            );
+        }else {
+            dataPart = MultipartBody.Part.createFormData(
+                    "data",
+                    ""
+            );
+        }
+
+        Call<DataResponse> call = dataApi.setEcg(accountBody, dataPart);
+        call.enqueue(new Callback<DataResponse>() {
+            @Override
+            public void onResponse(Call<DataResponse> call, Response<DataResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                }
+                else {
+                    callback.onError(new Exception("发送失败，响应码：" + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<DataResponse> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
     }
 
     public void submitAlcoholInfo(String account, String data, final DataCallback callback) {

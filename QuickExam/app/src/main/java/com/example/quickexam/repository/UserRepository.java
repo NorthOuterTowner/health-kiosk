@@ -42,8 +42,14 @@ public class UserRepository {
 
     public void login(String account, String pwd, byte[] photoYUVBytes, final LoginCallback callback) {
         // 构建 RequestBody
-        RequestBody accountBody = account != null ? RequestBody.create(MediaType.parse("text/plain"), account) : null;
-        RequestBody pwdBody = pwd != null ? RequestBody.create(MediaType.parse("text/plain"), pwd) : null;
+        RequestBody accountBody = account != null ? RequestBody.create(
+                MediaType.parse("text/plain"),
+                account
+        ) : null;
+        RequestBody pwdBody = pwd != null ? RequestBody.create(
+                MediaType.parse("text/plain"),
+                pwd
+        ) : null;
 
         MultipartBody.Part photoPart = null;
         if (photoYUVBytes != null) {
