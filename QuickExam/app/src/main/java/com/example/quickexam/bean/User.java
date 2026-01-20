@@ -9,6 +9,13 @@ public class User {
     private String height;
     private String weight;
 
+    public User(String account, String name, String gender, int age) {
+        this.account = account;
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+    }
+
     public String getHeight() {
         return height;
     }
