@@ -1,27 +1,20 @@
 package com.example.quickexam.activity;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import static com.example.quickexam.MainApplication.configMainBean;
+import static com.example.quickexam.MainApplication.dbLog;
+import static com.example.quickexam.MainApplication.instance;
+import static com.example.quickexam.MainApplication.m_iMenuTask;
+import static com.example.quickexam.MainApplication.m_serialportutil;
+import static com.example.quickexam.MainApplication.miflytts;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
@@ -32,28 +25,26 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.quickexam.BuildConfig;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import com.example.quickexam.MainApplication;
 import com.example.quickexam.R;
-import com.example.quickexam.adapter.ProjectAdapter;
-import com.example.quickexam.broadcast.Constants;
-import android_serialport_api.DataUtils;
-import android_serialport_api.SerialPortGY;
-import android_serialport_api.SerialPortUtil;
-
 import com.example.quickexam.bean.ConfigBean;
 import com.example.quickexam.bean.ResultBean;
 import com.example.quickexam.databinding.ActivityMainBinding;
 import com.example.quickexam.db.DBLog;
 import com.example.quickexam.db.Loginfo;
-import com.example.quickexam.session.UserSession;
 import com.example.quickexam.utils.FFT;
 import com.example.quickexam.utils.FileUtils;
 import com.example.quickexam.utils.IflyTts;
 import com.example.quickexam.utils.NavigationBarUtil;
 import com.example.quickexam.utils.ReadAssetsFileUtils;
 import com.example.quickexam.utils.SystemUtils;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.seeta.facedb.DBFace;
 import com.seeta.mvp.MainFragment;
@@ -63,32 +54,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.example.quickexam.MainApplication.dbLog;
-import static com.example.quickexam.MainApplication.instance;
-import static com.example.quickexam.MainApplication.m_iMenuTask;
-import static com.example.quickexam.MainApplication.m_serialportutil;
-import static com.example.quickexam.MainApplication.miflytts;
-import static com.example.quickexam.MainApplication.configMainBean;
-import static com.example.quickexam.utils.FFT.calculateRMS;
-import static java.lang.Math.abs;
+import android_serialport_api.DataUtils;
+import android_serialport_api.SerialPortGY;
+import android_serialport_api.SerialPortUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -168,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }, 1000);
     }
 
-    //在主线程里面处理消息并更新UI界面
+    //在主线程里面处理子线程消息并更新UI界面
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -215,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     CharSequence sysTimeStr = DateFormat.format("hh:mm:ss", sysTime);//时间显示格式
                     binding.time.setText(mYear + "/" + mMonth + "/" + mDay + "/" + " " + sysTimeStr);
                     break;
-                case FaceClick:
+                case FaceClick://开始体检
                     //m_serialportutil.sendSPStr((String) msg.obj);
                     m_bFlagStart = true;
-                    clearView(1);
+                    clearView(1);//清空
                     miflytts.playText("开始检测，进行人脸识别");
                     startActivityForResult(new Intent(MainActivity.this, FragmentActivity.class), 1000);
                     break;
@@ -271,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //adapter.getDataList().set(4, m_beanbloodPress);
         //adapter.getDataList().set(3, m_beanspo2);
         //adapter.changeData();
-        //binding.name.setText(UserSession.getInstance().getCurrentUser().getName());
         binding.name.setText("--");//姓名
         binding.result.setText("--");//体温
         binding.result2.setText("--");//酒精
@@ -290,25 +264,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         blood_dia = "";
         fag = "";
     }
-
+//类似项目里的初始化
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {//开启设备准备工作
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
         NavigationBarUtil.focusNotAle(getWindow());
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());//使用view bingding绑定布局文件
         setContentView(binding.getRoot());
-        NavigationBarUtil.hideNavigationBar(getWindow());
+        NavigationBarUtil.hideNavigationBar(getWindow());//让界面沾满屏幕
         NavigationBarUtil.clearFocusNotAle(getWindow());
         SystemUtils.appThrowable();
-        initView();
-        verifyStoragePermissions(this);
-        initDBFace();
-        m_serialportutil = SerialPortUtil.getInstance();
+        initView();//初始化界面
+        verifyStoragePermissions(this);//看看能不能使用摄像头以及往硬盘存数据
+        initDBFace();//初始化人脸识别的设备和模型
+        m_serialportutil = SerialPortUtil.getInstance();//打开接受心电的告诉串口
         m_serialportutil.openSerialPort();
         m_serialGY = new SerialPortGY();
         m_serialGY.openSerialPort();
-        m_serialGY.sendSerialPort("A4060301AE");
+        m_serialGY.sendSerialPort("A4060301AE");//激活体温探头
 
         //ConfigBean.SettingBean.ProjectBean m_probean = new ConfigBean.SettingBean.ProjectBean();
         //m_probean.setIs_open(1);
@@ -320,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         m_beanbloodPress = mlistBean.get(4);
 
         new TimeThread().start(); //启动新的线程
-        miflytts = new IflyTts();
+        miflytts = new IflyTts();//准备讯飞语音
         miflytts.initTts(getApplicationContext());
 
 
@@ -338,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 用EventBus进行线程间通信，也可以使用Handler
+     * 用EventBus进行线程间通信，也可以使用Handler，类似while(1)
      *
      * @param string
      */
@@ -365,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     miflytts.playText("请对酒精传感器吹气");
                     m_serialportutil.sendSPStr("EtOH");
                 } else {
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {//创建一个临时对象。强制将一个子线程的操作弄到主线程去
                         @Override
                         public void run() {
                             Message msg = new Message();
@@ -390,24 +364,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if (m_iMenuTask == 3) {
             String[] strArray = string.split(",");
-            if ((strArray[0].equals("EtOH")) && (strArray.length == 3)) {
-                double dataalcohol = Double.valueOf(strArray[1]);
-                alcoholList.add(dataalcohol);
-                if (alcoholList.size() > 5) {
+            if ((strArray[0].equals("EtOH")) && (strArray.length == 3)) {//表述切出来的总段数是否为3，且第一个数据是否为字符串EoTH
+                double dataalcohol = Double.valueOf(strArray[1]);//将数据变成小数
+                alcoholList.add(dataalcohol);//记录数据
+                if (alcoholList.size() > 5) {//返回的酒精传感器一次只能保存五个数
                     alcoholList.remove(0);
                     m_iMenuTask = 4;
                     m_serialportutil.sendSPStr("EPCM");
-                } else {
+                }
+                else {//如果不够五个数，则继续给传感器发指令
                     m_serialportutil.sendSPStr("EtOH");
                 }
-                double maxalcohol = alcoholList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
-                map.put(1, new ResultBean(1, String.valueOf((float) maxalcohol)));
+                double maxalcohol = alcoholList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();//取单片机返回值（电压）最大值
+                map.put(1, new ResultBean(1, String.valueOf((float) maxalcohol)));//将数据打包进一个大包裹里
                 runOnUiThread(new Runnable() {
-                    @Override
+                    @Override//申请主线程
                     public void run() {
-                        maxAlcohol = String.valueOf((float) maxalcohol);
+                        maxAlcohol = String.valueOf((float) maxalcohol);//变成字符串
                         m_beanalcohol.setValue(maxAlcohol);
-                        binding.result2.setText(maxAlcohol);
+                        binding.result2.setText(maxAlcohol);//把确定好的最大酒精值放到界面上
                         //adapter.getDataList().set(1, m_beanalcohol);
                         //adapter.changeData();
                     }
@@ -415,14 +390,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else {
             String[] strArray = string.split(",");
-            if ((strArray[0].equals("ECG")) && (strArray.length >= 14)) {
+            if ((strArray[0].equals("ECG")) && (strArray.length >= 14)) {//这里是什么意思，需要改一下
                 ECGList.add(Double.valueOf(strArray[1])); //ECG
-                PPGList.add(Double.valueOf(strArray[2])); //PPG
-                if (ECGList.size() > maxfftsize) {
-                    PPGList.remove(0);
+                PPGList.add(Double.valueOf(strArray[2])); //PPG——删掉
+                if (ECGList.size() > maxfftsize) {//max为1024
+                    PPGList.remove(0);//滑动更新存储
                     ECGList.remove(0);
                 }
-                double datahr = Integer.valueOf(strArray[3]); //HR 心率
+                //需删掉部分数据 只保留ecg描点、SYS DIA、ARR（sDNN）,spo2的HR、SPO2、pleth
+                double datahr = Integer.valueOf(strArray[3]); //HR 心率。字符串中提取数字
                 double datarr = Integer.valueOf(strArray[4]); //RR  呼吸率
                 double datasys = Integer.valueOf(strArray[5]); //SYS 收缩压
                 double datadia = Integer.valueOf(strArray[6]); //DIA 舒张压
@@ -432,22 +408,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 double datappbf = Integer.valueOf(strArray[10]); //PBF 含水率
                 double datatshr = Integer.valueOf(strArray[11]); //hr
                 double datatsspo2 = Integer.valueOf(strArray[12]); //spo2
-                double datapleth = Integer.valueOf(strArray[13]); //pleth
-                if (datapleth > 0) {
+                double datapleth = Integer.valueOf(strArray[13]); //pleth光电容积脉搏波
+                if (datapleth > 0) {//光电容积
                     SPO2List.add(datapleth);
                     if (SPO2List.size() > maxfftsize) {
-                        SPO2List.remove(0);
+                        SPO2List.remove(0);//滑动更新存储
                     }
                 }
-                if (datatshr > 0) {
+                if (datatshr > 0) {//这个可以删掉
                     datahr = datatshr;
                 }
                 updateCnt++;
                 if (updateCnt < 2) {
                     return;
                 }
-                double dataecg = FFT.RemoveDCComponent(ECGList) * (-0.01);
-                double datappg = FFT.RemoveDCComponent(PPGList) * 0.01;
+                //这里需要继续查看，画图？因为软件画图和自己用代码画图一定是对的，需要看一下怎么才能画出来
+                double dataecg = FFT.RemoveDCComponent(ECGList) * (-0.01);//！！这里不用乘上-1啦
+                double datappg = FFT.RemoveDCComponent(PPGList) * 0.01;//数据来源应该是PLETH
                 double dataspo2 = (datapleth - 127) * (-1.5);
                 Log.d(TAG, "dataecg:" + dataecg + ",datappg" + datappg);
                 double finalDatahr = datahr;
@@ -603,27 +580,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // 收到广播执行操作
-            Toast.makeText(context, "收到信号", Toast.LENGTH_SHORT).show();
-            String setName = intent.getStringExtra("name");
-            binding.name.setText(setName);
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        registerReceiver(receiver, new IntentFilter(Constants.ACTION_CHANGE_INFO));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(receiver);
-    }
     private void getConfig() {
         String json = "";
         if (FileUtils.isExists(FileUtils.pathHead + FileUtils.settingFileName)) {
@@ -648,7 +604,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
         if (m_iMenuTask == 1) {
-            miflytts.playText("请测量额温");
+            miflytts.playText("请测量额温");//这一个额头温度可能需要改一改
             m_serialGY.sendSerialPort("A4030707B5");
             m_iMenuTask = 2;
         }
