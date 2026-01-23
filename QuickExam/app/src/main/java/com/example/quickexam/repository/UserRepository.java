@@ -61,25 +61,25 @@ public class UserRepository {
 
             /* Solve the problem of up-down */
             // Transform JPEG to Bitmap
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-//
-//            // Flipped picture
-//            Matrix matrix = new Matrix();
-//            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
-//
-//            Bitmap flipped = Bitmap.createBitmap(
-//                    bitmap,
-//                    0,0,
-//                    bitmap.getWidth(),
-//                    bitmap.getHeight(),
-//                    matrix,
-//                    true
-//            );
-//
-//            // Transform Bitmap to JPEG byte[]
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-//            photoBytes = baos.toByteArray();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+
+            // Flipped picture
+            Matrix matrix = new Matrix();
+            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+
+            Bitmap flipped = Bitmap.createBitmap(
+                    bitmap,
+                    0,0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true
+            );
+
+            // Transform Bitmap to JPEG byte[]
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+            photoBytes = baos.toByteArray();
 
             RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoBytes);
             photoPart = MultipartBody.Part.createFormData("photo", "face.jpg", photoBody);
@@ -116,25 +116,25 @@ public class UserRepository {
 
             /* Solve the problem of up-down */
             // Transform JPEG to Bitmap
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
-//
-//            // Flipped picture
-//            Matrix matrix = new Matrix();
-//            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
-//
-//            Bitmap flipped = Bitmap.createBitmap(
-//                    bitmap,
-//                    0,0,
-//                    bitmap.getWidth(),
-//                    bitmap.getHeight(),
-//                    matrix,
-//                    true
-//            );
-//
-//            // Transform Bitmap to JPEG byte[]
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
-//            photoBytes = baos.toByteArray();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length);
+
+            // Flipped picture
+            Matrix matrix = new Matrix();
+            matrix.postScale(1f, -1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+
+            Bitmap flipped = Bitmap.createBitmap(
+                    bitmap,
+                    0,0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true
+            );
+
+            // Transform Bitmap to JPEG byte[]
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            flipped.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+            photoBytes = baos.toByteArray();
 
             RequestBody photoBody = RequestBody.create(MediaType.parse("image/*"), photoBytes);
             photoPart = MultipartBody.Part.createFormData("photo", "face.jpg", photoBody);
