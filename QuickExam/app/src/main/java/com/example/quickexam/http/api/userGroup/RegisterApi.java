@@ -22,7 +22,7 @@ public interface RegisterApi {
      * @return Response
      */
     @Multipart
-    @POST("user/register")
+    @POST("admin/register")
     Call<RegisterResponse> register(
             @Part("account") RequestBody account,
             @Part("pwd") RequestBody pwd,
