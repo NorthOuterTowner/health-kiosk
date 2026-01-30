@@ -92,6 +92,8 @@ def compare_face(file_name):
 
             match_found = None
             for db_file_name in file_names:
+                if db_file_name is None:
+                    continue
                 npy_path = os.path.join(image_base_path, db_file_name + ".npy")
                 if not os.path.exists(npy_path):
                     continue
@@ -122,5 +124,7 @@ for line in sys.stdin:
             print(json.dumps(result), flush=True)
         else:
             result = {"status": "error", "msg": "未知操作"}
+            print(json.dump(result), flush=True)
     except Exception as e:
         result = {"status": "error", "msg": str(e)}
+        print(json.dump(result), flush=True)

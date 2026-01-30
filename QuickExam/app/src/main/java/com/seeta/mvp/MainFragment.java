@@ -226,7 +226,7 @@ public class MainFragment extends Fragment
 
                 UserRepository userRepo = new UserRepository();
 
-                /**补丁内容，若运行后台可去掉注释运行*//*
+                /**补丁内容，若运行后台可去掉注释运行*/
                 userRepo.login(edit_account.getText().toString().trim(), edit_pwd.getText().toString().trim(), latestFrame, new UserRepository.LoginCallback(){
                     @Override
                     public void onSuccess(LoginResponse response) {
@@ -239,7 +239,7 @@ public class MainFragment extends Fragment
                         // Send a broadcast to activity intend to change info in MainActivity
                         Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
                         changeInfoIntent.putExtra("name",curUser.getName());
-                        changeInfoIntent.putExtra("age", curUser.getAge());
+                        changeInfoIntent.putExtra("age", Integer.toString(curUser.getAge()));
                         changeInfoIntent.putExtra("gender", curUser.getGender());
                         activity.getApplicationContext().sendBroadcast(changeInfoIntent);
 
@@ -262,35 +262,35 @@ public class MainFragment extends Fragment
                     public void onError(Throwable t) {
                         Toast.makeText(activity.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                });*/
+                });
                 /**补丁内容 Start*/
-                Toast.makeText(activity.getApplicationContext(),"补丁版本进入成功",Toast.LENGTH_SHORT).show();
-
-                User curUser = new User("补丁","补丁","男", 20);;
-
-                UserSession.getInstance().setCurrentUser(curUser);
-
-                // Send a broadcast to activity intend to change info in MainActivity
-                Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
-                changeInfoIntent.putExtra("name",curUser.getName());
-                changeInfoIntent.putExtra("age", curUser.getAge());
-                changeInfoIntent.putExtra("gender", curUser.getGender());
-                activity.getApplicationContext().sendBroadcast(changeInfoIntent);
-
-                // start examination after login successfully
-                if (activity.changeBP) {
-                    change();
-                    Intent intent = new Intent();
-                    intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
-                    activity.setResult(2000, intent);
-                    activity.finish();
-                } else {
-                    Intent intent = new Intent();
-                    if (!activity.recognizedName.isEmpty())
-                        intent.putExtra("name", activity.recognizedName);
-                    activity.setResult(2000, intent);
-                    activity.finish();
-                }
+//                Toast.makeText(activity.getApplicationContext(),"补丁版本进入成功",Toast.LENGTH_SHORT).show();
+//
+//                User curUser = new User("补丁","补丁","男", 20);;
+//
+//                UserSession.getInstance().setCurrentUser(curUser);
+//
+//                // Send a broadcast to activity intend to change info in MainActivity
+//                Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
+//                changeInfoIntent.putExtra("name",curUser.getName());
+//                changeInfoIntent.putExtra("age", curUser.getAge());
+//                changeInfoIntent.putExtra("gender", curUser.getGender());
+//                activity.getApplicationContext().sendBroadcast(changeInfoIntent);
+//
+//                // start examination after login successfully
+//                if (activity.changeBP) {
+//                    change();
+//                    Intent intent = new Intent();
+//                    intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
+//                    activity.setResult(2000, intent);
+//                    activity.finish();
+//                } else {
+//                    Intent intent = new Intent();
+//                    if (!activity.recognizedName.isEmpty())
+//                        intent.putExtra("name", activity.recognizedName);
+//                    activity.setResult(2000, intent);
+//                    activity.finish();
+//                }
                 /** 补丁内容 End */
                 m_iMenuTask = 1;
                 //Application app = (Application)activity.getApplication();
