@@ -15,24 +15,34 @@ export const selfExamMessages = {
             action: "操作",
             delete: "删除本条记录"
         },
-        info: "查看详情"
+        info: "查看详情",
+        export: {
+            h: "数据导出服务",
+            p: "点击此处生成并下载当前自检项目的详细报告 (PDF/Excel)",
+            span: "立即生成"
+        }
     },
     en: {
-        title: "Exam Data Management",
+        title: "Health Data",
         columns: {
-            tempor: "Tempor",
+            tempor: "Temperature",
             alcohol: "Alcohol",
             ecg: "ECG",
             ppg: "PPG",
-            spo2: "SPO2",
-            sys: "Blood Sys",
-            dia: "Blood Dia",
-            hr: "Blood Hr",
-            time: "time",
-            date: "date",
-            action: "action",
-            delete: "delete this record"
+            spo2: "SpO2",
+            sys: "Systolic",
+            dia: "Diastolic",
+            hr: "Heart Rate",
+            time: "Time",
+            date: "Date",
+            action: "Action",
+            delete: "Delete Record"
         },
-        info: "view details"
+        info: "View Details",
+        export: {
+            h: "Data Export Service",
+            p: "Click here to generate and download a detailed report of the current self-examination items (PDF/Excel)",
+            span: "Generate"
+        }
     }
 }
