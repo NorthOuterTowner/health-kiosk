@@ -30,7 +30,7 @@ npm run dev
 
 Android APP为用户在体检过程中提供指引，并可视化的查看当前体检数据，使用Kotlin语言开发，使用Gradle进行依赖管理。
 
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Retrofit](https://img.shields.io/badge/Retrofit-4285F4?style=for-the-badge&logo=Retrofit) ![OkHttp](https://img.shields.io/badge/OkHttp-3949AB?style=for-the-badge&logo=https://raw.githubusercontent.com/konpa/devicon/master/icons/okhttp/okhttp-original.svg)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Retrofit](https://img.shields.io/badge/Retrofit-4285F4?style=for-the-badge&logo=Retrofit) ![OkHttp](https://img.shields.io/badge/OkHttp-3949AB?style=for-the-badge&logo=https://raw.githubusercontent.com/konpa/devicon/master/icons/okhttp/okhttp-original.svg)
 
 
 
