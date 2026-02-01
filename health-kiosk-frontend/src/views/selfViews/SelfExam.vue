@@ -3,10 +3,9 @@
     <div class="layout">
         <Sidebar />
         <div class="device-page">
-          <div style="display: flex;">
-            <h2>{{ $t('selfExam.title') }}</h2>
-            <n-button @click="handleDownload">下载</n-button>
-          </div>
+            <div class="header-section">
+                <h2>{{ $t('selfExam.title') }}</h2>
+            </div>
         
             <n-data-table
                 remote
@@ -17,6 +16,21 @@
                 class="dataTable"
             />
 
+            <div class="export-footer-zone">
+                <div class="export-card" @click="handleDownload">
+                    <div class="export-content">
+                        <n-icon size="32" class="export-icon">
+                            <DownloadOutline /> </n-icon>
+                        <div class="export-text">
+                            <h3>{{ $t('selfExam.export.h') }}</h3>
+                            <p>{{ $t('selfExam.export.p') }}</p>
+                        </div>
+                    </div>
+                    <div class="export-action">
+                        <span>{{ $t('selfExam.export.span') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -27,12 +41,13 @@
 </template>
 
 <script setup lang = "ts">
-import { ref, onMounted, h, reactive, render } from 'vue';
+import { ref, onMounted, h, reactive, computed } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
 import { NButton, useMessage, useDialog } from "naive-ui";
 import { useI18n } from 'vue-i18n'
 import { deleteExamDataApi, downloadDataApi, getInfoApi } from '../../api/self/selfData';
 import ExportOption from '../../components/examData/exportOption.vue';
+import { DownloadOutline } from '@vicons/ionicons5';
 
 const { t } = useI18n();
 
@@ -60,17 +75,9 @@ const renderEcgPic = (row: any) => {
   return BASE_URL+relative_path;
 }
 
-const columns = [
-  {
-    title: t('selfExam.columns.tempor'),
-    key: "tempor",
-    width: 100,
-  },
-  {
-    title: t('selfExam.columns.alcohol'),
-    key: "alcohol",
-    width: 100,
-  },
+const columns = computed(() => [
+  { title: t('selfExam.columns.tempor'), key: "tempor", width: 100 },
+  { title: t('selfExam.columns.alcohol'), key: "alcohol", width: 100 },
   {
     title: t('selfExam.columns.ecg'),
     key: "ecg",
@@ -81,52 +88,26 @@ const columns = [
         {
           size: "small",
           type: "success",
-          onClick: () => {
-            renderEcgPic(row);
-          }
+          onClick: () => { window.open("/pic/" + row.ecg); }
         },
-        {
-          default: () => {
-            return  "查看图像"
-          }
-        }
+        { default: () => t('selfExam.info') } // 使用 i18n 里的 "查看详情"
       )
     }
   },
-  {
-    title: t('selfExam.columns.sys'),
-    key: "blood_sys",
-    width: 100,
-  },
-  {
-    title: t('selfExam.columns.dia'),
-    key: "blood_dia",
-    width: 100,
-  },
-  {
-    title: t('selfExam.columns.hr'),
-    key: "blood_hr",
-    width: 100,
-  },
+  { title: t('selfExam.columns.sys'), key: "blood_sys", width: 100 },
+  { title: t('selfExam.columns.dia'), key: "blood_dia", width: 100 },
+  { title: t('selfExam.columns.hr'), key: "blood_hr", width: 100 },
   {
     title: t('selfExam.columns.date'),
     key: "date",
     width: 150,
-    render(row: any) {
-      return row.date.split('T')[0];
-    }
+    render(row: any) { return row.date.split('T')[0]; }
   },
   {
     title: t('selfExam.columns.time'),
     key: "time",
     width: 100,
-    render(row: any){
-      if(row.time == 1) {
-        return "上午"
-      }else {
-        return "下午"
-      }
-    }
+    render(row: any) { return row.time == 1 ? "AM" : "PM"; }
   },
   {
     title: t('selfExam.columns.action'),
@@ -137,8 +118,7 @@ const columns = [
           NButton,
           {
             size: "small",
-            type: "info",
-            style: "margin-right: 6px;",
+            type: "error",
             onClick: () => confirmDelete(row),
           },
           { default: () => t("selfExam.columns.delete") }
@@ -146,7 +126,7 @@ const columns = [
       ];
     },
   },
-];
+]);
 
 const handleDownload = () => {
   export_option.value = true;
@@ -218,5 +198,64 @@ onMounted(fetchExamItems)
   flex: 1;
   padding-left: 1em;
   padding-right: 60px;
+}
+
+/* 底部导出区域容器 */
+.export-footer-zone {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center; /* 居中显示 */
+}
+
+/* 导出卡片样式 */
+.export-card {
+    width: 100%;
+    max-width: 800px; /* 限制最大宽度，避免拉得太长 */
+    padding: 30px;
+    border: 1px dashed #dcdfe6; /* 虚线边框更有“放置区”的感觉 */
+    border-radius: 12px;
+    background-color: #fafafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.export-card:hover {
+    background-color: #f0f7ff;
+    border-color: #18a058; /* Naive UI 默认绿色 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.export-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.export-icon {
+    color: #18a058;
+}
+
+.export-text h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.export-text p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.export-action span {
+    font-weight: 600;
+    color: #18a058;
+    border: 1px solid #18a058;
+    padding: 6px 16px;
+    border-radius: 20px;
 }
 </style>

@@ -21,7 +21,7 @@ export function deleteExamDataApi (record_id: number) {
 export function downloadDataApi(start_date: String, end_date: String, 
     file_type: String | null | undefined) {
         let fact_type = file_type ?? "csv";
-  return instance.post("/examData/download", {
+  return instance.post("/download/data", {
     start_date,
     end_date,
     file_type: fact_type
