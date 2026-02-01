@@ -52,11 +52,11 @@ defineEmits(["close"]);
 const startDate = ref<number | null>(null);
 const endDate = ref<number | null>(null);
 
-const fileType = ref<"csv" | "excel" | "docx">("csv");
+const fileType = ref<"csv" | "xlsx" | "docx">("csv");
 
 const fileTypeOptions = [
   { label: "CSV", value: "csv" },
-  { label: "Excel", value: "excel" },
+  { label: "Excel", value: "xlsx" },
   { label: "Word", value: "docx" }
 ];
 
