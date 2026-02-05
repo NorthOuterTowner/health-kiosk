@@ -47,7 +47,7 @@ public class SerialPortUtil {
      */
     public void openSerialPort() {
         try {
-            serialPort = new SerialPort(new File("/dev/ttyS4"), 921600, 0);
+            serialPort = new SerialPort(new File("/dev/ttyS4"), 115200, 0);
             //调用对象SerialPort方法，获取串口中"读和写"的数据流
             inputStream = serialPort.getInputStream();
             outputStream = serialPort.getOutputStream();
@@ -97,7 +97,7 @@ public class SerialPortUtil {
      *
      * @param data 要发送的数据
      */
-    public void sendSerialPort(String data) {
+    public void sendSerialPort(String data) {//将字符串转换为字节数组才发送
         try {
             byte[] sendData = DataUtils.HexToByteArr(data);
             outputStream.write(sendData);
@@ -112,7 +112,7 @@ public class SerialPortUtil {
      *
      * @param data 要发送的数据
      */
-    public void sendSPStr(String data) {
+    public void sendSPStr(String data) {//将字符串转化字节数组后发送，直接发送字节数组，即发送ASCII码，[0x6a,0x68,0x69,0x38]
         try {
             byte[] sendData = data.getBytes();
             outputStream.write(sendData);
@@ -133,7 +133,7 @@ public class SerialPortUtil {
      * 接收串口数据的线程
      */
 
-    private class ReceiveThread extends Thread {
+    private class ReceiveThread extends Thread {//将串口输入流中的数据读取并转换为字符串后处理
         @Override
         public void run() {
             super.run();

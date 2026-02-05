@@ -212,7 +212,7 @@ public class BloodFragment extends Fragment {
                         upStr = split[1];
                         mHandler.sendEmptyMessage(changeVIEW);
                     }
-            } else if (split[0].equals("BlR")) {
+            } else if (split[0].equals("BPR")) {//此处进行了修改
                 if (split.length >= 4) {
                     sys = split[1];
                     dia = split[2];

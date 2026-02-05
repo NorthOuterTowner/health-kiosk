@@ -223,6 +223,8 @@ public class MainFragment extends Fragment
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 1. 弹出提示，确认进入补丁模式
+                Toast.makeText(activity.getApplicationContext(), "补丁版本进入成功", Toast.LENGTH_SHORT).show();
 
                 UserRepository userRepo = new UserRepository();
 
