@@ -226,44 +226,76 @@ public class MainFragment extends Fragment
                 // 1. 弹出提示，确认进入补丁模式
                 Toast.makeText(activity.getApplicationContext(), "补丁版本进入成功", Toast.LENGTH_SHORT).show();
 
-                // 2. 创建模拟用户
-                String mockName = "测试用户"; // 这里你可以改成你想要的姓名
-                User curUser = new User("mock_001", mockName, "男", 20);
-                UserSession.getInstance().setCurrentUser(curUser);
+                UserRepository userRepo = new UserRepository();
 
-                // 3. 【关键：更新 Activity 变量】
-                // 确保 FragmentActivity 里的变量被赋值，否则跳转时数据会丢失
-                activity.recognizedName = mockName;
-                activity.id = "mock_001";
-                activity.age = "20";
-                activity.sex = "男";
+                /**补丁内容，若运行后台可去掉注释运行*/
+                userRepo.login(edit_account.getText().toString().trim(), edit_pwd.getText().toString().trim(), latestFrame, new UserRepository.LoginCallback(){
+                    @Override
+                    public void onSuccess(LoginResponse response) {
+                        Toast.makeText(activity.getApplicationContext(),response.getMsg(),Toast.LENGTH_SHORT).show();
 
-                // 4. 发送广播（通知其他组件信息已更新）
-                Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
-                changeInfoIntent.putExtra("name", curUser.getName());
-                changeInfoIntent.putExtra("age", curUser.getAge());
-                changeInfoIntent.putExtra("gender", curUser.getGender());
-                activity.sendBroadcast(changeInfoIntent);
+                        User curUser = response.getUser();
 
-                // 5. 【核心：设置任务状态为 1】
-                // 这一步决定了回到 MainActivity 后是否会自动播放“请测量额温”并启动串口
+                        UserSession.getInstance().setCurrentUser(curUser);
+
+                        // Send a broadcast to activity intend to change info in MainActivity
+                        Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
+                        changeInfoIntent.putExtra("name",curUser.getName());
+                        changeInfoIntent.putExtra("age", Integer.toString(curUser.getAge()));
+                        changeInfoIntent.putExtra("gender", curUser.getGender());
+                        activity.getApplicationContext().sendBroadcast(changeInfoIntent);
+
+                        // start examination after login successfully
+                        if (activity.changeBP) {
+                            change();
+                            Intent intent = new Intent();
+                            intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
+                            activity.setResult(2000, intent);
+                            activity.finish();
+                        } else {
+                            Intent intent = new Intent();
+                            if (!activity.recognizedName.isEmpty())
+                                intent.putExtra("name", activity.recognizedName);
+                            activity.setResult(2000, intent);
+                            activity.finish();
+                        }
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        Toast.makeText(activity.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+                /**补丁内容 Start*/
+//                Toast.makeText(activity.getApplicationContext(),"补丁版本进入成功",Toast.LENGTH_SHORT).show();
+//
+//                User curUser = new User("补丁","补丁","男", 20);;
+//
+//                UserSession.getInstance().setCurrentUser(curUser);
+//
+//                // Send a broadcast to activity intend to change info in MainActivity
+//                Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
+//                changeInfoIntent.putExtra("name",curUser.getName());
+//                changeInfoIntent.putExtra("age", curUser.getAge());
+//                changeInfoIntent.putExtra("gender", curUser.getGender());
+//                activity.getApplicationContext().sendBroadcast(changeInfoIntent);
+//
+//                // start examination after login successfully
+//                if (activity.changeBP) {
+//                    change();
+//                    Intent intent = new Intent();
+//                    intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
+//                    activity.setResult(2000, intent);
+//                    activity.finish();
+//                } else {
+//                    Intent intent = new Intent();
+//                    if (!activity.recognizedName.isEmpty())
+//                        intent.putExtra("name", activity.recognizedName);
+//                    activity.setResult(2000, intent);
+//                    activity.finish();
+//                }
+                /** 补丁内容 End */
                 m_iMenuTask = 1;
-
-                // 6. 处理返回逻辑
-                if (activity.changeBP) {
-                    // 如果是直接去测血压模式
-                    change(); // 调用 MainFragment 里的 change() 方法切换 Fragment
-                    Intent intent = new Intent();
-                    intent.putExtra("name", mockName);
-                    activity.setResult(2000, intent);
-                    activity.finish();
-                } else {
-                    // 如果是回到主界面
-                    Intent intent = new Intent();
-                    intent.putExtra("name", mockName); // 这里确保把模拟姓名传回去
-                    activity.setResult(2000, intent);
-                    activity.finish();
-                }
+                //Application app = (Application)activity.getApplication();
             }
         });
         edit_account.setOnClickListener(new View.OnClickListener() {

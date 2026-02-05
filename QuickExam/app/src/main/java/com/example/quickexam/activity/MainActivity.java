@@ -408,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 // 7. 更新 UI 界面
                 runOnUiThread(new Runnable() {
-                    @Override
+                    @Override//申请主线程
                     public void run() {
                         // 更新全局变量
                         maxAlcohol = formattedVal;

@@ -128,6 +128,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         user.token = token
         //const updateSql = "UPDATE `user` SET `token` = ? WHERE `account` = ?";
         //await db.async.run(updateSql, [token, user.account]);
+        console.log("登录成功")
         return res.status(200).json({
           code: 200, 
           msg: "登录成功",
@@ -152,9 +153,11 @@ router.post("/login", upload.single("photo") , async (req, res) => {
    * Login logic when just having the picture.
    * Using face recognition function to recognize whether a face saved in database is as same as the input picture.
    */
-  console.log("人脸识别");
+    console.log("人脸识别");
     const py = req.py;
     const callbacks = req.pyCallbacks;
+    
+    console.log("callback upload");
 
     const file_name = req.file?.filename;
 
@@ -171,15 +174,19 @@ router.post("/login", upload.single("photo") , async (req, res) => {
       });
 
     try {
+      console.log("开始写入")
       const result = await faceMatch();
+      console.log("返回值")
       // find user information in MysQL through db_filename
       if (result.status === "ok" && result.match) {
         console.log("match");
         const file_name = result.match
         const find_user_sql = "select * from `user` where `pic` = ? ;"
+        console.log("PIC_NAME:" + file_name);
         const {err:userErr,rows:userRows} = await db.async.all(find_user_sql,[file_name])
         console.log(file_name)
         if(userErr != null || userRows.length == 0){
+          console.log("查询用户信息失败");
           return res.status(500).json({
             code: 500,
             msg:"查询用户信息失败"
@@ -187,12 +194,13 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         }
         const user = userRows[0];
         user.pwd = "";
-        const token = generateToken({account})
+        const token = generateToken({account:user.account})
         //token = uuidv4()
         user.token = token
         //const updateSql = "UPDATE `user` SET `token` = ? WHERE `account` = ?";
         //await db.async.run(updateSql, [token, user.account]);
         //py.kill()
+        console.log("匹配成功");
         return res.status(200).json({ code: 200, 
           msg: "人脸匹配成功", 
           user 
@@ -204,12 +212,14 @@ router.post("/login", upload.single("photo") , async (req, res) => {
         });
       } else {
         //未检测到人脸
+        console.log("未检测到人脸");
         return res.status(500).json({ 
           code: 500, 
           msg: result.msg 
         });
       }
     } catch (e) {
+      console.log("服务异常");
       return res.status(500).json({ 
         code: 500, 
         msg: "Python 服务异常", 

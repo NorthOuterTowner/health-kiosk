@@ -42,7 +42,7 @@ py.stderr.on("data", (data) => {
 });
 
 /**
- * TODO: 
+ * DEBUGGER:
  * this middleware just used when request is about login function.
  */
 app.use((req, res, next) => {
@@ -95,6 +95,7 @@ import permissionRouter from './router/permission.js';
 import examDataRouter from './router/examData.js';
 import LLMRouter from './router/llm.js';
 import testRouter from './router/testRouter.js';
+import downloadRouter from './router/download.js';
 
 app.use("/admin", adminRouter);
 app.use("/func", funcRouter);
@@ -108,7 +109,8 @@ app.use("/role", roleRouter);
 app.use("/permission", permissionRouter);
 app.use("/examData",examDataRouter);
 app.use("/llm",LLMRouter);
-app.use("/test",testRouter)
+app.use("/test",testRouter);
+app.use("/download",downloadRouter);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`health-kiosk-backend listening at http://0.0.0.0:${port}`);

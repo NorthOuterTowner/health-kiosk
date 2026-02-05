@@ -58,7 +58,7 @@ const Messages = {
     userInstruction: userInstructionMessages.en,
     adminInstruction: adminInstructionMessages.en,
     role:roleMessages.en,
-    selExam: selfExamMessages.en,
+    selfExam: selfExamMessages.en,
     selfLLM: selfLLM.en,
     export: exportMessages.en,
   }

@@ -603,8 +603,22 @@ router.post("/set/blood_hr", async (req, res) => {
     }
 });
 
-router.get("/get/ecg", async (req, res) => {
+router.get("/get/ecg", authMiddleware, async (req, res) => {
     /**TODO: Get ECG data on stream. */
+    const user_id = req.account;
+    const { date, time } = req.body;
+    const search_sql = "select `ecg` from `data` where `user_id` = ? and `date` = ? and `time` = ?;";
+    try {
+        const { err, rows } = db.async.all(search_sql, [user_id, date, time]);
+        const ecg_file_name = rows[0].ecg;
+        /**TODO: Read ECG file from FS */
+
+    }catch(err) {
+        res.status(200).json({
+            code:500,
+            msg:"查询失败"
+        });
+    }
 });
 
 /**
@@ -670,84 +684,6 @@ router.get("/userId", authMiddleware, async (req, res) => {
         })
     }
 });
-
-router.post("/download", authMiddleware, async (req, res) => {
-    try {
-        const user_id = req.account;
-
-        const {
-            start_date,
-            end_date,
-            file_type
-        } = req.body;
-
-        if (!start_date || !end_date) {
-            return res.status(400).json({
-                code: 400,
-                msg: "缺少时间范围参数"
-            });
-        }
-
-        // ===== 2. 查询数据库 =====
-        const select_sql = `
-            SELECT *
-            FROM \`data\`
-            WHERE \`user_id\` = ?
-              AND \`date\` BETWEEN ? AND ?
-            ORDER BY \`id\`
-        `;
-
-        const { rows, err } = await db.async.all(select_sql, [
-            user_id,
-            start_date,
-            end_date
-        ]);
-
-        if (err) {
-            return res.status(500).json({
-                code: 500,
-                msg: err.msg
-            });
-        }
-
-        if (!rows || rows.length === 0) {
-            return res.status(200).json({
-                code: 200,
-                msg: "无可导出的数据"
-            });
-        }
-
-        // ===== 3. 生成 CSV 文件内容 =====
-        const headers = Object.keys(rows[0]).join(",");
-
-        const csvBody = rows.map(row =>
-            Object.values(row)
-                .map(v => `"${v ?? ""}"`)
-                .join(",")
-        ).join("\n");
-
-        const csvContent = headers + "\n" + csvBody;
-
-        // ===== 4. 设置下载响应头 =====
-        const filename = `data_${start_date}_${end_date}.csv`;
-
-        res.setHeader("Content-Type", "text/csv; charset=utf-8");
-        res.setHeader(
-            "Content-Disposition",
-            `attachment; filename=${encodeURIComponent(filename)}`
-        );
-
-        // ===== 5. 返回文件 =====
-        res.send(csvContent);
-
-    } catch (e) {
-        res.status(500).json({
-            code: 500,
-            msg: "服务器内部错误"
-        });
-    }
-});
-
 
 /**
  * @api {post} /data/delete 删除体检数据记录
