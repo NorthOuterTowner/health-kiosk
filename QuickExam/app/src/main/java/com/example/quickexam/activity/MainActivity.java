@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             gyReadList.clear();
             alcoholList.clear();
             binding.begin.setText("开始");
-            m_serialportutil.sendSPStr("STOP");
+            m_serialportutil.sendSPStr("STOP");//发送的是
             m_iMenuTask = 0;
             binding.mydata.removeData();
             binding.mydata2.removeData();
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if ((strArray[0].equals("EtOH")) && (strArray.length == 3)) {//表述切出来的总段数是否为3，且第一个数据是否为字符串EoTH
                 double dataalcohol = Double.valueOf(strArray[1]);//将数据变成小数
                 alcoholList.add(dataalcohol);//记录数据
-                if (alcoholList.size() > 5) {//返回的酒精传感器一次只能保存五个数
+                if (alcoholList.size() > 5) {//返回的酒精传感器一次只能保存五个数。这里需要填加一个阈值大小判断
                     alcoholList.remove(0);
                     m_iMenuTask = 4;
                     m_serialportutil.sendSPStr("EPCM");
@@ -375,30 +375,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else {//如果不够五个数，则继续给传感器发指令
                     m_serialportutil.sendSPStr("EtOH");
                 }
-                double maxalcohol = alcoholList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();//取单片机返回值（电压）最大值
-                map.put(1, new ResultBean(1, String.valueOf((float) maxalcohol)));//将数据打包进一个大包裹里
+                // 1. 获取本次检测中捕获到的最大电压
+                final double currentMaxV = alcoholList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
+
+                double V_BASE = 0.5;   // 基准电压
+                double K_FACTOR = 30.0; // 灵敏度系数（如果 2.85V 要对应 0.91 左右，K 约等于 387，你可以根据实测调整）
+
+// 2. 计算浓度数值（以 % 为例，mg/100ml 除以 1000）
+                double concentration_mg = (currentMaxV - V_BASE) * K_FACTOR;
+                if (concentration_mg < 0) concentration_mg = 0;
+                double concentration_percent = concentration_mg / 1000.0;
+
+// 3. 根据电压判定状态文字（不带空格和括号）
+                String statusLabel = "";
+                if (currentMaxV < 1.92) {
+                    statusLabel = "正常";
+                } else if (currentMaxV >= 1.92 && currentMaxV < 2.85) {
+                    statusLabel = "酒驾";
+                } else {
+                    statusLabel = "醉驾";
+                }
+
+// 4. 格式化数值部分（保留两位或三位小数，根据你 dec 的定义）
+// 如果得到的是 0.91 这种两位数，建议 dec 使用 "0.00" 格式
+                final String formattedVal = dec.format(concentration_percent);
+
+// 5. 【核心修改】按照你要求的格式拼接： "数值/状态"
+                final String uiDisplay = formattedVal + "/" + statusLabel;
+
+// 6. 存入结果包（只存数字，方便后台统计）
+                map.put(1, new ResultBean(1, formattedVal));
+
+// 7. 更新 UI 界面
                 runOnUiThread(new Runnable() {
                     @Override//申请主线程
                     public void run() {
-                        maxAlcohol = String.valueOf((float) maxalcohol);//变成字符串
-                        m_beanalcohol.setValue(maxAlcohol);
-                        binding.result2.setText(maxAlcohol);//把确定好的最大酒精值放到界面上
-                        //adapter.getDataList().set(1, m_beanalcohol);
-                        //adapter.changeData();
+                        // 更新全局变量
+                        maxAlcohol = formattedVal;
+
+                        // 在 UI 上展示效果，例如: "0.01/正常" 或 "0.91/醉驾"
+                        binding.result2.setText(uiDisplay);
+
+                        // 颜色提醒（依然保留，增强视觉效果）
+                        if (currentMaxV >= 2.85) {
+                            binding.result2.setTextColor(android.graphics.Color.RED);
+                        } else if (currentMaxV >= 1.92) {
+                            binding.result2.setTextColor(android.graphics.Color.YELLOW);
+                        } else {
+                            binding.result2.setTextColor(android.graphics.Color.WHITE);
+                        }
                     }
                 });
+
             }
         } else {
             String[] strArray = string.split(",");
-            if ((strArray[0].equals("ECG")) && (strArray.length >= 14)) {//这里是什么意思，需要改一下
+            if (strArray[0].equals("ECG")){//这里是什么意思，需要改一下 删掉&& (strArray.length >= 14))
                 ECGList.add(Double.valueOf(strArray[1])); //ECG
                 PPGList.add(Double.valueOf(strArray[2])); //PPG——删掉
                 if (ECGList.size() > maxfftsize) {//max为1024
                     PPGList.remove(0);//滑动更新存储
                     ECGList.remove(0);
                 }
+                //！!!!下面这些需要改一下
                 //需删掉部分数据 只保留ecg描点、SYS DIA、ARR（sDNN）,spo2的HR、SPO2、pleth
                 double datahr = Integer.valueOf(strArray[3]); //HR 心率。字符串中提取数字
+                //Log.e(TAG, "datahr: " + datahr);
+                Log.e("datahr", "" + datahr);
+                double ecg1 = Integer.valueOf(strArray[1]); //心电图数据
+                Log.e("ecg1", String.valueOf(ecg1));
                 double datarr = Integer.valueOf(strArray[4]); //RR  呼吸率
                 double datasys = Integer.valueOf(strArray[5]); //SYS 收缩压
                 double datadia = Integer.valueOf(strArray[6]); //DIA 舒张压
@@ -428,13 +473,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 double dataspo2 = (datapleth - 127) * (-1.5);
                 Log.d(TAG, "dataecg:" + dataecg + ",datappg" + datappg);
                 double finalDatahr = datahr;
+                Log.e("finalDatahr", String.valueOf(finalDatahr));
+                Log.e("datahr", String.valueOf(datahr));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (finalDatahr > 0) {
                             ecg = String.valueOf((float) finalDatahr);
                             map.put(2, new ResultBean(2, String.valueOf((float) finalDatahr)));
-                            binding.ecg.setText(String.valueOf((int) finalDatahr));
+                            binding.ecg.setText(String.valueOf((int) finalDatahr));//！！！！这里需要注意，看他最终变成什么样了
                         }
                         if (datarr > 0) {
                             //binding.sp02.setText(String.valueOf((int)datarr));

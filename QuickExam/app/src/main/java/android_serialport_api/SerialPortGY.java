@@ -80,7 +80,7 @@ public class SerialPortGY {
      *
      * @param data 要发送的数据
      */
-    public void sendSerialPort(String data) {
+    public void sendSerialPort(String data) {//将字节转换为一个十六进制数组
         try {
             byte[] sendData = DataUtils.HexToByteArr(data);
             outputStream.write(sendData);
@@ -95,7 +95,9 @@ public class SerialPortGY {
      *
      * @param data 要发送的数据
      */
-    public void sendSPStr(String data) {
+    public void sendSPStr(String data) {//直接将字符串转换为字节数组
+        //接收一个字符串型的数据并且转为字节数组发送 比如EtOH 变成
+        //“E” “t” ”O“ ”H“
         try {
             byte[] sendData = data.getBytes();
             outputStream.write(sendData);
@@ -115,7 +117,7 @@ public class SerialPortGY {
      * 接收串口数据的线程
      */
 
-    private class ReceiveThread extends Thread {
+    private class ReceiveThread extends Thread {//将串口输入流中的数据读取并转换为字符串后处理
         @Override
         public void run() {
             super.run();
