@@ -6,6 +6,7 @@ import static com.example.quickexam.MainApplication.instance;
 import static com.example.quickexam.MainApplication.m_iMenuTask;
 import static com.example.quickexam.MainApplication.m_serialportutil;
 import static com.example.quickexam.MainApplication.miflytts;
+import static com.example.quickexam.utils.TransmitData.transmit;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -39,6 +40,11 @@ import com.example.quickexam.bean.ResultBean;
 import com.example.quickexam.databinding.ActivityMainBinding;
 import com.example.quickexam.db.DBLog;
 import com.example.quickexam.db.Loginfo;
+import com.example.quickexam.http.api.dataGroup.DataApi;
+import com.example.quickexam.http.model.dataGroup.DataResponse;
+import com.example.quickexam.http.model.dataGroup.HealthGeneralRequest;
+import com.example.quickexam.repository.DataRepository;
+import com.example.quickexam.session.UserSession;
 import com.example.quickexam.utils.FFT;
 import com.example.quickexam.utils.FileUtils;
 import com.example.quickexam.utils.IflyTts;
@@ -54,6 +60,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -64,6 +74,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import android_serialport_api.DataUtils;
 import android_serialport_api.SerialPortGY;
 import android_serialport_api.SerialPortUtil;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -118,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private long sysTime;
     private String ppg;
     //private ProjectAdapter adapter;
-
     //更新时间线程
     class TimeThread extends Thread {
         @Override
@@ -225,6 +237,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dbLog.saveLog(new Loginfo("", nameFace, maxTemper, maxAlcohol, ecg,
                         sp02, ppg, blood_sys, blood_dia, ecg, fag, String.valueOf(sysTime)));
             }
+            /** Logic added for transmit health data to the backend */
+            File ecgFile = writeECGToFile(ECGList);
+            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, ecgFile,
+                    success -> {
+                        if(success) {
+                            Toast.makeText(getApplicationContext(), "发送成功",
+                                    Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getApplicationContext(), "发送成功",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
+
+            // Logic End
             Bundle bundle = new Bundle();
             bundle.putSerializable("result", (Serializable) map);
             Intent intent = new Intent(MainActivity.this, ResultActivity.class);
@@ -736,5 +763,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return fragment;
 
         }
+    }
+
+    private File writeECGToFile(List<Double> ecgList) {
+        String fileName = "ecg_" + System.currentTimeMillis() + ".csv";
+        File file = new File(FileUtils.pathHead, fileName);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (Double value : ecgList) {
+                writer.write(String.valueOf(value));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 }
