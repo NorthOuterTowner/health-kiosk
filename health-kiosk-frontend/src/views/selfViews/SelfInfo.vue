@@ -161,6 +161,7 @@ const form = ref({...initialForm})
 
 onMounted(async () => {
   const res = await getInfoApi();
+  console.log(res);
   const row = res?.data?.rows[0];
   form.value.username = row.name;
   form.value.email = row.email;

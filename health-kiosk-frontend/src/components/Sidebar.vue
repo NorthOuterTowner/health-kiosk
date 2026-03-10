@@ -199,7 +199,7 @@ onMounted(async () => {
   if (!res || !res.data.config) return;
 
   const permissionList = res.data.config; // [{key, permission}, ...]
-  console.log(permissionList)
+  //console.log(permissionList)
   // 重置每个菜单及子菜单的 role
   for (let menu of menuConfig) {
     menu.role = [];
@@ -215,7 +215,7 @@ onMounted(async () => {
     // 先匹配一级菜单
     const foundMenu = menuConfig.find(m => m.key === key);
     if (foundMenu) {
-      console.log("setset")
+      //console.log("setset")
       foundMenu.role = permission;
       continue;
     }
