@@ -110,8 +110,7 @@ router.post("/login", upload.single("photo") , async (req, res) => {
           code: 500, 
           msg: "服务器错误", 
           err 
-        }
-      ); 
+        }); 
       } 
       if (rows.length === 0) { 
         return res.status(200).json({ 

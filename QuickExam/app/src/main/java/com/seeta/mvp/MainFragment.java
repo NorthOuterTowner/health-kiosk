@@ -221,10 +221,11 @@ public class MainFragment extends Fragment
         // Change to :
         //  Send HTTP Request to backend service
         btn_ok.setOnClickListener(new View.OnClickListener() {
+            // MainApplication.miflytts.playText("请输入姓名");
             @Override
             public void onClick(View view) {
                 // 1. 弹出提示，确认进入补丁模式
-                Toast.makeText(activity.getApplicationContext(), "补丁版本进入成功", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(activity.getApplicationContext(), "补丁版本进入成功", Toast.LENGTH_SHORT).show();
 
                 UserRepository userRepo = new UserRepository();
 
@@ -251,13 +252,14 @@ public class MainFragment extends Fragment
                             Intent intent = new Intent();
                             intent.putExtra("name", UserSession.getInstance().getCurrentUser().getName());
                             activity.setResult(2000, intent);
-                            activity.finish();
+                            //activity.finish();
                         } else {
+                            change();
                             Intent intent = new Intent();
                             if (!activity.recognizedName.isEmpty())
                                 intent.putExtra("name", activity.recognizedName);
                             activity.setResult(2000, intent);
-                            activity.finish();
+                            //activity.finish();
                         }
                     }
                     @Override
@@ -274,6 +276,7 @@ public class MainFragment extends Fragment
 //
 //                // Send a broadcast to activity intend to change info in MainActivity
 //                Intent changeInfoIntent = new Intent(Constants.ACTION_CHANGE_INFO);
+//                Log.e("NAME_REAL",curUser.getName());
 //                changeInfoIntent.putExtra("name",curUser.getName());
 //                changeInfoIntent.putExtra("age", curUser.getAge());
 //                changeInfoIntent.putExtra("gender", curUser.getGender());
