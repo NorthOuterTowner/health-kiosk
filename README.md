@@ -30,12 +30,15 @@ npm run dev
 
 Android APP为用户在体检过程中提供指引，并可视化的查看当前体检数据，使用Kotlin语言开发，使用Gradle进行依赖管理。
 
-![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Retrofit](https://img.shields.io/badge/Retrofit-4285F4?style=for-the-badge&logo=Retrofit) ![OkHttp](https://img.shields.io/badge/OkHttp-3949AB?style=for-the-badge&logo=https://raw.githubusercontent.com/konpa/devicon/master/icons/okhttp/okhttp-original.svg)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)
 
 
 
 #### 1.运行
-使用数据线连接待运行设备，之后在 `Android Studio` 中打开项目，点击运行按钮即可。或使用 `Android Studio` 模拟器 `Pixel` 进行运行。若电脑使用集成式显卡，推荐使用软件方式进行界面渲染。
+使用数据线连接待运行设备，之后在 `Android Studio` 中打开项目，点击运行按钮即可。直接运行的情况下，无法完成登录进入体检界面，若仅需进行体检功能的测试，可以前往 `QuickExam/ app/ src/ main/ java/ com/ seeta/ mvp/ MainFragment.java`切换为补丁版本，即可正常进行体检功能的使用，但无法连接后台完成人脸识别和数据传输功能。
+
+#### 2.连接后台
+如需完成正常的登录注册流程，需连接路由器，确保Android体检机与后台运行的设备处于同一局域网环境中，之后更改 `QuickExam/ app/ src/ main/ java/ com/ seeta/ mvp/ MainFragment.java`中的URL地址为后台设备的IP地址，即可完成连接。
 
 ### :computer: 后端部分
 后端使用 `node.js` 和 `Express` 框架，连接 `MySQL` 数据库，并提供 `RESTful API `接口供前端调用。
