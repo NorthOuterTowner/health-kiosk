@@ -69,6 +69,7 @@ async function examineRowExists(date, time, user) {
             msg: "已找到该记录"
         };
     }else if(rows.length == 0) {
+        console.log("未找到记录     date: "+date+", time: "+time +",user:"+user);
         return {
             exist: false,
             id: null,

@@ -7,6 +7,7 @@ import static com.example.quickexam.MainApplication.m_iMenuTask;
 import static com.example.quickexam.MainApplication.m_serialportutil;
 import static com.example.quickexam.MainApplication.miflytts;
 import static com.example.quickexam.utils.TransmitData.transmit;
+import com.example.quickexam.activity.FragmentActivity.*;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -457,39 +458,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else {
             String[] strArray = string.split(",");
-            if (strArray[0].equals("ECG")){//这里是什么意思，需要改一下 删掉&& (strArray.length >= 14))
+            if (strArray[0].equals("ECG") && strArray.length>=8){//这里是什么意思，需要改一下 删掉&& (strArray.length >= 14))
                 ECGList.add(Double.valueOf(strArray[1])); //ECG
-                PPGList.add(Double.valueOf(strArray[2])); //PPG——删掉
+                PPGList.add(Double.valueOf(strArray[7])); //PPG——删掉
                 if (ECGList.size() > maxfftsize) {//max为1024
                     PPGList.remove(0);//滑动更新存储
                     ECGList.remove(0);
                 }
                 //！!!!下面这些需要改一下
                 //需删掉部分数据 只保留ecg描点、SYS DIA、ARR（sDNN）,spo2的HR、SPO2、pleth
-                double datahr = Integer.valueOf(strArray[3]); //HR 心率。字符串中提取数字
+                double datahr = Integer.valueOf(strArray[5]); //HR 心率。字符串中提取数字
                 //Log.e(TAG, "datahr: " + datahr);
                 Log.e("datahr", "" + datahr);
                 double ecg1 = Integer.valueOf(strArray[1]); //心电图数据
                 Log.e("ecg1", String.valueOf(ecg1));
-                double datarr = Integer.valueOf(strArray[4]); //RR  呼吸率
-                double datasys = Integer.valueOf(strArray[5]); //SYS 收缩压
-                double datadia = Integer.valueOf(strArray[6]); //DIA 舒张压
-                double datasis = Integer.valueOf(strArray[7]); //SIS 动脉硬化指数
-                double datafag = Integer.valueOf(strArray[8]); //FAG 疲劳等级
-                double dataarr = Integer.valueOf(strArray[9]); //ARR 心律不齐
-                double datappbf = Integer.valueOf(strArray[10]); //PBF 含水率
-                double datatshr = Integer.valueOf(strArray[11]); //hr
-                double datatsspo2 = Integer.valueOf(strArray[12]); //spo2
-                double datapleth = Integer.valueOf(strArray[13]); //pleth光电容积脉搏波
+                //double datarr = Integer.valueOf(strArray[4]); //RR  呼吸率
+                double datasys = Integer.valueOf(strArray[2]); //SYS 收缩压
+                double datadia = Integer.valueOf(strArray[3]); //DIA 舒张压
+                //double datasis = Integer.valueOf(strArray[7]); //SIS 动脉硬化指数
+                double datafag = Integer.valueOf(strArray[4]); //FAG 疲劳等级
+                //double dataarr = Integer.valueOf(strArray[9]); //ARR 心律不齐
+                //double datappbf = Integer.valueOf(strArray[10]); //PBF 含水率
+                //double datatshr = Integer.valueOf(strArray[11]); //hr
+                double datatsspo2 = Integer.valueOf(strArray[6]); //spo2
+                double datapleth = Integer.valueOf(strArray[7]); //pleth光电容积脉搏波
                 if (datapleth > 0) {//光电容积
                     SPO2List.add(datapleth);
                     if (SPO2List.size() > maxfftsize) {
                         SPO2List.remove(0);//滑动更新存储
                     }
                 }
-                if (datatshr > 0) {//这个可以删掉
+                /*if (datatshr > 0) {//这个可以删掉
                     datahr = datatshr;
-                }
+                }*/
                 updateCnt++;
                 if (updateCnt < 2) {
                     return;
@@ -510,9 +511,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             map.put(2, new ResultBean(2, String.valueOf((float) finalDatahr)));
                             binding.ecg.setText(String.valueOf((int) finalDatahr));//！！！！这里需要注意，看他最终变成什么样了
                         }
-                        if (datarr > 0) {
+                        /*if (datarr > 0) {
                             //binding.sp02.setText(String.valueOf((int)datarr));
-                        }
+                        }*/
                         if (datatsspo2 > 0) {
                             sp02 = String.valueOf((float) datatsspo2);
                             map.put(3, new ResultBean(3, String.valueOf((float) datatsspo2)));
@@ -539,12 +540,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             //adapter.getDataList().set(4, m_beanbloodPress);
                             map.put(4, new ResultBean(5, blood_sys + "/" + blood_dia));
                         }
-                        if (datasis > 0) {                //SIS 动脉硬化指数
+                        /*if (datasis > 0) {                //SIS 动脉硬化指数
                             SISList.add(datadia);
                             if (SISList.size() > 10) {
                                 SISList.remove(0);
                             }
-                        }
+                        }*/
                         if (datafag > 0) {                //FAG 疲劳等级
                             FAGList.add(datafag);
                             if (FAGList.size() > 10) {
@@ -554,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             map.put(5, new ResultBean(6, String.valueOf((float) datafag)));
                             binding.result4.setText(String.valueOf(datafag));
                         }
-                        if (dataarr > 0) {                //ARR 心律不齐
+                        /*if (dataarr > 0) {                //ARR 心律不齐
                             ARRList.add(datadia);
                             if (ARRList.size() > 10) {
                                 ARRList.remove(0);
@@ -565,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             if (PBFList.size() > 10) {
                                 PBFList.remove(0);
                             }
-                        }
+                        }*/
                         binding.mydata.addData((float) dataecg);//血氧
                         binding.mydata2.addData((float) dataspo2);//spo2
                         binding.mydata3.addData((float) datappg);//PPG
@@ -729,7 +730,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mHandler.sendMessage(msg);// 发送一个msg给mHandler
             msg = null;
         }
-
     }
 
     @Override
