@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TransmitData {
 
     public static void transmit(String maxAlcohol, String blood_dia, String blood_sys,
-                                String maxTemper, File ecg, TransmitCallback callback) {
+                                String maxTemper, String fag, File ecg, TransmitCallback callback) {
 
         DataRepository dataRepo = new DataRepository();
         String account = UserSession.getInstance().getCurrentUser().getAccount();
@@ -44,6 +44,7 @@ public class TransmitData {
         dataRepo.submitBloodSysInfo(account, blood_sys, cb);
         dataRepo.submitTemporInfo(account, maxTemper, cb);
         dataRepo.submitECGInfo(account, ecg, cb);
+        dataRepo.submitFagInfo(account, fag, cb);
     }
 
     // 定义回调接口
