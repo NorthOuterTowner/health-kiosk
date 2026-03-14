@@ -276,6 +276,9 @@ onMounted(async () => {
 }
 .msg-ai {
   justify-content: flex-start;
+  max-width: 100%;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 .message-bubble {
   max-width: 65%;
@@ -285,6 +288,8 @@ onMounted(async () => {
   white-space: pre-wrap;
   word-break: break-word;
   position: relative;
+  border: 1px solid #e5e7eb;
+  background-color: #2563eb;
 }
 .msg-user .message-bubble {
   background: #2563eb;
@@ -292,7 +297,7 @@ onMounted(async () => {
   border-bottom-right-radius: 2px;
 }
 .msg-ai .message-bubble {
-  background: #f3f4f6;
+  background: #e0e0e0;
   color: #111827;
   border-bottom-left-radius: 2px;
 }
@@ -453,7 +458,7 @@ onMounted(async () => {
 }
 
 :deep(.markdown-body pre) {
-  background-color: #f6f8fa;
+  background-color: #727272;
   border-radius: 6px;
   padding: 12px;
   margin: 8px 0;
@@ -465,9 +470,5 @@ onMounted(async () => {
   border-radius: 6px;
 }
 
-/* 针对 AI 气泡的微调 */
-.msg-ai .message-bubble {
-  max-width: 85%; /* AI 回复通常较长，可以调宽一点 */
-  background: #f3f4f6;
-}
+
 </style>
