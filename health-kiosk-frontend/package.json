@@ -14,7 +14,9 @@
     "axios": "^1.11.0",
     "dayjs": "^1.11.18",
     "echarts": "^6.0.0",
+    "github-markdown-css": "^5.9.0",
     "lucide-vue-next": "^0.539.0",
+    "markdown-it": "^14.1.1",
     "naive-ui": "^2.42.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.18",
@@ -23,6 +25,7 @@
     "wangeditor": "^4.7.15"
   },
   "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.2.1",
     "@vicons/ionicons5": "^0.13.0",
     "@vitejs/plugin-vue": "^6.0.1",

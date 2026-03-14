@@ -4,6 +4,7 @@ import router from './router'
 import './style.css'
 import { i18n } from './i18n'
 import { create, NButton, NInput, NForm, NFormItem, NMessageProvider, NDialogProvider, NDataTable, NDialog, NSelect, NModal, NResult } from 'naive-ui';
+import 'github-markdown-css/github-markdown.css';
 
 const naive = create({
   components: [NButton, NInput, NForm, NFormItem, NMessageProvider, NDataTable, NDialog, NSelect, NModal, NResult, NDialogProvider]
