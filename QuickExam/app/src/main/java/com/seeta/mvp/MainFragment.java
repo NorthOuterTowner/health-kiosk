@@ -218,8 +218,6 @@ public class MainFragment extends Fragment
             }
         });
 
-        // Change to :
-        //  Send HTTP Request to backend service
         btn_ok.setOnClickListener(new View.OnClickListener() {
             // MainApplication.miflytts.playText("请输入姓名");
             @Override
@@ -233,6 +231,7 @@ public class MainFragment extends Fragment
                 userRepo.login(edit_account.getText().toString().trim(), edit_pwd.getText().toString().trim(), latestFrame, new UserRepository.LoginCallback(){
                     @Override
                     public void onSuccess(LoginResponse response) {
+                        MainApplication.miflytts.playText("开始进行血压检测");
                         Toast.makeText(activity.getApplicationContext(),response.getMsg(),Toast.LENGTH_SHORT).show();
 
                         User curUser = response.getUser();
