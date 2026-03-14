@@ -14,7 +14,7 @@ import retrofit2.http.Part;
 
 public interface DataApi {
     @Multipart
-    @POST("examData/set/ecg")
+    @POST("/examData/set/ecg")
     Call<DataResponse> setEcg(
             @Part("account") RequestBody account,
             @Part MultipartBody.Part data
@@ -53,5 +53,10 @@ public interface DataApi {
     @POST("/examData/set/blood_hr")
     Call<DataResponse> setBloodHr(
             @Body HealthGeneralRequest body
+    );
+
+    @POST("/examData/set/fag")
+        Call<DataResponse> setFag(
+                @Body HealthGeneralRequest body
     );
 }
