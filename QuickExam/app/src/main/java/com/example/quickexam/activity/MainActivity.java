@@ -240,13 +240,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             /** Logic added for transmit health data to the backend */
             File ecgFile = writeECGToFile(ECGList);
-            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, ecgFile,
+            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ecgFile,
                     success -> {
                         if(success) {
                             Toast.makeText(getApplicationContext(), "发送成功",
                                     Toast.LENGTH_SHORT).show();
                         }else {
-                            Toast.makeText(getApplicationContext(), "发送成功",
+                            Toast.makeText(getApplicationContext(), "发送失败",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }

@@ -85,22 +85,24 @@ async function examineRowExists(date, time, user) {
 }
 
 router.post("/set/ecg",(req,res)=>{
+    console.log("收到ECG数据")
     const busboy = Busboy({ headers: req.headers });
 
     let userId = null;
     let savedFilePath = null;
 
-    const baseDir = path.join("uploads", "ecg");
+    const baseDir = path.join(__dirname, "uploads", "ecg");
     if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
 
     // 接收字段（meta）
     busboy.on("field", (name, value) => {
-    if (name === "account") {
-        userId = value;
-        console.log("接收到 account =", userId);
-    }
+        if (name === "account") {
+            userId = value;
+            console.log("接收到 account =", userId);
+        }
     });
 
+    let targetName = null;
     // 接收二进制 ECG 文件（application/octet-stream）
     busboy.on("file", (name, file, info) => {
         if(name != "data") return;
@@ -108,7 +110,7 @@ router.post("/set/ecg",(req,res)=>{
         const { filename, mimeType } = info;
         console.log("接收到文件字段:", name, mimeType);
 
-        const targetName = `${Date.now()}_${userId}.bin`;
+        targetName = `${Date.now()}_${userId}.bin`;
         const targetPath = path.join(baseDir, targetName);
 
         savedFilePath = targetPath;
@@ -544,6 +546,67 @@ router.post("/set/blood_dia", async (req, res) => {
 });
 
 /**
+ * @api {post} /examData/set/fag Upload Pressure level
+ * @apiGroup ExamData
+ * * @apiParam {Number} data FAG value (integer).
+ * @apiParam {String} user User ID.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "msg": "Update blood_dia successful"
+ * }
+ */
+router.post("/set/fag", async (req, res) => {
+    let { data, user } = req.body;
+    data = parseInt(data, 10);// store fag data by integer form
+
+    if (isNaN(data)) {
+        return res.status(200).json({
+            code: 400,
+            msg: "数据格式错误，期望 integer 类型。"
+        });
+    }
+
+    const {date, time} = await decideTime();
+    const existRes = await examineRowExists(date, time, user);
+
+    if(existRes.exist == true) {
+        const updateSql = "update `data` set `fag` = ? where id = ? ;";
+        try {
+            await db.async.run(updateSql,[data, existRes.id]);
+            return res.status(200).json({
+                code:200,
+                msg: "更新 fag 成功"
+            });
+        } catch(err) {
+            return res.status(200).json({
+                code:500,
+                msg: "上传 fag 失败"
+            });
+        }
+    } else if(existRes.exist == false) {
+        const insertSQL = "insert `data` (`user_id`, `fag`, `date`, `time`) values (?, ?, ?, ?);";
+        try {
+            await db.async.run(insertSQL,[user, data, date, time]);
+            return res.status(200).json({
+                code:200,
+                msg: "插入 fag 成功"
+            });
+        } catch(err) {
+            return res.status(200).json({
+                code:500,
+                msg: "上传 fag 失败"
+            });
+        }
+    } else {
+        return res.status(200).json({
+                code:500,
+                msg: existRes.msg
+            });
+    }
+});
+
+/**
  * @api {post} /examData/set/blood_hr Upload Heart Rate
  * @apiGroup ExamData
  * * @apiParam {Number} data Heart Rate (HR) value (integer).
@@ -735,6 +798,10 @@ router.post("/delete", authMiddleware, async (req, res) => {
             msg: "服务器内部错误"
         });
     }
+});
+
+router.post("/setAll", async(req,res) => {
+   // TODO: set all info  
 });
 
 export default router;
