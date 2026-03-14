@@ -108,6 +108,11 @@ public class DataRepository {
         executeCall(dataApi.setTempor(req), callback);
     }
 
+    public void submitFagInfo(String account, String data, final DataCallback callback) {
+        HealthGeneralRequest req = new HealthGeneralRequest(account, data);
+        executeCall(dataApi.setFag(req), callback);
+    }
+
     private void executeCall(Call<DataResponse> call, final DataCallback callback) {
         call.enqueue(new Callback<DataResponse>() {
             @Override
