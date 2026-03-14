@@ -10,9 +10,11 @@
               :key="m.id ?? i"
               :class="['message-row', m.role === 'user' ? 'msg-user' : 'msg-ai']"
             >
-              <div class="message-bubble">
-                <span v-html="formatMessage(m.content)"></span>
-                <!-- 添加流式输入指示器 -->
+              <div 
+                class="message-bubble" 
+                :class="{'markdown-body': m.role === 'assistant'}"
+              >
+                <span v-html="formatMessage(m.content, m.role)"></span>
                 <span v-if="m.streaming" class="cursor-blink">▋</span>
               </div>
             </div>
@@ -76,10 +78,26 @@ import Sidebar from "../../components/Sidebar.vue";
 import {
   getCorpusApi,
   sendMessageStreamApi,
-  sendMessageApi,
   type CorpusItem,
 } from "../../api/self/chat";
 import { useI18n } from 'vue-i18n'
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // 记得引入代码高亮样式
+import 'github-markdown-css/github-markdown.css'; // 记得引入基础 Markdown 样式
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value;
+      } catch (__) {}
+    }
+    return ''; 
+  }
+});
 
 const { t } = useI18n();
 
@@ -106,13 +124,14 @@ const messagesRef = ref<HTMLElement | null>(null);
 
 let streamAbortController: AbortController | null = null;
 
-const formatMessage = (text: string) => {
-  if (!text) return "";
-  const esc = String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-  return esc.replace(/\n/g, "<br/>");
+const formatMessage = (content: string, role: string) => {
+  if (!content) return "";
+  
+  if (role === 'user') {
+    return content.replace(/\n/g, "<br/>"); 
+  }
+
+  return md.render(content);
 };
 
 const scrollToBottom = async () => {
@@ -190,9 +209,10 @@ const onSend = async () => {
           });
         }
       },
-    )}catch(err){
-
-    }
+    )
+  }catch(err){
+    
+  }
 };
 
 const onStop = () => {
@@ -256,6 +276,9 @@ onMounted(async () => {
 }
 .msg-ai {
   justify-content: flex-start;
+  max-width: 100%;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 .message-bubble {
   max-width: 65%;
@@ -265,6 +288,8 @@ onMounted(async () => {
   white-space: pre-wrap;
   word-break: break-word;
   position: relative;
+  border: 1px solid #e5e7eb;
+  background-color: #2563eb;
 }
 .msg-user .message-bubble {
   background: #2563eb;
@@ -272,7 +297,7 @@ onMounted(async () => {
   border-bottom-right-radius: 2px;
 }
 .msg-ai .message-bubble {
-  background: #f3f4f6;
+  background: #e0e0e0;
   color: #111827;
   border-bottom-left-radius: 2px;
 }
@@ -420,4 +445,30 @@ onMounted(async () => {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+:deep(.markdown-body) {
+  background-color: transparent !important;
+  font-size: 14px;
+  color: inherit;
+  font-family: inherit;
+}
+
+:deep(.markdown-body p) {
+  margin-bottom: 0; /* 修复段落间距过大 */
+}
+
+:deep(.markdown-body pre) {
+  background-color: #727272;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+:deep(.markdown-body code) {
+  background-color: rgba(175, 184, 193, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+}
+
+
 </style>

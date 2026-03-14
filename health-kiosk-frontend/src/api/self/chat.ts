@@ -49,11 +49,9 @@ export function sendMessageApi(input: string, model?: string | null, req_id?: st
 }
 
 /**
- * 流式发送消息（放在同一文件中），注意：
+ * ### 流式发送消息：
  * - axios 在浏览器端无法稳定读取 response body 流，所以这里使用 fetch。
- * - 仍然与其它 API 同目录，满足“所有 api 写在一个 typescript 文件中”的要求。
- *
- * onChunk(chunk, done) 会被多次调用，done=true 表示流完成。
+ * - onChunk(chunk, done) 会被多次调用，done=true 表示流完成。
  */
 export function sendMessageStreamApi(
   input: string,
