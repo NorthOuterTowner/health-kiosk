@@ -13,4 +13,19 @@
     <color name="info_text_label">#7cb342</color>
     <color name="info_text_content">#212121</color>
     <color name="gray_757575">#757575</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="green">#4CAF50</color>
+    <color name="yellow">#FFEB3B</color>
+    <!-- 红绿灯“熄灭”状态的颜色（较暗） -->
+    <color name="red_off">#B71C1C</color>
+    <color name="yellow_off">#F57F17</color>
+    <color name="green_off">#1B5E20</color>
+
+    <!-- 红绿灯“亮起”状态的颜色（鲜艳/高亮） -->
+    <color name="red_on">#FF5252</color>
+    <color name="yellow_on">#FFEB3B</color>
+    <color name="green_on">#69F0AE</color>
+
+    <!-- 可选：灯框背景 -->
+    <color name="light_gray">#E0E0E0</color>
 </resources>
