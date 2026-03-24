@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/reactionbj2" >
+
+    <!-- 真实的红绿灯（三个灯垂直排列） -->
+    <LinearLayout
+        android:id="@+id/lightContainer"
+        android:layout_width="224dp"
+        android:layout_height="394dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/bg_traffic_light"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- 红灯 -->
+        <View
+            android:id="@+id/lightRed"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/red_off" />
+
+        <!-- 黄灯 -->
+        <View
+            android:id="@+id/lightYellow"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/yellow_off" />
+
+        <!-- 绿灯 -->
+        <View
+            android:id="@+id/lightGreen"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_circle"
+            android:backgroundTint="@color/green_off" />
+
+    </LinearLayout>
+    <!-- 注意：这里添加了红绿灯LinearLayout的结束标签 -->
+    <!-- ========== 新增：测试信息显示区域 ========== -->
+    <TextView
+        android:id="@+id/tvRoundInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="第 1 / 8 次"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvResultPreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点击按钮开始测试"
+        android:textSize="25sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="24dp"/>
+    <!-- ========== 新增区域结束 ========== -->
+    <!-- 三个颜色按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/btnRed"
+            android:layout_width="75dp"
+            android:layout_height="130dp"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/red"
+            android:text="红"
+            android:textSize="30sp"/>
+
+        <Button
+            android:id="@+id/btnGreen"
+            android:layout_width="75dp"
+            android:layout_height="130dp"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/green"
+            android:text="绿"
+            android:textSize="30sp"/>
+
+        <Button
+            android:id="@+id/btnYellow"
+            android:layout_width="75dp"
+            android:layout_height="130dp"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/yellow"
+            android:text="黄"
+            android:textSize="30sp"/>
+    </LinearLayout>
+    <!-- 注意：这里是你原始代码中多余的、错误的“traintLayout>”文本所在的位置 -->
+
+</LinearLayout>
+    <!-- 这是最外层的结束标签 -->
