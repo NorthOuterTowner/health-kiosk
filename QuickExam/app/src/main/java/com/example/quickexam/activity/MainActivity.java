@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             /** Logic added for transmit health data to the backend */
             File ecgFile = writeECGToFile(ECGList);
-            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ecgFile,
+            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ppg, sp02, ecgFile,
                     success -> {
                         if(success) {
                             Toast.makeText(getApplicationContext(), "发送成功",
@@ -510,6 +510,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             ecg = String.valueOf((float) finalDatahr);
                             map.put(2, new ResultBean(2, String.valueOf((float) finalDatahr)));
                             binding.ecg.setText(String.valueOf((int) finalDatahr));//！！！！这里需要注意，看他最终变成什么样了
+                            File ecgFile = writeECGToFile(ECGList);
+                            transmit(String.valueOf(finalDatahr),ecgFile,success -> {
+                                if(success) {
+
+                                }else {
+                                    
+                                }
+                            });
                         }
                         /*if (datarr > 0) {
                             //binding.sp02.setText(String.valueOf((int)datarr));
