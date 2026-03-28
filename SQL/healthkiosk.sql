@@ -14,6 +14,19 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+-- 导出 healthkiosk 的数据库结构
+CREATE DATABASE IF NOT EXISTS `healthkiosk` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `healthkiosk`;
+
+-- 导出  表 healthkiosk.corpus 结构
+CREATE TABLE IF NOT EXISTS `corpus` (
+  `id` tinyint(4) NOT NULL AUTO_INCREMENT COMMENT '问题id',
+  `request` varchar(50) CHARACTER SET utf8mb4 NOT NULL COMMENT '问题',
+  `response` varchar(100) CHARACTER SET utf8mb4 NOT NULL COMMENT '回答',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+
 -- 正在导出表  healthkiosk.corpus 的数据：~17 rows (大约)
 DELETE FROM `corpus`;
 INSERT INTO `corpus` (`id`, `request`, `response`) VALUES
@@ -51,20 +64,65 @@ INSERT INTO `corpus` (`id`, `request`, `response`) VALUES
 INSERT INTO `corpus` (`id`, `request`, `response`) VALUES
 	(17, '体检机会不会上传我的隐私信息', '系统只上传必要的体检数据，个人信息会严格加密保护');
 
--- 正在导出表  healthkiosk.data 的数据：~6 rows (大约)
+-- 导出  表 healthkiosk.data 结构
+CREATE TABLE IF NOT EXISTS `data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '测试id',
+  `user_id` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '用户account',
+  `tempor` float DEFAULT NULL COMMENT '体温',
+  `alcohol` float DEFAULT NULL COMMENT '酒精',
+  `ecg` varchar(50) DEFAULT NULL COMMENT '心电文件路径',
+  `spo2` int(11) DEFAULT NULL COMMENT '血氧',
+  `ppg` int(11) DEFAULT NULL COMMENT '光电容积脉搏波',
+  `blood_sys` int(11) DEFAULT NULL COMMENT '收缩压',
+  `blood_dia` int(11) DEFAULT NULL COMMENT '舒张压',
+  `blood_hr` int(11) DEFAULT NULL COMMENT '心率',
+  `date` date NOT NULL COMMENT '测试日期',
+  `time` int(11) NOT NULL COMMENT '测试时段',
+  PRIMARY KEY (`id`),
+  KEY `FK_data_user` (`user_id`),
+  CONSTRAINT `FK_data_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`account`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1 COMMENT='体检数据表';
+
+-- 正在导出表  healthkiosk.data 的数据：~14 rows (大约)
 DELETE FROM `data`;
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(24, 'admin', 36.5, 0, '/ecg/002.ecg', 88, 75, 92, 58, 55, '2024-11-24', 2);
+	(24, 'admin', 36.5, 0, '/ecg/002.ecg', 88, 75, 92, 58, 55, '2026-01-24', 2);
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(26, 'admin', 37.1, 0, '/ecg/004.ecg', 96, 69, 130, 101, 42, '2024-11-26', 2);
+	(26, 'admin', 37.1, 0, '/ecg/004.ecg', 96, 69, 130, 101, 42, '2026-01-26', 2);
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(27, 'admin', 36.6, 0, '/ecg/005.ecg', 98, 20, 118, 77, 75, '2024-11-27', 1);
+	(27, 'admin', 36.6, 0, '/ecg/005.ecg', 98, 20, 118, 77, 75, '2026-01-27', 1);
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(29, 'admin', 36.9, 0, '/ecg/007.ecg', 105, 76, 120, 80, 128, '2024-11-29', 1);
+	(29, 'admin', 36.9, 0, '/ecg/007.ecg', 105, 76, 120, 80, 128, '2026-01-29', 1);
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(30, 'admin', 36.4, 0, '/ecg/008.ecg', 89, 71, 80, 50, 40, '2024-11-30', 2);
+	(30, 'admin', 36.4, 0, '/ecg/008.ecg', 89, 71, 80, 50, 40, '2026-01-30', 2);
 INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
-	(31, 'admin', 36.8, 5, '/ecg/009.ecg', 100, 78, 125, 82, 170, '2024-12-01', 1);
+	(31, 'admin', 36.8, 5, '/ecg/009.ecg', 100, 78, 125, 82, 170, '2026-02-01', 1);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(32, 'uu', 36.32, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(33, 'ui', 35.31, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(34, 'ui', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(35, 'io', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(36, 'io', 36.27, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(37, 'oo', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(38, 'iip', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2026-03-12', 2);
+INSERT INTO `data` (`id`, `user_id`, `tempor`, `alcohol`, `ecg`, `spo2`, `ppg`, `blood_sys`, `blood_dia`, `blood_hr`, `date`, `time`) VALUES
+	(39, 'ip', 36.27, 0, NULL, NULL, NULL, 159, 80, NULL, '2026-03-12', 2);
+
+-- 导出  表 healthkiosk.device 结构
+CREATE TABLE IF NOT EXISTS `device` (
+  `version` varchar(50) NOT NULL COMMENT '软件版本',
+  `description` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '该版本描述',
+  `type` enum('1','2') NOT NULL COMMENT '软件类型(1表示release,2表示debug)',
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
+  `num` int(11) NOT NULL DEFAULT '0' COMMENT '下载量',
+  PRIMARY KEY (`version`,`type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='软件版本表';
 
 -- 正在导出表  healthkiosk.device 的数据：~2 rows (大约)
 DELETE FROM `device`;
@@ -73,7 +131,18 @@ INSERT INTO `device` (`version`, `description`, `type`, `time`, `num`) VALUES
 INSERT INTO `device` (`version`, `description`, `type`, `time`, `num`) VALUES
 	('v0.1.1-beta', '可用的版本', '1', '2025-10-16 15:22:02', 0);
 
--- 正在导出表  healthkiosk.function 的数据：~18 rows (大约)
+-- 导出  表 healthkiosk.function 结构
+CREATE TABLE IF NOT EXISTS `function` (
+  `function_id` int(11) NOT NULL AUTO_INCREMENT,
+  `function_key` varchar(50) NOT NULL COMMENT 'key标识',
+  `name` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '功能名称',
+  `remark` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '说明',
+  `parent` int(11) DEFAULT NULL COMMENT '父功能id',
+  `class` enum('menu','sub','btn') NOT NULL COMMENT '类型',
+  PRIMARY KEY (`function_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1 COMMENT='功能表，key对应Sidebar中各个menu的键';
+
+-- 正在导出表  healthkiosk.function 的数据：~20 rows (大约)
 DELETE FROM `function`;
 INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
 	(1, 'users', '用户管理', '用户管理模块', NULL, 'menu');
@@ -83,10 +152,6 @@ INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent
 	(3, 'app', '软件管理', '软件管理模块', NULL, 'menu');
 INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
 	(4, 'app:list', '软件列表', '软件列表', 3, 'sub');
-INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
-	(5, 'examdata', '体检数据', '体检数据模块', NULL, 'menu');
-INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
-	(6, 'examdata:list', '体检数据趋势', '体检数据趋势', 5, 'sub');
 INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
 	(7, 'info', '个人信息', '个人信息模块', NULL, 'menu');
 INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
@@ -116,6 +181,13 @@ INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent
 INSERT INTO `function` (`function_id`, `function_key`, `name`, `remark`, `parent`, `class`) VALUES
 	(20, 'info:selfLLM', 'AI助手', 'AI助手', 7, 'sub');
 
+-- 导出  表 healthkiosk.ip 结构
+CREATE TABLE IF NOT EXISTS `ip` (
+  `ip` varchar(50) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `identity` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- 正在导出表  healthkiosk.ip 的数据：~5 rows (大约)
 DELETE FROM `ip`;
 INSERT INTO `ip` (`ip`, `name`, `identity`) VALUES
@@ -128,6 +200,17 @@ INSERT INTO `ip` (`ip`, `name`, `identity`) VALUES
 	('192.168.0.103', 'Android', '体检机用户');
 INSERT INTO `ip` (`ip`, `name`, `identity`) VALUES
 	('192.168.0.0', 'tp-link', '路由器');
+
+-- 导出  表 healthkiosk.item 结构
+CREATE TABLE IF NOT EXISTS `item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '项目号',
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
+  `abbreviation` varchar(20) NOT NULL COMMENT '简称',
+  `status` int(11) NOT NULL DEFAULT '1' COMMENT '0-disable,1-able',
+  `description` varchar(20) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '描述',
+  `usage` text CHARACTER SET utf8mb4 COMMENT '使用说明',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COMMENT='体检项目表';
 
 -- 正在导出表  healthkiosk.item 的数据：~9 rows (大约)
 DELETE FROM `item`;
@@ -148,6 +231,17 @@ INSERT INTO `item` (`id`, `name`, `abbreviation`, `status`, `description`, `usag
 INSERT INTO `item` (`id`, `name`, `abbreviation`, `status`, `description`, `usage`) VALUES
 	(8, '心率', 'blood_hr', 1, '', '');
 
+-- 导出  表 healthkiosk.news 结构
+CREATE TABLE IF NOT EXISTS `news` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '新闻id',
+  `publish` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '发布者',
+  `content` varchar(2000) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '内容',
+  `publish_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `status` enum('draft','publish') NOT NULL DEFAULT 'draft' COMMENT '草稿/发布',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
 -- 正在导出表  healthkiosk.news 的数据：~5 rows (大约)
 DELETE FROM `news`;
 INSERT INTO `news` (`id`, `publish`, `content`, `publish_time`, `update_time`, `status`) VALUES
@@ -161,7 +255,19 @@ INSERT INTO `news` (`id`, `publish`, `content`, `publish_time`, `update_time`, `
 INSERT INTO `news` (`id`, `publish`, `content`, `publish_time`, `update_time`, `status`) VALUES
 	(5, 'admin', '<h2>AI 体检趋势分析系统正式上线</h2>\r\n<p>随着体检设备数量不断增加，后台需要处理的体检记录呈指数级增长。为提升分析效率，我们正式上线了“AI 体检趋势分析系统”。该系统能够基于时间序列、心率波动模型以及司机个人历史数据，对血压、心率、血氧等指标进行趋势推断，并给出风险提示。</p>\r\n<p>系统具备以下功能：</p>\r\n<ul>\r\n    <li><strong>7 日体检趋势自动生成</strong>：司机可查看自己一周内体检波动情况，轻松了解身体变化。</li>\r\n    <li><strong>高风险司机预警机制</strong>：当连续多天出现异常数据，系统将自动通知相关管理人员。</li>\r\n    <li><strong>智能报告生成</strong>：后台可一键生成详细体检分析报告，包括波形质量、检测环境影响、历史对比等。</li>\r\n</ul>\r\n<p>未来我们将继续扩展 AI 模型的能力，将心电图深度波形分析纳入系统，让健康监测更加智能、更加贴心，也让铁路运行更加安全。</p>', '2025-12-04 07:53:15', '2025-12-04 07:53:15', 'draft');
 
--- 正在导出表  healthkiosk.permission 的数据：~76 rows (大约)
+-- 导出  表 healthkiosk.permission 结构
+CREATE TABLE IF NOT EXISTS `permission` (
+  `permission_id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` int(2) NOT NULL,
+  `function_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`permission_id`) USING BTREE,
+  KEY `FK_permission_role` (`role_id`) USING BTREE,
+  KEY `FK_permission_function` (`function_id`) USING BTREE,
+  CONSTRAINT `FK_permission_function` FOREIGN KEY (`function_id`) REFERENCES `function` (`function_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_permission_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=latin1 COMMENT='各个功能对应的角色权限需求，即每个功能需要何种角色才可访问';
+
+-- 正在导出表  healthkiosk.permission 的数据：~90 rows (大约)
 DELETE FROM `permission`;
 INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 	(2, 3, 1);
@@ -199,22 +305,6 @@ INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 	(18, 4, 4);
 INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 	(19, 5, 4);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(20, 2, 5);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(21, 3, 5);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(22, 4, 5);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(23, 5, 5);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(24, 2, 6);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(25, 3, 6);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(26, 4, 6);
-INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
-	(27, 5, 6);
 INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 	(28, 1, 7);
 INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
@@ -344,7 +434,16 @@ INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 INSERT INTO `permission` (`permission_id`, `role_id`, `function_id`) VALUES
 	(91, 5, 20);
 
--- 正在导出表  healthkiosk.role 的数据：~6 rows (大约)
+-- 导出  表 healthkiosk.role 结构
+CREATE TABLE IF NOT EXISTS `role` (
+  `role_id` int(2) NOT NULL COMMENT '角色识别标识符',
+  `role_name` varchar(12) CHARACTER SET utf8mb4 NOT NULL COMMENT '角色名称',
+  `remark` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '说明',
+  `use` int(1) DEFAULT '1' COMMENT '是否启用',
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='角色表';
+
+-- 正在导出表  healthkiosk.role 的数据：~7 rows (大约)
 DELETE FROM `role`;
 INSERT INTO `role` (`role_id`, `role_name`, `remark`, `use`) VALUES
 	(0, '访客', '未注册的用户', 1);
@@ -361,36 +460,77 @@ INSERT INTO `role` (`role_id`, `role_name`, `remark`, `use`) VALUES
 INSERT INTO `role` (`role_id`, `role_name`, `remark`, `use`) VALUES
 	(6, '测试角色', '仅供测试使用的角色。', 0);
 
--- 正在导出表  healthkiosk.user 的数据：~14 rows (大约)
+-- 导出  表 healthkiosk.user 结构
+CREATE TABLE IF NOT EXISTS `user` (
+  `account` varchar(50) CHARACTER SET utf8mb4 NOT NULL COMMENT '唯一身份标识符',
+  `name` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '名称',
+  `age` int(11) DEFAULT NULL COMMENT '年龄',
+  `gender` enum('男','女') CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '性别',
+  `pic` varchar(50) DEFAULT NULL COMMENT '图片的路径表示',
+  `pwd` varchar(100) NOT NULL COMMENT 'sha256密码',
+  `height` int(11) DEFAULT NULL COMMENT '身高',
+  `weight` int(11) DEFAULT NULL COMMENT '体重',
+  `role` int(11) NOT NULL COMMENT '游客0，访客1，用户2，管理员3',
+  `email_enc` varchar(255) DEFAULT NULL COMMENT 'aes256邮箱',
+  `email_hash` varchar(100) DEFAULT NULL COMMENT '邮箱的hash',
+  `key_version` varchar(2) DEFAULT NULL COMMENT '密钥版本',
+  `register_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
+  `birthday` datetime DEFAULT NULL COMMENT '生日',
+  PRIMARY KEY (`account`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='用户表';
+
+-- 正在导出表  healthkiosk.user 的数据：~24 rows (大约)
 DELETE FROM `user`;
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('10', '10', NULL, NULL, NULL, '4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-26 17:03:19', NULL);
+	('10', '10', NULL, NULL, NULL, '4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-06 17:03:19', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('11', 'testUser', NULL, NULL, NULL, '5772527c5398c3b1d9999c5a9388823c454126d8a387a32ce461ad7cfc13f656', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-28 19:12:41', NULL);
+	('11', 'testUser', NULL, NULL, NULL, '5772527c5398c3b1d9999c5a9388823c454126d8a387a32ce461ad7cfc13f656', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-08 19:12:41', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('2', '2', NULL, NULL, NULL, 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', NULL, NULL, 2, NULL, NULL, NULL, '2025-11-24 16:34:25', NULL);
+	('2', '2', NULL, NULL, NULL, 'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-11 15:34:25', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('3', '3', NULL, NULL, NULL, '4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-23 16:34:31', NULL);
+	('3', '3', NULL, NULL, NULL, '4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-03 16:34:31', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('5', '5', NULL, NULL, NULL, 'ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-24 16:34:40', NULL);
+	('5', '5', NULL, NULL, NULL, 'ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-04 16:34:40', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('6', '6', NULL, NULL, NULL, 'e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-28 17:02:56', NULL);
+	('6', '6', NULL, NULL, NULL, 'e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-08 17:02:56', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('7', '7', NULL, NULL, NULL, '7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-28 17:03:04', NULL);
+	('7', '7', NULL, NULL, NULL, '7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-09 17:03:04', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('8', '8', NULL, NULL, NULL, '2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-28 17:03:07', NULL);
+	('8', '8', NULL, NULL, NULL, '2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-08 17:03:07', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('9', '9', NULL, NULL, NULL, '19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7', NULL, NULL, 1, NULL, NULL, NULL, '2025-11-27 17:03:13', NULL);
+	('9', '9', NULL, NULL, NULL, '19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7', NULL, NULL, 1, NULL, NULL, NULL, '2026-03-07 17:03:13', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('admin', 'admin', 30, '男', '1768550626716.jpg', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 180, 65, 5, 'ZntTALWJ2M2MpTnOBOtYJSm76KGWzfN3p5OrU+hdO5Q4mpL6W7DFmC73Av+2diMP', '429ca99f1adb243b70017eae55ed8967dd6077f53d030f83300583e269ca0fd5', 'v1', '2025-11-26 14:08:59', NULL);
+	('aat', 'aat', NULL, NULL, '1769069717354.jpg', '888ef612b1be0483434dabc1f5a5c4c369d74de403c012b58ac4d707b7f965f8', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-03 08:28:13', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('lmf', 'lmf', NULL, NULL, NULL, 'd2e14c798217f0cd783930877ca62c681860a0a48bc1baf9fc66ff64da21bfdb', NULL, NULL, 1, 'ayqdcRzwlScYWp7ro6OGaApqNnWn6NnyuJ7hG0esfdNmCOdscP2PARGMbwj323qR', 'cc143d1395476355298d727dfeb33076c18b83df1718986150f9701e8be3b94b', 'v1', '2025-11-26 15:02:28', NULL);
+	('admin', 'admin', 30, '男', NULL, '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 180, 65, 5, 'ZntTALWJ2M2MpTnOBOtYJSm76KGWzfN3p5OrU+hdO5Q4mpL6W7DFmC73Av+2diMP', '429ca99f1adb243b70017eae55ed8967dd6077f53d030f83300583e269ca0fd5', 'v1', '2026-03-06 14:08:59', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('show1', '测试2', NULL, NULL, NULL, 'show1', NULL, NULL, 0, NULL, NULL, NULL, '2025-11-23 16:08:58', NULL);
+	('ii', 'ii', NULL, NULL, '1773304370339.jpg', '4021fadf187fd2c8277aad0fbc5e8fc4e7f1c75fbb38b6337160f125444790b2', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:32:50', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('user', 'user', NULL, '男', NULL, '04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb', NULL, NULL, 2, NULL, NULL, NULL, '2025-11-30 16:09:02', NULL);
+	('iip', 'iip', NULL, NULL, '1773306264665.jpg', '5d7f49449ab22deac22d767b89549c554134c8e47de4d38e748049875c83503b', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 17:04:24', NULL);
 INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
-	('user2', 'user2', 5, '男', '1759821101919.png', '94edf28c6d6da38fd35d7ad53e485307f89fbeaf120485c8d17a43f323deee71', 1, 1, 2, '2NtdXvuuQsA3yzptRxuEfYnP2Lxn7sH2j6jnsOHEYcjxV4p82XjtFEYQW3GZEzIk', '429ca99f1adb243b70017eae55ed8967dd6077f53d030f83300583e269ca0fd5', 'v1', '2025-11-27 15:07:58', NULL);
+	('io', 'io', NULL, NULL, '1773304422581.jpg', '4021fadf187fd2c8277aad0fbc5e8fc4e7f1c75fbb38b6337160f125444790b2', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:33:42', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('ip', 'ip', NULL, NULL, '1773307441191.jpg', 'bb9af5d1915da1fbc132ced081325efcd2e63e4804f96890f42e9739677237a4', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 17:24:01', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('ji', 'ji', NULL, NULL, '1773302926759.jpg', 'f5557d4fcf727a981a3c315aca733eefa2996f7c7cdae1fa7e0de28522820bb0', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:08:46', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('lmf', 'lmf', NULL, NULL, NULL, 'd2e14c798217f0cd783930877ca62c681860a0a48bc1baf9fc66ff64da21bfdb', NULL, NULL, 1, 'ayqdcRzwlScYWp7ro6OGaApqNnWn6NnyuJ7hG0esfdNmCOdscP2PARGMbwj323qR', 'cc143d1395476355298d727dfeb33076c18b83df1718986150f9701e8be3b94b', 'v1', '2026-03-06 15:02:28', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('oo', 'oo', 22, '女', NULL, 'a8c23cc814179578e3a774418ac5fc4702a66eb3b78c876df81b290465e6e334', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-02 16:04:22', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('pp', 'pp', NULL, NULL, '1773305834493.jpg', 'd53315bea08cec50d2591fcaf3b32dc5d289cdc6c16b7e8bed8c8e3f7ceaa34e', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:57:14', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('qq', 'qq', NULL, NULL, NULL, 'd5ce2b19fbda14a25deac948154722f33efd37b369a32be8f03ec2be8ef7d3a5', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-09 15:15:17', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('show1', '测试2', NULL, NULL, NULL, 'show1', NULL, NULL, 0, NULL, NULL, NULL, '2026-03-05 16:08:58', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('ui', 'ui', NULL, NULL, '1773303415651.jpg', 'd3ef7de562f9a4a34a9a0b05a112955fdecdd0102c3faae5eeb03a195091a5e4', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:16:55', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('user', 'user', NULL, '男', NULL, '04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-10 16:09:02', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('user2', 'user2', 5, '男', NULL, '94edf28c6d6da38fd35d7ad53e485307f89fbeaf120485c8d17a43f323deee71', 1, 1, 2, '2NtdXvuuQsA3yzptRxuEfYnP2Lxn7sH2j6jnsOHEYcjxV4p82XjtFEYQW3GZEzIk', '429ca99f1adb243b70017eae55ed8967dd6077f53d030f83300583e269ca0fd5', 'v1', '2026-03-07 15:07:58', NULL);
+INSERT INTO `user` (`account`, `name`, `age`, `gender`, `pic`, `pwd`, `height`, `weight`, `role`, `email_enc`, `email_hash`, `key_version`, `register_time`, `birthday`) VALUES
+	('uu', 'uu', NULL, NULL, '1773302434652.jpg', '5afab9a620f6f11284505be2fb9a975b4dccfdd30970dffc7ed875490160e4d0', NULL, NULL, 2, NULL, NULL, NULL, '2026-03-12 16:00:34', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
