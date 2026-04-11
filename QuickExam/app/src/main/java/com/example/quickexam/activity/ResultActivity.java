@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,7 @@ public class ResultActivity extends AppCompatActivity {
     private int RESULT_BACK = 3000;
     private final int TIME_CODE = 1;
     private HashMap<Integer, ResultBean> lists;
+    private final Handler jumpHandler = new Handler();
     //在主线程里面处理消息并更新UI界面
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -79,14 +81,24 @@ public class ResultActivity extends AppCompatActivity {
                 while (back >= 0) {
                     try {
                         Thread.sleep(1000);
+                        if (back < 0) {
+                            break;
+                        }
                         back--;
                         if (back == 0) {
-                            setResult(RESULT_BACK);
-                            finish();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setResult(RESULT_BACK);
+                                    finish();
+                                }
+                            });
+                            break;
                         }
                         mHandler.sendEmptyMessage(TIME_CODE);
-                    } catch (InterruptedException e) {
+                    }  catch (InterruptedException e) {
                         e.printStackTrace();
+                        break;
                     }
                 }
             }
@@ -105,6 +117,34 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        binding.grid.setAdapter(new Gridadapter(lists, this));
+        if (lists != null) {
+            binding.grid.setAdapter(new Gridadapter(lists, this));
+        }
+
+        // 保存体检完成状态
+        final SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);
+        prefs.edit().putBoolean("exam_completed", true).apply();
+
+        // 延迟2秒后跳转到反应测试（让用户先看到体检结果）
+        jumpHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                boolean reactionTestDone = prefs.getBoolean("reaction_test_done", false);
+                if (!reactionTestDone && !isFinishing()) {
+                    // 停止结果页倒计时，避免后台自动finish
+                    back = -1;
+
+                    Intent intent = new Intent(ResultActivity.this, ReactionTestActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }, 2000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        jumpHandler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
     }
 }
