@@ -13,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -206,6 +207,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case FaceClick://开始体检
                     //m_serialportutil.sendSPStr((String) msg.obj);
                     m_bFlagStart = true;
+                    SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);
+                    prefs.edit()
+                            .putBoolean("reaction_test_done", false)
+                            .putBoolean("exam_completed", false)
+                            .apply();
                     clearView(1);//清空
                     miflytts.playText("开始检测，进行人脸识别");
                     startActivityForResult(new Intent(MainActivity.this, FragmentActivity.class), 1000);

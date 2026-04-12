@@ -36,6 +36,7 @@
         tools:ignore="MissingClass"
         android:usesCleartextTraffic="true">
         <activity android:name=".activity.ResultActivity"></activity>
+        <activity android:name=".activity.ReactionTestActivity" />
         <activity
             android:name=".activity.FragmentActivity"
             android:theme="@style/dialogstyle"></activity>
