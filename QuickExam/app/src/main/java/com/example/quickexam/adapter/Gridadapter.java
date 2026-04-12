@@ -76,7 +76,7 @@ public class Gridadapter extends BaseAdapter {
                 unit.setText("mmhg");
                 break;
             case 6://PPG
-                text.setText("PPG");
+                text.setText("疲劳度");
                 unit.setText("");
                 break;
         }

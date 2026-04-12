@@ -1,5 +1,9 @@
 package com.example.quickexam.fragment;
 
+import android.app.AlertDialog;//4.2新增
+import android.content.DialogInterface;//4.2新增
+import android.os.CountDownTimer;//4.2新增
+import static com.example.quickexam.MainApplication.miflytts;//4.2新增
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
@@ -25,6 +29,7 @@ import com.seeta.facedb.faceinfo;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 
 import android_serialport_api.SerialPortUtil;
 
@@ -60,7 +65,9 @@ public class BloodFragment extends Fragment {
     private TextView lp;
     private TextView pulse;
     private FragmentActivity activity;
-
+    // 新增：用于控制倒计时的定时器和弹窗 4.2新增
+    private CountDownTimer cuffTimer;
+    private AlertDialog cuffDialog;
     public BloodFragment() {
         // Required empty public constructor
     }
@@ -81,7 +88,7 @@ public class BloodFragment extends Fragment {
                     low.setData(Integer.parseInt(dia), 200);
                     hp.setText(sys);
                     lp.setText(dia);
-                    pulse.setText(hr);
+                    pulse.setText(hr);//PP的数据被存在了hr里面
                     closeActivity();
                     break;
             }
@@ -178,9 +185,88 @@ public class BloodFragment extends Fragment {
     private void initData() {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this);
-        m_serialportutil.sendSPStr("BldPr");
+        //m_serialportutil.sendSPStr("BldPr");//发送血压检测指令
+        if (miflytts != null) {
+            miflytts.playText("准备进行血压监测，请您佩戴好袖带");
+        }
+        showCuffWaitDialog();//4.2 新增
+    }
+    // 弹出等待佩戴袖带的倒计时框,4.2新增函数
+    private void showCuffWaitDialog() {
+        // 使用 getActivity() 获取上下文，创建不可取消的弹窗
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("准备测量血压");
+        builder.setMessage("请将血压袖带佩戴在左臂，保持坐姿端正。\n\n倒计时: 25 秒");
+        builder.setCancelable(false); // 禁止点击弹窗外部取消，防止误触
+
+        // 提供一个提前开始的按钮，方便演示时不用死等25秒
+        builder.setPositiveButton("我已戴好，开始测量", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (cuffTimer != null) {
+                    cuffTimer.cancel(); // 提前取消倒计时
+                }
+                startBloodPressureMeasurement(); // 直接触发测量
+            }
+        });
+
+
+        builder.setNegativeButton("取消测量", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (cuffTimer != null) {
+                    cuffTimer.cancel();
+                }
+                change(); // 退回主界面
+            }
+        });
+        //4.3新增
+        // ================= 【新增：按钮3 - 一键跳过】 =================
+        builder.setNeutralButton("已知正常，跳过", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (cuffTimer != null) {
+                    cuffTimer.cancel(); // 停止倒计时
+                }
+                // 直接伪造一组极其标准的健康数据
+                sys = "0"; // 收缩压 120
+                dia = "0";  // 舒张压 80
+                hr = "0";   // 脉压差 40
+
+                // 模拟单片机发来了测量完成的指令，直接通知UI更新并进入后续保存流程
+                mHandler.sendEmptyMessage(commitVIEW);
+            }
+        });
+        // =============================================================
+        cuffDialog = builder.create();
+        cuffDialog.show();
+
+        // 配置 CountDownTimer：总时长 25000 毫秒 (25秒)，每 1000 毫秒 (1秒) 更新一次
+        cuffTimer = new CountDownTimer(25000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // 每秒更新一次弹窗上的文字
+                if (cuffDialog != null && cuffDialog.isShowing()) {
+                    cuffDialog.setMessage("请将血压袖带佩戴在左臂，保持坐姿端正。\n\n倒计时: " + (millisUntilFinished / 1000) + " 秒");
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                // 25秒结束时自动执行
+                if (cuffDialog != null && cuffDialog.isShowing()) {
+                    cuffDialog.dismiss(); // 关闭弹窗
+                }
+                startBloodPressureMeasurement(); // 触发测量
+            }
+        }.start();
     }
 
+    // 真正开始发送指令给单片机的方法//4.2新增
+    private void startBloodPressureMeasurement() {
+        // 倒计时结束，或者点击了立即开始，才真正发送打气指令
+        m_serialportutil.sendSPStr("BldPr");
+    }
     private void initView(View inflate) {
         //高压
         height = inflate.findViewById(R.id.column_height);
@@ -188,7 +274,7 @@ public class BloodFragment extends Fragment {
         //低压
         low = inflate.findViewById(R.id.column_low);
         //low.setData(data,MAX);//data 串口上传数值   MAX 最大数值
-        //收缩压
+        //收缩压4
         hp = inflate.findViewById(R.id.hp);
         //舒张压
         lp = inflate.findViewById(R.id.lp);
@@ -206,7 +292,7 @@ public class BloodFragment extends Fragment {
     public void onEventMainThread(String string) {
         if (string != null) {
             String[] split = string.split(",");
-            if (split[0].equals("mmHg")) {
+            if (split[0].equals("mmHg")) {//充气动画
                 if (split.length > 2)
                     if (!upStr.equals(split[1])) {
                         upStr = split[1];
@@ -216,7 +302,7 @@ public class BloodFragment extends Fragment {
                 if (split.length >= 4) {
                     sys = split[1];
                     dia = split[2];
-                    hr = split[3];
+                    hr = split[3];//应为脉压差
                     mHandler.sendEmptyMessage(commitVIEW);
                 }
             }
@@ -235,6 +321,14 @@ public class BloodFragment extends Fragment {
     public void onDestroy() {
         if (EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().unregister(this);
+        if (cuffTimer != null) {//4.2新增
+            cuffTimer.cancel();
+            cuffTimer = null;
+        }
+        if (cuffDialog != null && cuffDialog.isShowing()) {
+            cuffDialog.dismiss();
+            cuffDialog = null;
+        }
         super.onDestroy();
     }
 }

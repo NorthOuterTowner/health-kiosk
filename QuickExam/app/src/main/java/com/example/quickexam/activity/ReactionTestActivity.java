@@ -2,6 +2,7 @@ package com.example.quickexam.activity; // 请替换为你的实际包名
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;//3.29新加
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -306,6 +307,16 @@ public class ReactionTestActivity extends AppCompatActivity {
 
         sb.append("\n平均反应时间: ").append(avgTime).append(" ms\n");
         sb.append("疲劳评估: ").append(evaluateFatigueLevel(avgTime, errorRatePercent)).append("\n");
+        // ========== 新增：标记反应测试已完成 ==========
+        SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);//3.29新加
+        prefs.edit().putBoolean("reaction_test_done", true).apply();
+
+        // 弹出结果对话框
+        new AlertDialog.Builder(this)
+                .setTitle("测试完成")
+                .setMessage(sb.toString())
+                .setPositiveButton("完成", (dialog, which) -> finish())
+                .show();
 
         // 弹出结果对话框
         new AlertDialog.Builder(this)

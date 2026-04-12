@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;//3.29新加
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -104,7 +105,26 @@ public class ResultActivity extends AppCompatActivity {
         });
     }
 
-    private void initData() {
+    private void initData() {//3.29新加
         binding.grid.setAdapter(new Gridadapter(lists, this));
+
+        // ========== 新增：体检完成，标记状态并准备跳转反应测试 ==========
+        // 保存体检完成状态
+        SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);
+        prefs.edit().putBoolean("exam_completed", true).apply();
+
+        // 延迟2秒后跳转到反应测试（让用户先看到体检结果）
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 检查是否还没有做过反应测试
+                boolean reactionTestDone = prefs.getBoolean("reaction_test_done", false);
+                if (!reactionTestDone) {
+                    Intent intent = new Intent(ResultActivity.this, ReactionTestActivity.class);
+                    startActivity(intent);
+                    // 注意：不调用finish()，让反应测试结束后可以返回这里
+                }
+            }
+        }, 2000); // 延迟2秒，让用户能看到体检结果
     }
 }
