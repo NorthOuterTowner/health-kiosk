@@ -172,8 +172,8 @@ public class MainFragment extends Fragment
         mCameraPreview.setCameraCallbacks(mCameraCallbacks);
         activity = (FragmentActivity) getActivity();
 
-//        setStatus(0, null, null);
-
+        setStatus(0, null, null);
+/*后台运行部分 start*/
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,7 +217,7 @@ public class MainFragment extends Fragment
                 change();
             }
         });
-
+/*3.242晚 后台运行部分end*/
         btn_ok.setOnClickListener(new View.OnClickListener() {
             // MainApplication.miflytts.playText("请输入姓名");
             @Override
@@ -227,7 +227,7 @@ public class MainFragment extends Fragment
 
                 UserRepository userRepo = new UserRepository();
 
-                /**补丁内容，若运行后台可去掉注释运行*/
+                /**正式版内容*/
                 userRepo.login(edit_account.getText().toString().trim(), edit_pwd.getText().toString().trim(), latestFrame, new UserRepository.LoginCallback(){
                     @Override
                     public void onSuccess(LoginResponse response) {
@@ -266,7 +266,7 @@ public class MainFragment extends Fragment
                         Toast.makeText(activity.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
-                /**补丁内容 Start*/
+                /**补丁内容 Start 若要运行则去掉注释 */
 //                Toast.makeText(activity.getApplicationContext(),"补丁版本进入成功",Toast.LENGTH_SHORT).show();
 //
 //                User curUser = new User("补丁","补丁","男", 20);;

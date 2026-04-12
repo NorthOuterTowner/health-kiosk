@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String ppg;
     //private ProjectAdapter adapter;
     //更新时间线程
+    private int lastValidSpO2 = 0; // 4.3新增
+    private int lastValidHR = 0;   // 4.3新增
     class TimeThread extends Thread {
         @Override
         public void run() {
@@ -415,12 +417,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 double V_BASE = 0.5;   // 基准电压
                 double K_FACTOR = 30.0; // 灵敏度系数（如果 2.85V 要对应 0.91 左右，K 约等于 387，你可以根据实测调整）
 
-// 2. 计算浓度数值（以 % 为例，mg/100ml 除以 1000）
+                // 2. 计算浓度数值（以 % 为例，mg/100ml 除以 1000）
                 double concentration_mg = (currentMaxV - V_BASE) * K_FACTOR;
                 if (concentration_mg < 0) concentration_mg = 0;
                 double concentration_percent = concentration_mg / 1000.0;
 
-// 3. 根据电压判定状态文字（不带空格和括号）
+                // 3. 根据电压判定状态文字（不带空格和括号）
                 String statusLabel = "";
                 if (currentMaxV < 1.92) {
                     statusLabel = "正常";
@@ -430,17 +432,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     statusLabel = "醉驾";
                 }
 
-// 4. 格式化数值部分（保留两位或三位小数，根据你 dec 的定义）
-// 如果得到的是 0.91 这种两位数，建议 dec 使用 "0.00" 格式
+                // 4. 格式化数值部分（保留两位或三位小数，根据你 dec 的定义）
+                // 如果得到的是 0.91 这种两位数，建议 dec 使用 "0.00" 格式
                 final String formattedVal = dec.format(concentration_percent);
 
-// 5. 【核心修改】按照你要求的格式拼接： "数值/状态"
+                // 5. 【核心修改】按照你要求的格式拼接： "数值/状态"
                 final String uiDisplay = formattedVal + "/" + statusLabel;
 
-// 6. 存入结果包（只存数字，方便后台统计）
+                // 6. 存入结果包（只存数字，方便后台统计）
                 map.put(1, new ResultBean(1, formattedVal));
 
-// 7. 更新 UI 界面
+                // 7. 更新 UI 界面
                 runOnUiThread(new Runnable() {
                     @Override//申请主线程
                     public void run() {
@@ -463,35 +465,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         } else {
-            String[] strArray = string.split(",");
-            if (strArray[0].equals("ECG") && strArray.length>=8){//这里是什么意思，需要改一下 删掉&& (strArray.length >= 14))
-                ECGList.add(Double.valueOf(strArray[1])); //ECG
-                PPGList.add(Double.valueOf(strArray[7])); //PPG——删掉
-                if (ECGList.size() > maxfftsize) {//max为1024
-                    PPGList.remove(0);//滑动更新存储
-                    ECGList.remove(0);
-                }
-                //！!!!下面这些需要改一下
-                //需删掉部分数据 只保留ecg描点、SYS DIA、ARR（sDNN）,spo2的HR、SPO2、pleth
-                double datahr = Integer.valueOf(strArray[5]); //HR 心率。字符串中提取数字
-                //Log.e(TAG, "datahr: " + datahr);
-                Log.e("datahr", "" + datahr);
-                double ecg1 = Integer.valueOf(strArray[1]); //心电图数据
-                Log.e("ecg1", String.valueOf(ecg1));
-                //double datarr = Integer.valueOf(strArray[4]); //RR  呼吸率
-                double datasys = Integer.valueOf(strArray[2]); //SYS 收缩压
-                double datadia = Integer.valueOf(strArray[3]); //DIA 舒张压
-                //double datasis = Integer.valueOf(strArray[7]); //SIS 动脉硬化指数
-                double datafag = Integer.valueOf(strArray[4]); //FAG 疲劳等级
-                //double dataarr = Integer.valueOf(strArray[9]); //ARR 心律不齐
-                //double datappbf = Integer.valueOf(strArray[10]); //PBF 含水率
-                //double datatshr = Integer.valueOf(strArray[11]); //hr
-                double datatsspo2 = Integer.valueOf(strArray[6]); //spo2
-                double datapleth = Integer.valueOf(strArray[7]); //pleth光电容积脉搏波
-                if (datapleth > 0) {//光电容积
-                    SPO2List.add(datapleth);
-                    if (SPO2List.size() > maxfftsize) {
-                        SPO2List.remove(0);//滑动更新存储
+            // === 1. 解决串口粘包，找回丢失的心电波峰 ===
+            String[] lines = string.split("\n");
+
+            for (String line : lines) {
+                if (line.trim().isEmpty()) continue;
+                String[] strArray = line.split(",");
+
+                if (strArray[0].equals("ECG") && strArray.length >= 8) {
+
+                    // === 2. 抛弃 FFT，严格按照手册计算真实波形偏移量 ===
+                    double rawEcg = Double.valueOf(strArray[1]);
+                    double rawPpg = Double.valueOf(strArray[7]);
+
+                    // 手册规定心电基线约 519。减去它，让波峰变成正数，波谷变成负数。
+                    double dataecg = rawEcg - 519.0;
+                    // 脉搏波基线大约在 500 左右
+                    double datappg = rawPpg - 500.0;
+                    // ============================================
+
+                    // === 3. 聪明版守门员：防突变 & 防初始假数据 ===
+                    // 心率 (HR)
+                    int rawHR = Integer.valueOf(strArray[5]);
+                    if (rawHR >= 60 && rawHR <= 100) {
+                        if (lastValidHR == 0 || Math.abs(rawHR - lastValidHR) <= 10) {
+                            lastValidHR = rawHR;
+                        }
                     }
                 }
                 /*if (datatshr > 0) {//这个可以删掉
@@ -525,71 +524,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                             });
                         }
-                        /*if (datarr > 0) {
-                            //binding.sp02.setText(String.valueOf((int)datarr));
-                        }*/
-                        if (datatsspo2 > 0) {
-                            sp02 = String.valueOf((float) datatsspo2);
-                            map.put(3, new ResultBean(3, String.valueOf((float) datatsspo2)));
-                            binding.sp02.setText(String.valueOf((int) datatsspo2));
-                            //m_beanspo2.setValue(String.valueOf((int)datatsspo2));
-                            //adapter.getDataList().set(3,m_beanspo2);
-                        }
-                        if (datatsspo2 > 0) {
-//                            map.put(4, new ResultBean(4, String.valueOf((float) datappg)));
-                            ppg = String.valueOf((float) datappg);
-                            binding.IBP1.setText(String.valueOf((int) datappg));
-                        }
-                        if ((datasys > 0) && (datadia > 0)) {                //SYS 收缩压 DIA 舒张压
-                            SYSList.add(datasys);
-                            DIAList.add(datadia);
-                            if (SYSList.size() > 10) {
-                                SYSList.remove(0);
-                                DIAList.remove(0);
-                            }
-                            blood_sys = (int) datasys + "";
-                            blood_dia = "" + (int) datadia;
-                            binding.result3.setText(blood_sys + "/" + blood_dia);
-                            m_beanbloodPress.setValue(blood_sys + "/" + blood_dia);
-                            //adapter.getDataList().set(4, m_beanbloodPress);
-                            map.put(4, new ResultBean(5, blood_sys + "/" + blood_dia));
-                        }
-                        /*if (datasis > 0) {                //SIS 动脉硬化指数
-                            SISList.add(datadia);
-                            if (SISList.size() > 10) {
-                                SISList.remove(0);
-                            }
-                        }*/
-                        if (datafag > 0) {                //FAG 疲劳等级
-                            FAGList.add(datafag);
-                            if (FAGList.size() > 10) {
-                                FAGList.remove(0);
-                            }
-                            fag = String.valueOf((float) datafag);
-                            map.put(5, new ResultBean(6, String.valueOf((float) datafag)));
-                            binding.result4.setText(String.valueOf(datafag));
-                        }
-                        /*if (dataarr > 0) {                //ARR 心律不齐
-                            ARRList.add(datadia);
-                            if (ARRList.size() > 10) {
-                                ARRList.remove(0);
-                            }
-                        }
-                        if (datappbf > 0) {               //PBF 含水率
-                            PBFList.add(datadia);
-                            if (PBFList.size() > 10) {
-                                PBFList.remove(0);
-                            }
-                        }*/
-                        binding.mydata.addData((float) dataecg);//血氧
-                        binding.mydata2.addData((float) dataspo2);//spo2
-                        binding.mydata3.addData((float) datappg);//PPG
-                        //binding.mydata4.addData((float) dataspo2);//CO2
-                        //adapter.changeData();
-                        //检测结束
-//                        mHandler.sendEmptyMessageDelayed(INTENTSTART, 1000 * 10);
                     }
-                });
+                    double datatsspo2 = lastValidSpO2;
+
+                    // 疲劳度 (防早产，没测完发0时保持界面为空)
+                    int rawFag = Integer.valueOf(strArray[4]);
+                    double datafag = (rawFag > 0) ? (150 - rawFag) : 0;
+                    // ============================================
+
+                    double datasys = Integer.valueOf(strArray[2]);
+                    double datadia = Integer.valueOf(strArray[3]);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 只有当拿到真正的有效数据(>0)时，才更新 UI 数字
+                            if (datahr > 0) {
+                                ecg = String.valueOf((float) datahr);
+                                map.put(2, new ResultBean(2, String.valueOf((float) datahr)));
+                                binding.ecg.setText(String.valueOf((int) datahr));
+                            }
+                            if (datatsspo2 > 0) {
+                                sp02 = String.valueOf((float) datatsspo2);
+                                map.put(3, new ResultBean(3, String.valueOf((float) datatsspo2)));
+                                binding.sp02.setText(String.valueOf((int) datatsspo2));
+                            }
+                            if ((datasys > 0) && (datadia > 0)) {
+                                blood_sys = (int) datasys + "";
+                                blood_dia = "" + (int) datadia;
+                                binding.result3.setText(blood_sys + "/" + blood_dia);
+                                m_beanbloodPress.setValue(blood_sys + "/" + blood_dia);
+                                map.put(4, new ResultBean(5, blood_sys + "/" + blood_dia));
+                            }
+                            if (datafag > 0) {
+                                fag = String.valueOf((float) datafag);
+                                map.put(5, new ResultBean(6, String.valueOf((float) datafag)));
+                                binding.result4.setText(String.valueOf(datafag));
+                            }
+
+                            // 给控件喂食处理好的波形数据！
+                            binding.mydata.addData((float) dataecg); // 完美心电波形
+                            binding.mydata2.addData((float) datappg); // 完美脉搏波形
+                        }
+                    });
+                }
             }
         }
 
