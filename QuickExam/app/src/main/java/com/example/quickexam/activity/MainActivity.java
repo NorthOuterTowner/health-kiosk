@@ -13,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -208,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case FaceClick://开始体检
                     //m_serialportutil.sendSPStr((String) msg.obj);
                     m_bFlagStart = true;
+                    SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);
+                    prefs.edit()
+                            .putBoolean("reaction_test_done", false)
+                            .putBoolean("exam_completed", false)
+                            .apply();
                     clearView(1);//清空
                     miflytts.playText("开始检测，进行人脸识别");
                     startActivityForResult(new Intent(MainActivity.this, FragmentActivity.class), 1000);
@@ -242,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             /** Logic added for transmit health data to the backend */
             File ecgFile = writeECGToFile(ECGList);
-            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ecgFile,
+            transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ppg, sp02, ecgFile,
                     success -> {
                         if(success) {
                             Toast.makeText(getApplicationContext(), "发送成功",
@@ -486,13 +492,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             lastValidHR = rawHR;
                         }
                     }
-                    double datahr = lastValidHR;
+                }
+                /*if (datatshr > 0) {//这个可以删掉
+                    datahr = datatshr;
+                }*/
+                updateCnt++;
+                if (updateCnt < 2) {
+                    return;
+                }
+                //这里需要继续查看，画图？因为软件画图和自己用代码画图一定是对的，需要看一下怎么才能画出来
+                double dataecg = FFT.RemoveDCComponent(ECGList) * (-0.01);//！！这里不用乘上-1啦
+                double datappg = FFT.RemoveDCComponent(PPGList) * 0.01;//数据来源应该是PLETH
+                double dataspo2 = (datapleth - 127) * (-1.5);
+                Log.d(TAG, "dataecg:" + dataecg + ",datappg" + datappg);
+                double finalDatahr = datahr;
+                Log.e("finalDatahr", String.valueOf(finalDatahr));
+                Log.e("datahr", String.valueOf(datahr));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalDatahr > 0) {
+                            ecg = String.valueOf((float) finalDatahr);
+                            map.put(2, new ResultBean(2, String.valueOf((float) finalDatahr)));
+                            binding.ecg.setText(String.valueOf((int) finalDatahr));//！！！！这里需要注意，看他最终变成什么样了
+                            File ecgFile = writeECGToFile(ECGList);
+                            transmit(String.valueOf(finalDatahr),ecgFile,success -> {
+                                if(success) {
 
-                    // 血氧 (SpO2)
-                    int rawSpO2 = Integer.valueOf(strArray[6]);
-                    if (rawSpO2 >= 95 && rawSpO2 <= 100) {
-                        if (lastValidSpO2 == 0 || Math.abs(rawSpO2 - lastValidSpO2) <= 2) {
-                            lastValidSpO2 = rawSpO2;
+                                }else {
+                                    
+                                }
+                            });
                         }
                     }
                     double datatsspo2 = lastValidSpO2;

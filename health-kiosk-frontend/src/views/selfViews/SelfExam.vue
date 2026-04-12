@@ -78,22 +78,6 @@ const renderEcgPic = (row: any) => {
 const columns = computed(() => [
   { title: t('selfExam.columns.tempor'), key: "tempor", width: 100 },
   { title: t('selfExam.columns.alcohol'), key: "alcohol", width: 100 },
-  {
-    title: t('selfExam.columns.ecg'),
-    key: "ecg",
-    width: 100,
-    render(row: any) {
-      return h(
-        NButton,
-        {
-          size: "small",
-          type: "success",
-          onClick: () => { window.open("/pic/" + row.ecg); }
-        },
-        { default: () => t('selfExam.info') } // 使用 i18n 里的 "查看详情"
-      )
-    }
-  },
   { title: t('selfExam.columns.sys'), key: "blood_sys", width: 100 },
   { title: t('selfExam.columns.dia'), key: "blood_dia", width: 100 },
   { title: t('selfExam.columns.hr'), key: "blood_hr", width: 100 },

@@ -34,6 +34,7 @@ public class ResultActivity extends AppCompatActivity {
     private int RESULT_BACK = 3000;
     private final int TIME_CODE = 1;
     private HashMap<Integer, ResultBean> lists;
+    private final Handler jumpHandler = new Handler();
     //在主线程里面处理消息并更新UI界面
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
@@ -80,14 +81,24 @@ public class ResultActivity extends AppCompatActivity {
                 while (back >= 0) {
                     try {
                         Thread.sleep(1000);
+                        if (back < 0) {
+                            break;
+                        }
                         back--;
                         if (back == 0) {
-                            setResult(RESULT_BACK);
-                            finish();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setResult(RESULT_BACK);
+                                    finish();
+                                }
+                            });
+                            break;
                         }
                         mHandler.sendEmptyMessage(TIME_CODE);
-                    } catch (InterruptedException e) {
+                    }  catch (InterruptedException e) {
                         e.printStackTrace();
+                        break;
                     }
                 }
             }
@@ -126,5 +137,12 @@ public class ResultActivity extends AppCompatActivity {
                 }
             }
         }, 2000); // 延迟2秒，让用户能看到体检结果
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        jumpHandler.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
     }
 }
