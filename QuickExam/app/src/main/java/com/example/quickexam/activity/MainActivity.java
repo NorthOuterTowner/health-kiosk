@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //更新时间线程
     private int lastValidSpO2 = 0; // 4.3新增
     private int lastValidHR = 0;   // 4.3新增
+
     class TimeThread extends Thread {
         @Override
         public void run() {
@@ -247,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         sp02, ppg, blood_sys, blood_dia, ecg, fag, String.valueOf(sysTime)));
             }
             /** Logic added for transmit health data to the backend */
+            // 在测试结束时统一收集数据并上传，避免阻塞主线程
             File ecgFile = writeECGToFile(ECGList);
             transmit(maxAlcohol, blood_dia, blood_sys, maxTemper, fag, ppg, sp02, ecgFile,
                     success -> {
@@ -270,18 +272,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             binding.begin.setText("停止");
             MainApplication.FaceID = "";
             m_iMenuTask = 0;
+            // 清理波形缓存队列
+            ECGList.clear();
+            PPGList.clear();
         }
         m_beanStartEnd.setColor(2);
         m_beanspo2.setValue("--");
         m_beanspo2.setColor(0);
         m_beanbloodPress.setValue("--");
         m_beanbloodPress.setColor(0);
-        //adapter.getDataList().set(0, m_beantemp);
-        //adapter.getDataList().set(1, m_beanalcohol);
-        //adapter.getDataList().set(2, m_beanStartEnd);
-        //adapter.getDataList().set(4, m_beanbloodPress);
-        //adapter.getDataList().set(3, m_beanspo2);
-        //adapter.changeData();
+
         binding.name.setText("--");//姓名
         binding.result.setText("--");//体温
         binding.result2.setText("--");//酒精
@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         blood_dia = "";
         fag = "";
     }
-//类似项目里的初始化
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {//开启设备准备工作
         super.onCreate(savedInstanceState);
@@ -320,9 +320,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         m_serialGY.openSerialPort();
         m_serialGY.sendSerialPort("A4060301AE");//激活体温探头
 
-        //ConfigBean.SettingBean.ProjectBean m_probean = new ConfigBean.SettingBean.ProjectBean();
-        //m_probean.setIs_open(1);
-        //m_probean.setName("123");
         m_beantemp = mlistBean.get(0);
         m_beanalcohol = mlistBean.get(1);
         m_beanStartEnd = mlistBean.get(2);
@@ -333,7 +330,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         miflytts = new IflyTts();//准备讯飞语音
         miflytts.initTts(getApplicationContext());
 
-
         gmsg.what = FaceClick;  //消息(一个整型值)
         gmsg.obj = "";
         mHandler.sendMessage(gmsg);// 发送一个msg给mHandler
@@ -342,16 +338,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initDBFace() {
         instance = DBFace.getInstance(getApplicationContext());
         instance.dbThreadInit();
-
         dbLog = DBLog.getInstance(this);
-
     }
 
-/**
-     * 用EventBus进行线程间通信，也可以使用Handler，类似while(1)
-     *
-     * @param string
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(String string) {
         Log.d(TAG, "COM READ:" + string);
@@ -459,6 +448,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     double baseEcg = rawEcg - 519.0;
                     double basePpg = rawPpg - 500.0;
 
+                    // === 新增：将实时数据填充至队列，并维持最大长度 ===
+                    ECGList.add(rawEcg);
+                    if (ECGList.size() > maxfftsize) {
+                        ECGList.remove(0);
+                    }
+                    PPGList.add(rawPpg);
+                    if (PPGList.size() > maxfftsize) {
+                        PPGList.remove(0);
+                    }
+
                     // === 3. 数据过滤 (守门员逻辑) ===
                     int rawHR = Integer.valueOf(strArray[5]);
                     if (rawHR >= 60 && rawHR <= 100) {
@@ -495,17 +494,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // 更新心率与文件传输
+                            // 更新心率
                             if (datahr > 0) {
                                 ecg = String.valueOf((float) datahr);
                                 map.put(2, new ResultBean(2, ecg));
                                 binding.ecg.setText(String.valueOf((int) datahr));
-
-                                // 只有在有数据时才尝试保存和上报
-                                File ecgFile = writeECGToFile(ECGList);
-                                transmit(String.valueOf(datahr), ecgFile, success -> {
-                                    // 可以在这里处理传输后的回调
-                                });
+                                // 注意：此处已删除会导致 UI 卡死的高频文件保存和网络上传代码
                             }
 
                             // 更新血氧
@@ -544,9 +538,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         binding.setting.setOnClickListener(this);
         binding.recyclerView.setLayoutManager(new StaggeredGridLayoutManager(5, StaggeredGridLayoutManager.VERTICAL));
-        //adapter = new ProjectAdapter(binding.recyclerView);
-        //m_Datatime = (TextView) findViewById(R.id.time);
-        //binding.recyclerView.setAdapter(adapter);
         binding.begin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -560,24 +551,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     m_bFlagStart = false;
                     clearView(0);
                 }
-
             }
         });
-//        adapter.setOnItemClickListener(new ProjectAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int position) {
-//                Log.e("Main", "" + position + "被点击了！！");
-//                if (position == 2) {
-//                }
-//            }
-//        });
     }
 
-    /**
-     * 检测是否有写的权限
-     *
-     * @param activity
-     */
     private void verifyStoragePermissions(Activity activity) {
         try {
             SystemUtils.tryGetUsbPermission(this);
@@ -621,10 +598,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ConfigBean configBean = new Gson().fromJson(json, ConfigBean.class);
         configMainBean = configBean;
         mlistBean = configMainBean.getSetting().getProject();
-        //adapter.setData(configBean.getSetting().getProject());
-        //changeData(ReadAssetsFileUtils.readAssetsTxt(this, "StarCareData"));
-        //times();
-        //sensorRroTxt();
         initData();
     }
 
@@ -645,7 +618,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         allDatas.clear();
     }
 
-    //打印
     @org.jetbrains.annotations.NotNull
     private String arrayToString(float[] data) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -674,7 +646,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//            adapter.setData(MainApplication.configMainBean.getSetting().getProject());
         if (requestCode == 1000 && resultCode == 2000) {
             nameFace = data.getStringExtra("name");
             if (nameFace != null)
@@ -728,33 +699,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (cesMutation && !phMutation) {
                 System.out.println("Respiratory arrest！！！ ");
             }
-            /*
-            System.arraycopy(fftBuf, 0, this.x, 0, maxfftsize);
-            System.arraycopy(cesfftBuf, 0, this.cesx, 0, maxfftsize);
-            maxval = minval = 0.0;
-            // 在线程执行期间打印消息
-            //System.out.println("Message from thread: " + message);
-            int n = x.length;
-            //double[] x = {1, 2, 3, 4, 5, 6, 7, 8};
-            double[] y = new double[n];
-            String str1 = Arrays.toString(x);
-            fft.fft(x, y);
-            for (int i = 0; i < n/2; i++) {
-                //System.out.println("x[" + i + "] = " + x[i] + ", y[" + i + "] = " + y[i]);
-                if(y[i]>maxval) {
-                    maxval = y[i];
-                    maxindex = i;
-                }
-                if(y[i] < minval) {
-                    minval = y[i];
-                    minindex = i;
-                }
-            }
-            String str2 = Arrays.toString(y);
-            System.out.println("Max[" + maxindex + "] = " + maxval + ", Min[" + minindex + "] = " + minval);
-            System.out.println("PHRMS:" + calculateRMS(this.x) + ", CESRMS:" + calculateRMS(this.cesx));
-             */
-
         }
     }
 
