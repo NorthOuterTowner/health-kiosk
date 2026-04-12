@@ -1,7 +1,7 @@
 package com.example.quickexam.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;//3.29新加
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -375,7 +375,7 @@ public class ReactionTestActivity extends AppCompatActivity {
                 .show();
 
         // 标记反应测试已完成
-        SharedPreferences prefs = getSharedPreferences("app_data", MODE_PRIVATE);
+        prefs = getSharedPreferences("app_data", MODE_PRIVATE);
         prefs.edit().putBoolean("reaction_test_done", true).apply();
 
         new AlertDialog.Builder(this)

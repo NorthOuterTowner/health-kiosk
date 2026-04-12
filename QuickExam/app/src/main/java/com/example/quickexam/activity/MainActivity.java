@@ -347,13 +347,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    /**
+/**
      * 用EventBus进行线程间通信，也可以使用Handler，类似while(1)
      *
      * @param string
      */
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onEventMainThread(String string) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(String string) {
         Log.d(TAG, "COM READ:" + string);
 
         if (m_iMenuTask == 0) return;
@@ -375,17 +375,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     miflytts.playText("请对酒精传感器吹气");
                     m_serialportutil.sendSPStr("EtOH");
                 } else {
-                    runOnUiThread(new Runnable() {//创建一个临时对象。强制将一个子线程的操作弄到主线程去
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Message msg = new Message();
-                            msg.what = Read_GY;  //消息(一个整型值)
-                            mHandler.sendMessageDelayed(msg, 1000);// 每隔1秒发送一个msg给mHandler
-                            msg = null;
+                            msg.what = Read_GY;
+                            mHandler.sendMessageDelayed(msg, 1000);
                         }
                     });
                 }
-                double maxtemper = gyReadList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
+                double maxtemper = gyReadList.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
                 map.put(0, new ResultBean(0, String.valueOf((float) maxtemper)));
                 runOnUiThread(new Runnable() {
                     @Override
@@ -393,36 +392,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         maxTemper = String.valueOf((float) maxtemper);
                         m_beantemp.setValue(maxTemper);
                         binding.result.setText(maxTemper);
-                        //adapter.getDataList().set(0, m_beantemp);
-                        //adapter.changeData();
                     }
                 });
             }
         } else if (m_iMenuTask == 3) {
             String[] strArray = string.split(",");
-            if ((strArray[0].equals("EtOH")) && (strArray.length == 3)) {//表述切出来的总段数是否为3，且第一个数据是否为字符串EoTH
-                double dataalcohol = Double.valueOf(strArray[1]);//将数据变成小数
-                alcoholList.add(dataalcohol);//记录数据
-                if (alcoholList.size() > 5) {//返回的酒精传感器一次只能保存五个数。这里需要填加一个阈值大小判断
+            if ((strArray[0].equals("EtOH")) && (strArray.length == 3)) {
+                double dataalcohol = Double.valueOf(strArray[1]);
+                alcoholList.add(dataalcohol);
+                if (alcoholList.size() > 5) {
                     alcoholList.remove(0);
                     m_iMenuTask = 4;
                     m_serialportutil.sendSPStr("EPCM");
-                }
-                else {//如果不够五个数，则继续给传感器发指令
+                } else {
                     m_serialportutil.sendSPStr("EtOH");
                 }
-                // 1. 获取本次检测中捕获到的最大电压
-                final double currentMaxV = alcoholList.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
 
-                double V_BASE = 0.5;   // 基准电压
-                double K_FACTOR = 30.0; // 灵敏度系数（如果 2.85V 要对应 0.91 左右，K 约等于 387，你可以根据实测调整）
+                final double currentMaxV = alcoholList.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
+                double V_BASE = 0.5;
+                double K_FACTOR = 30.0;
 
-                // 2. 计算浓度数值（以 % 为例，mg/100ml 除以 1000）
                 double concentration_mg = (currentMaxV - V_BASE) * K_FACTOR;
                 if (concentration_mg < 0) concentration_mg = 0;
                 double concentration_percent = concentration_mg / 1000.0;
 
-                // 3. 根据电压判定状态文字（不带空格和括号）
                 String statusLabel = "";
                 if (currentMaxV < 1.92) {
                     statusLabel = "正常";
@@ -432,27 +425,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     statusLabel = "醉驾";
                 }
 
-                // 4. 格式化数值部分（保留两位或三位小数，根据你 dec 的定义）
-                // 如果得到的是 0.91 这种两位数，建议 dec 使用 "0.00" 格式
                 final String formattedVal = dec.format(concentration_percent);
-
-                // 5. 【核心修改】按照你要求的格式拼接： "数值/状态"
                 final String uiDisplay = formattedVal + "/" + statusLabel;
-
-                // 6. 存入结果包（只存数字，方便后台统计）
                 map.put(1, new ResultBean(1, formattedVal));
 
-                // 7. 更新 UI 界面
                 runOnUiThread(new Runnable() {
-                    @Override//申请主线程
+                    @Override
                     public void run() {
-                        // 更新全局变量
                         maxAlcohol = formattedVal;
-
-                        // 在 UI 上展示效果，例如: "0.01/正常" 或 "0.91/醉驾"
                         binding.result2.setText(uiDisplay);
-
-                        // 颜色提醒（依然保留，增强视觉效果）
                         if (currentMaxV >= 2.85) {
                             binding.result2.setTextColor(android.graphics.Color.RED);
                         } else if (currentMaxV >= 1.92) {
@@ -462,10 +443,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 });
-
             }
         } else {
-            // === 1. 解决串口粘包，找回丢失的心电波峰 ===
+            // === 1. 解决串口粘包 ===
             String[] lines = string.split("\n");
 
             for (String line : lines) {
@@ -473,108 +453,92 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String[] strArray = line.split(",");
 
                 if (strArray[0].equals("ECG") && strArray.length >= 8) {
-
-                    // === 2. 抛弃 FFT，严格按照手册计算真实波形偏移量 ===
+                    // === 2. 计算原始波形偏移 (用于备选显示) ===
                     double rawEcg = Double.valueOf(strArray[1]);
                     double rawPpg = Double.valueOf(strArray[7]);
+                    double baseEcg = rawEcg - 519.0;
+                    double basePpg = rawPpg - 500.0;
 
-                    // 手册规定心电基线约 519。减去它，让波峰变成正数，波谷变成负数。
-                    double dataecg = rawEcg - 519.0;
-                    // 脉搏波基线大约在 500 左右
-                    double datappg = rawPpg - 500.0;
-                    // ============================================
-
-                    // === 3. 聪明版守门员：防突变 & 防初始假数据 ===
-                    // 心率 (HR)
+                    // === 3. 数据过滤 (守门员逻辑) ===
                     int rawHR = Integer.valueOf(strArray[5]);
                     if (rawHR >= 60 && rawHR <= 100) {
                         if (lastValidHR == 0 || Math.abs(rawHR - lastValidHR) <= 10) {
                             lastValidHR = rawHR;
                         }
                     }
-                }
-                /*if (datatshr > 0) {//这个可以删掉
-                    datahr = datatshr;
-                }*/
-                updateCnt++;
-                if (updateCnt < 2) {
-                    return;
-                }
-                //这里需要继续查看，画图？因为软件画图和自己用代码画图一定是对的，需要看一下怎么才能画出来
-                double dataecg = FFT.RemoveDCComponent(ECGList) * (-0.01);//！！这里不用乘上-1啦
-                double datappg = FFT.RemoveDCComponent(PPGList) * 0.01;//数据来源应该是PLETH
-                double dataspo2 = (datapleth - 127) * (-1.5);
-                Log.d(TAG, "dataecg:" + dataecg + ",datappg" + datappg);
-                double finalDatahr = datahr;
-                Log.e("finalDatahr", String.valueOf(finalDatahr));
-                Log.e("datahr", String.valueOf(datahr));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalDatahr > 0) {
-                            ecg = String.valueOf((float) finalDatahr);
-                            map.put(2, new ResultBean(2, String.valueOf((float) finalDatahr)));
-                            binding.ecg.setText(String.valueOf((int) finalDatahr));//！！！！这里需要注意，看他最终变成什么样了
-                            File ecgFile = writeECGToFile(ECGList);
-                            transmit(String.valueOf(finalDatahr),ecgFile,success -> {
-                                if(success) {
+                    final double datahr = lastValidHR;
 
-                                }else {
-                                    
-                                }
-                            });
+                    int rawSpO2 = Integer.valueOf(strArray[6]);
+                    if (rawSpO2 >= 95 && rawSpO2 <= 100) {
+                        if (lastValidSpO2 == 0 || Math.abs(rawSpO2 - lastValidSpO2) <= 2) {
+                            lastValidSpO2 = rawSpO2;
                         }
                     }
-                    double datatsspo2 = lastValidSpO2;
+                    final double datatsspo2 = lastValidSpO2;
 
-                    // 疲劳度 (防早产，没测完发0时保持界面为空)
+                    // 计数器逻辑
+                    updateCnt++;
+                    if (updateCnt < 2) continue;
+
+                    // === 4. 高级波形处理 (FFT去直流) ===
+                    // 这里采用你合并分支中的算法：FFT处理后乘上对应系数
+                    final double finalDataEcg = FFT.RemoveDCComponent(ECGList) * (-0.01);
+                    final double finalDataPpg = FFT.RemoveDCComponent(PPGList) * 0.01;
+
+                    // 疲劳度与血压解析
                     int rawFag = Integer.valueOf(strArray[4]);
-                    double datafag = (rawFag > 0) ? (150 - rawFag) : 0;
-                    // ============================================
+                    final double datafag = (rawFag > 0) ? (150 - rawFag) : 0;
+                    final double datasys = Integer.valueOf(strArray[2]);
+                    final double datadia = Integer.valueOf(strArray[3]);
 
-                    double datasys = Integer.valueOf(strArray[2]);
-                    double datadia = Integer.valueOf(strArray[3]);
-
+                    // === 5. 统一更新 UI ===
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // 只有当拿到真正的有效数据(>0)时，才更新 UI 数字
+                            // 更新心率与文件传输
                             if (datahr > 0) {
                                 ecg = String.valueOf((float) datahr);
-                                map.put(2, new ResultBean(2, String.valueOf((float) datahr)));
+                                map.put(2, new ResultBean(2, ecg));
                                 binding.ecg.setText(String.valueOf((int) datahr));
+
+                                // 只有在有数据时才尝试保存和上报
+                                File ecgFile = writeECGToFile(ECGList);
+                                transmit(String.valueOf(datahr), ecgFile, success -> {
+                                    // 可以在这里处理传输后的回调
+                                });
                             }
+
+                            // 更新血氧
                             if (datatsspo2 > 0) {
                                 sp02 = String.valueOf((float) datatsspo2);
-                                map.put(3, new ResultBean(3, String.valueOf((float) datatsspo2)));
+                                map.put(3, new ResultBean(3, sp02));
                                 binding.sp02.setText(String.valueOf((int) datatsspo2));
                             }
-                            if ((datasys > 0) && (datadia > 0)) {
-                                blood_sys = (int) datasys + "";
-                                blood_dia = "" + (int) datadia;
+
+                            // 更新血压
+                            if (datasys > 0 && datadia > 0) {
+                                blood_sys = String.valueOf((int) datasys);
+                                blood_dia = String.valueOf((int) datadia);
                                 binding.result3.setText(blood_sys + "/" + blood_dia);
                                 m_beanbloodPress.setValue(blood_sys + "/" + blood_dia);
                                 map.put(4, new ResultBean(5, blood_sys + "/" + blood_dia));
                             }
+
+                            // 更新疲劳度
                             if (datafag > 0) {
                                 fag = String.valueOf((float) datafag);
-                                map.put(5, new ResultBean(6, String.valueOf((float) datafag)));
+                                map.put(5, new ResultBean(6, fag));
                                 binding.result4.setText(String.valueOf(datafag));
                             }
 
-                            // 给控件喂食处理好的波形数据！
-                            binding.mydata.addData((float) dataecg); // 完美心电波形
-                            binding.mydata2.addData((float) datappg); // 完美脉搏波形
+                            // 更新波形图
+                            binding.mydata.addData((float) finalDataEcg);
+                            binding.mydata2.addData((float) finalDataPpg);
                         }
                     });
                 }
             }
         }
-
-        //tv.setText(string);
-        //byte[] sendData = DataUtils.HexToByteArr(string);
-        //Toast.makeText(getApplicationContext(), "未检测到摄像头", Toast.LENGTH_SHORT).show();
-
     }
 
     private void initView() {
