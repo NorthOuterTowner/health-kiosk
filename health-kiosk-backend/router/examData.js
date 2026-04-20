@@ -750,6 +750,89 @@ router.get("/userId", authMiddleware, async (req, res) => {
 });
 
 /**
+ * @api {get} /userId Get User Health Data
+ * @apiGroup ExamData
+ * * @apiQuery {String} user_id User's unique ID.
+ * @apiQuery {Number} [page=1] Page number (starting from 1).
+ * @apiQuery {Number} [limit=20] Number of items per page.
+ * * @apiSuccess {Object} Response:
+ * {
+ * "code": 200,
+ * "rows": [
+ * {
+ * "id": 1,
+ * "user_id": "user001",
+ * "tempor": 36.5,
+ * "alcohol": 0.05,
+ * "spo2": 98,
+ * "ppg": 85,
+ * "blood_sys": 120,
+ * "blood_dia": 80,
+ * "blood_hr": 75,
+ * "date": "2023-11-25",
+ * "time": 2
+ * }
+ * ],
+ * "msg": "Query successful",
+ * "cnt": 100
+ * }
+ */
+router.get("/userId2", authMiddleware, async (req, res) => {
+    const user_id = req.query.user;
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+    
+    const select_sql = "select * from `data` where `user_id` = ? order by `id` limit ? offset ? ;";
+    const {rows, err} = await db.async.all(select_sql,[user_id, limit, offset]);
+
+    const cnt_sql = "select COUNT(*) as cnt from `data` where `user_id` = ? ;";
+    const {rows: cntRows, err: cntErr} = await db.async.all(cnt_sql,[user_id]);
+    if(rows.length > 0 && err == null && cntErr == null) {
+        return res.status(200).json({
+            code:200,
+            rows,
+            msg:"查询成功",
+            cnt: cntRows[0].cnt
+        });
+    }else if (rows.length == 0) {
+        return res.status(200).json({
+            code:200,
+            rows:[],
+            msg:"查询成功",
+            cnt:0
+        });
+    }else {
+        return res.status(200).json({
+            code:500,
+            rows: null,
+            msg: err.msg,
+            cnt: null
+        })
+    }
+});
+
+router.get("/getRole", authMiddleware, async (req, res) => {
+    const user_id = req.account;
+    const select_sql = "select `role` from `user` where `account` = ?";
+    const {rows: cntRows, err: cntErr} = await db.async.all(select_sql,[user_id]);
+    console.log(cntRows[0])
+    if(cntErr) {
+        return res.status(200).json({
+            code:500,
+            rows: null,
+            msg: err.msg,
+            cnt: null
+        });
+    }
+    return res.status(200).json({
+        code:200,
+        role: cntRows[0].role
+    })
+});
+
+/**
  * @api {post} /data/delete 删除体检数据记录
  * @apiName DeleteExamRecord
  * @apiGroup ExamData

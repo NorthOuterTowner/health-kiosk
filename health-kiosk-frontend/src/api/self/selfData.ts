@@ -12,6 +12,23 @@ export function getInfoApi (page:Number | undefined | null,
         })
 }
 
+export function getInfoApi2 (page:Number | undefined | null, 
+    limit:Number | undefined | null, user: string) {
+        if(page == null) page = 1;
+        if(limit == null) limit = 10;
+        return instance.get(`/examData/userId2`,{
+            params:{
+                page,
+                limit,
+                user
+            }
+        })
+}
+
+export function getRoleApi () {
+    return instance.get(`/examData/getRole`,)
+}
+
 export function deleteExamDataApi (record_id: number) {
     return instance.post("/examData/delete", {
         record_id

@@ -4,7 +4,14 @@
         <Sidebar />
         <div class="device-page">
             <div class="header-section">
-                <h2>{{ $t('selfExam.title') }}</h2>
+              <n-space align="center" v-if="isAdmin">
+                <h2 style="margin: 0">{{ $t('selfExam.title') }}</h2>
+                <span>输入用户账户：</span>
+                <n-input v-model:value="user" style="width: 200px" />
+                <span style="margin: 5px;" />
+                <n-button type="primary" @click="fetchExamItems2">查询</n-button>
+              </n-space>
+              <div style="margin-bottom: 10px;"/>
             </div>
         
             <n-data-table
@@ -43,9 +50,9 @@
 <script setup lang = "ts">
 import { ref, onMounted, h, reactive, computed } from 'vue';
 import Sidebar from "../../components/Sidebar.vue";
-import { NButton, useMessage, useDialog } from "naive-ui";
+import { NButton, useMessage, useDialog, NInput } from 'naive-ui';
 import { useI18n } from 'vue-i18n'
-import { deleteExamDataApi, downloadDataApi, getInfoApi } from '../../api/self/selfData';
+import { deleteExamDataApi, getInfoApi, getInfoApi2, getRoleApi } from '../../api/self/selfData';
 import ExportOption from '../../components/examData/exportOption.vue';
 import { DownloadOutline } from '@vicons/ionicons5';
 
@@ -55,6 +62,8 @@ const export_option = ref(false);
 
 const message = useMessage();
 const dialog = useDialog();
+
+const user = ref<string>("");
 
 async function handleDelete(row: any){
   const res = await deleteExamDataApi(row.id);
@@ -151,6 +160,34 @@ const fetchExamItems = async () => {
   }
 };
 
+const isAdmin = ref(false); // 默认不显示
+
+const checkRole = async () => {
+  try {
+    const res = await getRoleApi();
+    isAdmin.value = res.data.role >= 3;
+  } catch (error) {
+    console.error("获取权限失败:", error);
+    isAdmin.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchExamItems();
+  checkRole(); // 组件挂载时检查一次权限
+});
+
+const fetchExamItems2 = async () => {
+  try {
+    const res = await getInfoApi2(pagination.page, pagination.pageSize, user.value);
+    examItems.value = res.data.rows || [];
+    pagination.itemCount = res.data.count || 0; // 后端返回总数
+  } catch (err) {
+    examItems.value = [];
+    pagination.itemCount = 0;
+  }
+};
+
 const pagination = reactive({
   page: 1,
   pageSize: 10,
@@ -168,7 +205,6 @@ const pagination = reactive({
   }
 });
 
-onMounted(fetchExamItems)
 </script>
 
 <style scoped>
